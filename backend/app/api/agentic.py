@@ -1,5 +1,5 @@
 """
-agentic.py: Agentic Workflow for Video-to-Course Conversion
+agentic.py: Agentic Workflow for Video-to-Course Conversion (using OpenTelemetry)
 
 Implements a LangGraph state graph to automate conversion of video content into structured courses.
 Takes video transcripts and extracted frames as input and orchestrates an agentic workflow to:
@@ -14,24 +14,24 @@ import json
 import logging
 import os
 import time
-from typing import Dict, List, Optional, TypedDict
-from uuid import uuid4
+from typing import Dict, List, TypedDict, Any
 from dotenv import load_dotenv
 import google.api_core.exceptions
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import ChatPromptTemplate, PromptTemplate
-from langchain.schema import HumanMessage
+from langchain.schema import HumanMessage, BaseMessage
 from langchain_groq import ChatGroq
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import StateGraph, END
-from maxim import Maxim, Config
-from maxim.logger import LoggerConfig
-from maxim.logger.components.generation import GenerationConfig
-from maxim.logger.components.span import SpanConfig, Span
-from maxim.logger.components.trace import TraceConfig
-from maxim.types import GenerationRequestMessage
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 from app.api.utils import clean_json_string, encode_image
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.resources import SERVICE_NAME, Resource
+from opentelemetry.trace import Status, StatusCode
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -42,23 +42,23 @@ load_dotenv()
 
 gemini_api_key = os.environ.get("GEMINI_API_KEY")
 groq_api_key = os.environ.get("GROQ_API_KEY")
-maxim_api_key = os.environ.get("MAXIM_API_KEY")
-log_repository_id = os.environ.get("LOG_REPO_ID")
 
 if not gemini_api_key:
     raise ValueError("GEMINI_API_KEY environment variable not set.")
 if not groq_api_key:
     raise ValueError("GROQ_API_KEY environment variable not set.")
-if not maxim_api_key:
-    raise ValueError("MAXIM_API_KEY environment variable not set.")
-if not log_repository_id:
-    raise ValueError("LOG_REPO_ID environment variable not set.")
 
-maxim_client = Maxim(Config(api_key=maxim_api_key))
-maxim_logger = maxim_client.logger(LoggerConfig(id=log_repository_id))
-trace = maxim_logger.trace(TraceConfig(id=str(uuid4()), name="user-course-generation"))
+resource = Resource(attributes={
+    SERVICE_NAME: "video-to-course-agent"
+})
+provider = TracerProvider(resource=resource)
+exporter = OTLPSpanExporter()
+processor = BatchSpanProcessor(exporter)
+provider.add_span_processor(processor)
+trace.set_tracer_provider(provider)
+tracer = trace.get_tracer(__name__)
 
-# pylint: disable=line-too-long
+#pylint: disable=line-too-long
 
 class GraphState(TypedDict):
     """State representation for the content generation graph."""
@@ -68,27 +68,29 @@ class GraphState(TypedDict):
     course_content: Dict
     quiz_content: Dict
     retention_plan: Dict
-    trace_id: Optional[str]
 
 gemini_llm = ChatGoogleGenerativeAI(
     model="gemini-1.5-flash",
     temperature=0.7,
     google_api_key=gemini_api_key
 )
-logger.info("Initialized ChatGoogleGenerativeAI with model gemini-1.5-pro.")
+logger.info("Initialized ChatGoogleGenerativeAI with model gemini-1.5-flash.")
 
 groq_llm = ChatGroq(
-    model="llama-3.2-90b-vision-preview",
+    model="meta-llama/llama-4-scout-17b-16e-instruct",
     temperature=0.7,
     api_key=groq_api_key
 )
-logger.info("Initialized Groq with llama-3.2-90b-vision-preview.")
+logger.info("Initialized Groq with meta-llama/llama-4-scout-17b-16e-instruct.")
 
 memory = MemorySaver()
 
 def log_retry_error(retry_state):
     """Log retry error."""
     logger.error("Retrying: %s", retry_state)
+    current_span = trace.get_current_span()
+    if current_span.is_recording():
+        current_span.add_event("Retry Occurred", attributes={"retry_state": str(retry_state)})
 
 @retry(
     stop=stop_after_attempt(3),
@@ -96,695 +98,778 @@ def log_retry_error(retry_state):
     retry=retry_if_exception_type(google.api_core.exceptions.ResourceExhausted),
     retry_error_callback=log_retry_error
 )
-def call_gemini_with_retry(chain, input_data, generation_config: GenerationConfig, span: Span):
-    """Call Gemini with retries and log the generation result."""
-    generation = span.generation(generation_config)
-    try:
-        result = chain.invoke(input_data)
-        content = result.content
-        gemini_response = {
-            "id": str(uuid4()),
-            "object": "text_completion",
-            "created": int(time.time()),
-            "model": generation_config.model,
-            "choices": [{"index": 0, "text": content, "finish_reason": "stop"}],
-            "usage": {
-                "prompt_tokens": len(str(input_data)),
-                "completion_tokens": len(content),
-                "total_tokens": len(str(input_data)) + len(content),
-            },
-        }
-        generation.result(gemini_response)
-        return result
-    except Exception as e:
-        logger.exception("Gemini call failed: %s", e)
-        generation.result({"error": str(e)})
-        raise
-    finally:
-        generation.end()
+def call_gemini_with_retry(
+    chain: Any,
+    input_data: Dict,
+    span_name: str,
+) -> BaseMessage:
+    """Call Gemini with retries and create an OTel span for the call."""
+    with tracer.start_as_current_span(span_name) as llm_span:
+        llm_span.set_attribute("gen_ai.system", "google_ai_studio")
+        llm_span.set_attribute("gen_ai.request.model", gemini_llm.model)
+        llm_span.set_attribute("gen_ai.request.temperature", gemini_llm.temperature)
+        prompt_str = str(input_data)
+        llm_span.set_attribute("gen_ai.prompt", prompt_str[:1000] + "..." if len(prompt_str) > 1000 else prompt_str)
+
+        try:
+            start_time = time.time()
+            result = chain.invoke(input_data)
+            end_time = time.time()
+            duration = end_time - start_time
+
+            content = result.content
+            llm_span.set_attribute("gen_ai.completion", content[:1000] + "..." if len(content) > 1000 else content)
+            llm_span.set_attribute("gen_ai.response.model", gemini_llm.model)
+            llm_span.set_attribute("gen_ai.usage.prompt_tokens", len(prompt_str))
+            llm_span.set_attribute("gen_ai.usage.completion_tokens", len(content))
+            llm_span.set_attribute("gen_ai.usage.total_tokens", len(prompt_str) + len(content))
+            llm_span.set_attribute("gen_ai.response.duration", duration)
+            # Add other metadata if available from the result object (e.g., finish reason)
+            # if hasattr(result, 'response_metadata') and result.response_metadata:
+            #    finish_reason = result.response_metadata.get('finish_reason')
+            #    if finish_reason:
+            #       llm_span.set_attribute("gen_ai.response.finish_reasons", [str(finish_reason)])
+            llm_span.set_status(Status(StatusCode.OK))
+            return result
+        except Exception as e:
+            logger.exception("Gemini call failed: %s", e)
+            llm_span.record_exception(e)
+            llm_span.set_status(Status(StatusCode.ERROR, description=f"Gemini call failed: {e}"))
+            raise
 
 @retry(
     stop=stop_after_attempt(3),
     wait=wait_exponential(multiplier=1, min=2, max=10),
     retry_error_callback=log_retry_error
 )
-def call_groq_with_retry(chain, input_data, generation_config: GenerationConfig, span: Span):
-    """Call Groq with retries and log the generation result."""
-    generation = span.generation(generation_config)
-    try:
-        result = chain.invoke(input_data)
-        content = result.content
-        gemini_response = {
-            "id": str(uuid4()),
-            "object": "text_completion",
-            "created": int(time.time()),
-            "model": generation_config.model,
-            "choices": [{"index": 0, "text": content, "finish_reason": "stop"}],
-            "usage": {
-                "prompt_tokens": len(str(input_data)),
-                "completion_tokens": len(content),
-                "total_tokens": len(str(input_data)) + len(content),
-            },
-        }
-        generation.result(gemini_response)
-        return result
-    except Exception as e:
-        logger.exception("Groq call failed: %s", e)
-        generation.result({"error": str(e)})
-        raise
-    finally:
-        generation.end()
+def call_groq_with_retry(
+    chain: Any,
+    input_data: Any,
+    span_name: str
+) -> BaseMessage:
+    """Call Groq with retries and create an OTel span for the call."""
+    with tracer.start_as_current_span(span_name) as llm_span:
+        llm_span.set_attribute("gen_ai.system", "groq")
+        llm_span.set_attribute("gen_ai.request.model", groq_llm.model_name)
+        llm_span.set_attribute("gen_ai.request.temperature", groq_llm.temperature)
+
+        prompt_str = str(input_data)
+        llm_span.set_attribute("gen_ai.prompt", prompt_str[:1000] + "..." if len(prompt_str) > 1000 else prompt_str)
+
+        try:
+            start_time = time.time()
+            result = chain.invoke(input_data)
+            end_time = time.time()
+            duration = end_time - start_time
+
+            content = result.content
+            llm_span.set_attribute("gen_ai.completion", content[:1000] + "..." if len(content) > 1000 else content)
+            llm_span.set_attribute("gen_ai.response.model", groq_llm.model_name)
+            llm_span.set_attribute("gen_ai.usage.prompt_tokens", len(prompt_str))
+            llm_span.set_attribute("gen_ai.usage.completion_tokens", len(content))
+            llm_span.set_attribute("gen_ai.usage.total_tokens", len(prompt_str) + len(content))
+            llm_span.set_attribute("gen_ai.response.duration", duration)
+            # Add other metadata like finish reason if available from result.response_metadata
+            # if hasattr(result, 'response_metadata') and result.response_metadata:
+            #     finish_reason = result.response_metadata.get('finish_reason')
+            #     if finish_reason:
+            #         llm_span.set_attribute("gen_ai.response.finish_reasons", [str(finish_reason)])
+
+            llm_span.set_status(Status(StatusCode.OK))
+            return result
+        except Exception as e:
+            logger.exception("Groq call failed: %s", e)
+            llm_span.record_exception(e)
+            llm_span.set_status(Status(StatusCode.ERROR, description=f"Groq call failed: {e}"))
+            raise
 
 def content_structurer(state: GraphState) -> GraphState:
     """Generate a blog-style course structure from the given transcript."""
     logger.info("Running Content Structurer Node")
-    content_structurer_span = trace.span(SpanConfig(id=str(uuid4()), name="Content Structurer"))
-    content_structurer_span.event("content_structurer_start", "Content Structurer Start")
+    with tracer.start_as_current_span("Content Structurer") as span:
+        span.add_event("content_structurer_start", attributes={"message": "Content Structurer Start"})
+        span.set_attribute("input.transcript_length", len(state.get("transcript", "")))
 
-    prompt_template = """
-Analyze the following video transcript and create a detailed, blog-style course structure.  
-The goal is to create a structure that is easy to understand and helps in selecting relevant images later.
+        prompt_template = """
+        Analyze the following video transcript and create a detailed, blog-style course structure.  
+        The goal is to create a structure that is easy to understand and helps in selecting relevant images later.
 
-1. **Identify Main Modules:** Divide the video into distinct modules. Each module should represent a major topic or theme.
-   -  Use **highly descriptive and specific module titles**.  Avoid generic titles like "Module 1" or "Introduction."  
-   -  Example:  Instead of "Introduction", use "Famotidine:  Understanding the Basics and Mechanism of Action".
+        1. **Identify Main Modules:** Divide the video into distinct modules. Each module should represent a major topic or theme.
+        -  Use **highly descriptive and specific module titles**.  Avoid generic titles like "Module 1" or "Introduction."  
+        -  Example:  Instead of "Introduction", use "Famotidine:  Understanding the Basics and Mechanism of Action".
 
-2. **Structure within Modules (Sections):**  Within each module, identify logical sections.
-   - Use **highly descriptive and specific section titles**.  Avoid generic titles like "Section 1" or "Overview."
-   - Example: Instead of "Section 1", use "What is Famotidine and What Conditions Does it Treat?".
-   - Provide accurate `start_ts` and `end_ts` (timestamps) for each section.
+        2. **Structure within Modules (Sections):**  Within each module, identify logical sections.
+        - Use **highly descriptive and specific section titles**.  Avoid generic titles like "Section 1" or "Overview."
+        - Example: Instead of "Section 1", use "What is Famotidine and What Conditions Does it Treat?".
+        - Provide accurate `start_ts` and `end_ts` (timestamps) for each section.
 
-3. **Extract Global Concepts:** Identify 5-10 key overarching concepts that are central to the entire video. These should be concise and informative.
+        3. **Extract Global Concepts:** Identify 5-10 key overarching concepts that are central to the entire video. These should be concise and informative.
 
-4. **Output Format:**  Output the structure as plain JSON, *without* any markdown formatting or code blocks. Follow the exact format below:
+        4. **Output Format:**  Output the structure as plain JSON, *without* any markdown formatting or code blocks. Follow the exact format below:
 
-```json
-{{
-    "modules": [
+        ```json
         {{
-            "module_title": "Descriptive Module Title Here",
-            "sections": [
+            "modules": [
                 {{
-                    "section_title": "Descriptive Section Title Here",
-                    "start_ts": 0.00,  
-                    "end_ts": 10.50,
-                    frames: [],//return it empty for now
+                    "module_title": "Descriptive Module Title Here",
+                    "sections": [
+                        {{
+                            "section_title": "Descriptive Section Title Here",
+                            "start_ts": 0.00,  
+                            "end_ts": 10.50,
+                            frames: [],//return it empty for now
+                        }},
+                        ... more sections ...
+                    ]
                 }},
-                ... more sections ...
-            ]
-        }},
-        ... more modules ...
-    ],
-    "global_concepts": ["Concept 1", "Concept 2", ...]
-}}
+                ... more modules ...
+            ],
+            "global_concepts": ["Concept 1", "Concept 2", ...]
+        }}
 
-Transcript:
-{transcript}
-"""
-    prompt = PromptTemplate.from_template(prompt_template)
-    chain = prompt | gemini_llm # pylint: disable=unsupported-binary-operation
+        Transcript:
+        {transcript}
+        """
+        prompt = PromptTemplate.from_template(prompt_template)
+        chain = prompt | gemini_llm # pylint: disable=unsupported-binary-operation
 
-    messages_content = prompt_template.format(transcript=state["transcript"])
-    messages = [GenerationRequestMessage(role="user", content=messages_content)]
-    generation_config = GenerationConfig(
-        id=str(uuid4()),
-        name="Content Structure Generation",
-        provider="google",
-        model="gemini-1.5-flash",
-        model_parameters={"temperature": 0.7},
-        messages=messages,
-    )
-    generation = content_structurer_span.generation(generation_config)
+        try:
+            response = call_gemini_with_retry(
+                chain,
+                {"transcript": state["transcript"]},
+                span_name="Content Structure Generation",
+            )
 
-    try:
-        response = chain.invoke({"transcript": state["transcript"]})
-        logger.info("Content Structurer output: %s", response)
-        cleaned_content = clean_json_string(response.content)
-        structured_content_json = json.loads(cleaned_content)
-        state["structured_content"] = structured_content_json
+            logger.info("Content Structurer output: %s", response)
+            cleaned_content = clean_json_string(response.content)
+            structured_content_json = json.loads(cleaned_content)
+            state["structured_content"] = structured_content_json
 
-        gemini_response = {
-            "id": str(uuid4()),
-            "object": "text_completion",
-            "created": int(time.time()),
-            "model": "gemini-1.5-flash",
-            "choices": [{"index": 0, "text": cleaned_content, "finish_reason": "stop"}],
-            "usage": {
-                "prompt_tokens": len(str(state["transcript"])),
-                "completion_tokens": len(cleaned_content),
-                "total_tokens": len(str(state["transcript"])) + len(cleaned_content),
-            },
-        }
-        logger.info("gemini response: %s", gemini_response)
-        generation.result(gemini_response)
-        content_structurer_span.event("content_structurer_success", "Content Structurer Succeeded")
-    except (json.JSONDecodeError, ValueError, google.api_core.exceptions.GoogleAPIError) as e:
-        logger.exception("Content Structurer error: %s", e)
-        content_structurer_span.event("content_structurer_error",
-                                    "Error in Content Structurer",
-                                    {"error": str(e)})
-        generation.result({"error": str(e)})
-        state["structured_content"] = {}
-    finally:
-        generation.end()
-        content_structurer_span.end()
+            span.set_attribute("output.module_count", len(structured_content_json.get("modules", [])))
+            span.set_attribute("output.global_concepts_count", len(structured_content_json.get("global_concepts", [])))
+            span.add_event("content_structurer_success", attributes={"message": "Content Structurer Succeeded"})
+            span.set_status(Status(StatusCode.OK))
+
+        except (json.JSONDecodeError, ValueError, google.api_core.exceptions.GoogleAPIError) as e:
+            logger.exception("Content Structurer error: %s", e)
+            span.record_exception(e)
+            span.set_status(Status(StatusCode.ERROR, description=f"Content Structurer error: {e}"))
+            span.add_event("content_structurer_error",
+                            attributes={"error.message": str(e)})
+            state["structured_content"] = {}
     return state
-
 
 
 def frame_selector(state: GraphState) -> GraphState:
     """Select frames from the video based on relevancy, avoiding repetition across the module."""
     logger.info("Running Frame Selector Node")
-    frame_selector_span = trace.span(SpanConfig(id=str(uuid4()), name="Frame Selector"))
-    frame_selector_span.event("frame_selector_start", "Frame Selector Start")
+    with tracer.start_as_current_span("Frame Selector") as span:
+        span.add_event("frame_selector_start", attributes={"message": "Frame Selector Start"})
+        span.set_attribute("input.initial_frame_count", len(state.get("frames", [])))
+        span.set_attribute("input.module_count", len(state.get("structured_content", {}).get("modules", [])))
 
-    frames = state["frames"]
-    selected_frames_with_info = []
-    logger.info("Initial frames to assess: %s", frames)
+        frames = state.get("frames", [])
+        structured_content = state.get("structured_content", {"modules": []})
+        course_content = state.get("course_content", {"modules": []})
+        transcript = state.get("transcript", "")
 
-    for module_index, module in enumerate(state["structured_content"]["modules"]):
-        module_start_ts = int(float(module["sections"][0]["start_ts"]))
-        module_end_ts = int(float(module["sections"][-1]["end_ts"]))
-        module_content = state["transcript"][module_start_ts:module_end_ts]
+        selected_frames_with_info = []
+        logger.info("Initial frames to assess: %d", len(frames))
 
-        # --- Maintain a list of captions for the entire module ---
-        module_previous_captions = []
-        for sec in module["sections"]:  # Iterate to collect existing captions
-            if "frames" in sec:
-                module_previous_captions.extend([f["caption"] for f in sec["frames"]])
-        # --- End of module caption list maintenance ---
+        if not structured_content or not structured_content.get("modules"):
+            logger.warning("No structured content found. Skipping frame selection.")
+            span.add_event("frame_selector_skipped", attributes={"reason": "No structured content"})
+            span.set_status(Status(StatusCode.OK))
+            return state
 
-        for section_index, section in enumerate(module["sections"]):
-            start_ts = float(section["start_ts"])
-            end_ts = float(section["end_ts"])
-            section_content = state["transcript"][int(start_ts):int(end_ts)]
-            section_frames = []
+        total_frames_processed = 0
+        total_frames_selected = 0
+
+        for module_index, module in enumerate(structured_content["modules"]):
+            module_start_ts_str = module.get("sections", [{}])[0].get("start_ts", "0")
+            module_end_ts_str = module.get("sections", [{}])[-1].get("end_ts", "0")
+            try:
+                module_start_ts = int(float(module_start_ts_str)) if module_start_ts_str else 0
+                module_end_ts = int(float(module_end_ts_str)) if module_end_ts_str else 0
+                module_content = transcript[module_start_ts:module_end_ts]
+            except (ValueError, TypeError) as ts_err:
+                logger.error(f"Error processing timestamps for module {module_index}: {ts_err}. Skipping module.")
+                span.add_event("timestamp_error", attributes={"module_index": module_index, "error": "%s" % ts_err})
+                continue
 
 
-            # --- Get corresponding generated content ---
-            generated_section_content = ""
-            if "course_content" in state and state["course_content"]["modules"]:
+            module_previous_captions = []
+            for sec in module.get("sections", []):
+                module_previous_captions.extend([f.get("caption", "") for f in sec.get("frames", []) if f.get("caption")])
+
+
+            for section_index, section in enumerate(module.get("sections", [])):
+                start_ts_str = section.get("start_ts", "0")
+                end_ts_str = section.get("end_ts", "0")
+                section_title = section.get("section_title", f"Untitled Section {section_index}")
                 try:
-                    generated_section_content = state["course_content"]["modules"][module_index]["sections"][section_index]["content"]
-                except (KeyError, IndexError) as e:
-                    logger.warning("Could not retrieve generated content for module %d, section %d: %s", module_index, section_index, e)
-            # --- End of getting generated content ---
+                    start_ts = float(start_ts_str) if start_ts_str else 0.0
+                    end_ts = float(end_ts_str) if end_ts_str else start_ts # Avoid negative range
+                    section_content = transcript[int(start_ts):int(end_ts)]
+                except (ValueError, TypeError) as ts_err:
+                    logger.error(f"Error processing timestamps for section '{section_title}': {ts_err}. Skipping section.")
+                    span.add_event("timestamp_error", attributes={"module_index": module_index, "section_index": section_index, "error": str(ts_err)})
+                    continue
 
+                section_frames_paths = []
 
-            for frame in frames:
-                frame_ts = float(frame["timestamp"])
-                if start_ts <= frame_ts <= end_ts:
-                    section_frames.append(frame)
-
-            if "frames" not in section:
-                section["frames"] = []  # Initialize
-
-
-            if section_frames:
-                logger.info("Processing %d frames for section: '%s'", len(section_frames), section['section_title'])
-                logger.info("Frames within section '%s' timestamp range: %s", section['section_title'], section_frames)
-                for frame_index, frame in enumerate(section_frames):
-                    logger.info("Processing frame: %s (Index within section: %d) for section: '%s'", frame['path'], frame_index, section['section_title'])
-
-                    image_path = os.path.join(os.getcwd(), frame["path"].lstrip('/'))
-                    base64_image = encode_image(image_path)
-                    if not base64_image:
-                        logger.warning("Skipping frame %s due to encoding failure.", frame["path"])
-                        continue
-
-                    image_data_item = {
-                        "type": "image_url",
-                        "image_url": {"url": f"data:image/png;base64,{base64_image}"},
-                    }
-
-
-                    user_prompt_text = (
-                        "**You MUST respond *only* with valid JSON.  No other text is permitted.**\n\n"
-                        "You are an expert image selector for educational content. Your task is to analyze an image and determine its "
-                        "relevance and distinctiveness within the context of a specific section of a learning module.  "
-                        "You will be provided with the module content, section content, generated section content, "
-                        "and a list of captions from previously selected images for *this entire module*.\n\n"  # Changed wording
-
-                        f"**Module Content:**\n{module_content}\n\n"
-                        f"**Section Content (Transcript):**\n{section_content}\n\n"
-                        f"**Generated Section Content (Refined):**\n{generated_section_content}\n\n"
-                        f"**Captions of Previously Selected Images (for this ENTIRE MODULE):**\n{module_previous_captions}\n\n"  # Key change: module_previous_captions
-
-                        "**Image Analysis Task:**\n\n"
-
-                        "1. **Relevance:** Assess whether the image directly supports, illustrates, or clarifies the concepts "
-                        "   discussed in the *section content* (both transcript and generated) and the overall *module content*.  "
-                        "   Consider whether the image adds educational value to the section.\n\n"
-
-                        "2. **Distinctiveness:**  Carefully compare the current image to the captions of previously selected images *for the entire module*.  " # Changed wording
-                        "   Determine if the current image offers *new* visual information or a *different perspective* compared to "
-                        "   *any* of the previously selected images *in this module*.  Avoid selecting images that are visually similar, redundant, "
-                        "   or convey essentially the same information as a previously selected image *anywhere in the module*.\n\n"  # Key change: module-wide distinctiveness
-                        "   *  Consider the visual elements, composition, and the overall message conveyed by the image.\n"
-                        "   *  Even if an image is relevant, if it's too similar to a previous image *from any section in this module*, it should be rejected.\n\n"  # Key change
-
-                        "3. **Reasoning (Chain-of-Thought):**\n"
-                        "    * Briefly explain *why* you are making your decision. Focus your reasoning on both RELEVANCE and DISTINCTIVENESS (or lack thereof), and refer to specific points within the content and captions (if rejecting).\n\n"
-
-                        "**Output (JSON Format - Strictly Adhere):**\n\n"
-                        "Respond with *only* one of the following JSON objects.  Do not include any other text.\n\n"
-
-                        "*   **If the image is BOTH relevant AND distinct:**\n"
-                        "    ```json\n"
-                        "    {\"relevant\": true, \"info\": \"Your concise reasoning (1-2 sentences).\", \"caption\": \"A short, descriptive caption for the image (1-2 sentences).\"}\n"
-                        "    ```\n\n"
-
-                        "*   **If the image is NOT relevant OR NOT distinct:**\n"
-                        "    ```json\n"
-                        "    {\"relevant\": false, \"info\": \"Your concise reasoning (1-2 sentences).\"}\n"
-                        "    ```\n\n"
-
-                        "**Example Reasoning (Relevant):**\n"
-                        "```json\n"
-                        "{\"relevant\": true, \"info\": \"The image clearly depicts the experimental setup described in the section, providing a visual aid for understanding the procedure.\", \"caption\": \"Experimental setup showing the sensor and data acquisition system.\"}\n"
-                        "```\n"
-
-                        "**Example Reasoning (Not Relevant):**\n"
-                        "```json\n"
-                        "{\"relevant\": false, \"info\": \"The image shows a generic graph, but it doesn't directly relate to the specific data analysis techniques discussed in this section.\"}\n"
-                        "```\n"
-
-                        "**Example Reasoning (Not Distinct):**\n"
-                        "```json\n"
-                        "{\"relevant\": false, \"info\": \"This image is very similar to a previously selected image from Section 1 that also showed the overall system architecture. It doesn't add new visual information.\"}\n"  # Example now refers to another section
-                        "```\n"
-                    )
-
-
-
-                    message_content = [
-                        {"type": "text", "text": user_prompt_text},
-                        image_data_item,
-                    ]
-                    messages = [GenerationRequestMessage(role="user", content=message_content)]
-                    generation_config = GenerationConfig(
-                        id=str(uuid4()),
-                        name=f"Frame Relevance - Mod {module_index}, Sec {section_index}, Frame {frame_index}",
-                        provider="groq",
-                        model="llama-3.2-90b-vision-preview",
-                        model_parameters={"temperature": 0.7},
-                        messages=messages,
-                    )
-                    message_to_llama = [HumanMessage(content=message_content)]
-
+                # --- Get corresponding generated content ---
+                generated_section_content = ""
+                if course_content and course_content.get("modules"):
                     try:
-                        response = call_groq_with_retry(groq_llm, message_to_llama, generation_config, frame_selector_span)
-                        cleaned_response = clean_json_string(response.content)
-                        logger.info("Frame processing response: %s", cleaned_response)
-                        result = json.loads(cleaned_response)
+                        generated_section_content = course_content["modules"][module_index]["sections"][section_index]["content"]
+                    except (KeyError, IndexError) as e:
+                        logger.warning("Could not retrieve generated content for module %d, section %d: %s", module_index, section_index, e)
+                        span.add_event("get_generated_content_warning", attributes={"module": module_index, "section": section_index, "error": str(e)})
+                # --- End ---
 
-                        if isinstance(result, dict) and result.get("relevant") is True:
-                            if "info" in result and "caption" in result:
-                                section["frames"].append({
-                                    "frame_path": frame["path"],
-                                    "caption": result["caption"],
-                                    "info": result["info"],
-                                    "timestamp": float(frame["timestamp"]),
-                                })
-                                selected_frames_with_info.append(frame)
-                                # --- Add new caption to module-level list ---
-                                module_previous_captions.append(result["caption"])
-                                # --- End of adding caption ---
-                                logger.info("Timestamp %s appended to section: %s", frame["timestamp"], section["section_title"])
 
-                    except (json.JSONDecodeError, ValueError, KeyError) as e:
-                        logger.exception("Frame processing error: %s", e)
-                        frame_selector_span.event("frame_selection_error", "Error in frame selection", {"error": str(e)})
-            else:
-                logger.info("No frames in range for section: %s", section['section_title'])
-                frame_selector_span.event("no_frames_in_range", f"No frames in range for section: {section['section_title']}")
+                for frame in frames:
+                    try:
+                        frame_ts = float(frame.get("timestamp", -1)) # Use get with default
+                        if start_ts <= frame_ts <= end_ts:
+                            section_frames_paths.append(frame) # Store the whole frame dict
+                    except (ValueError, TypeError) as ts_err:
+                        logger.warning(f"Invalid timestamp for frame {frame.get('path')}: {ts_err}. Skipping frame.")
+                        span.add_event("invalid_frame_timestamp", attributes={"frame_path": frame.get("path", "N/A"), "error": str(ts_err)})
 
-    # Add selected frames to course_content (no change here)
-    if "course_content" in state and state["course_content"]["modules"]:
-        for module_index, module in enumerate(state["course_content"]["modules"]):
-            for section_index, section in enumerate(module["sections"]):
-                try:
-                    structured_section = state["structured_content"]["modules"][module_index]["sections"][section_index]
-                    if "frames" in structured_section and structured_section["frames"]:
-                         state["course_content"]["modules"][module_index]["sections"][section_index]["media"] = structured_section["frames"]
-                    else:
-                        state["course_content"]["modules"][module_index]["sections"][section_index]["media"] = []
-                except (KeyError, IndexError) as e:
-                     logger.warning("Could not find matching structured section for course content update: %s", e)
+                if "frames" not in section:
+                    section["frames"] = []  # Initialize if missing
 
-    frame_selector_span.event("frame_selector_completed", "Frame selection complete")
-    frame_selector_span.end()
-    state["frames"] = selected_frames_with_info
+                if section_frames_paths:
+                    logger.info("Processing %d potential frames for section: '%s'", len(section_frames_paths), section_title)
+                    span.add_event("processing_section_frames", attributes={
+                        "module": module_index, "section": section_index, "section_title": section_title, "frame_count": len(section_frames_paths)
+                    })
+
+                    for frame_index, frame_data in enumerate(section_frames_paths):
+                        total_frames_processed += 1
+                        frame_path = frame_data.get("path")
+                        frame_timestamp = frame_data.get("timestamp")
+                        if not frame_path or frame_timestamp is None:
+                            logger.warning(f"Skipping frame with missing path or timestamp in section '{section_title}'. Data: {frame_data}")
+                            span.add_event("skipping_incomplete_frame", attributes={"section_title": section_title, "frame_data": str(frame_data)})
+                            continue
+
+                        logger.info("Processing frame: %s (Index within section: %d) for section: '%s'", frame_path, frame_index, section_title)
+
+                        image_path = os.path.abspath(frame_path)
+                        base64_image = encode_image(image_path)
+                        if not base64_image:
+                            logger.warning("Skipping frame %s due to encoding failure.", frame_path)
+                            span.add_event("frame_encoding_failure", attributes={"frame_path": frame_path})
+                            continue
+
+                        image_data_item = {
+                            "type": "image_url",
+                            "image_url": {"url": f"data:image/png;base64,{base64_image}"},
+                        }
+
+                        user_prompt_text = (
+                            "**You MUST respond *only* with valid JSON.  No other text is permitted.**\n\n"
+                            "You are an expert image selector for educational content. Your task is to analyze an image and determine its "
+                            "relevance and distinctiveness within the context of a specific section of a learning module.  "
+                            "You will be provided with the module content, section content, generated section content, "
+                            "and a list of captions from previously selected images for *this entire module*.\n\n"
+                            f"**Module Content:**\n{module_content}\n\n"
+                            f"**Section Content (Transcript):**\n{section_content}\n\n"
+                            f"**Generated Section Content (Refined):**\n{generated_section_content}\n\n"
+                            f"**Captions of Previously Selected Images (for this ENTIRE MODULE):**\n{module_previous_captions}\n\n"
+                            "**Image Analysis Task:**\n\n"
+                            "1. **Relevance:** Assess whether the image directly supports, illustrates, or clarifies the concepts "
+                            "   discussed in the *section content* (both transcript and generated) and the overall *module content*.  "
+                            "   Consider whether the image adds educational value to the section.\n\n"
+                            "2. **Distinctiveness:**  Carefully compare the current image to the captions of previously selected images *for the entire module*.  "
+                            "   Determine if the current image offers *new* visual information or a *different perspective* compared to "
+                            "   *any* of the previously selected images *in this module*.  Avoid selecting images that are visually similar, redundant, "
+                            "   or convey essentially the same information as a previously selected image *anywhere in the module*.\n\n"
+                            "   *  Consider the visual elements, composition, and the overall message conveyed by the image.\n"
+                            "   *  Even if an image is relevant, if it's too similar to a previous image *from any section in this module*, it should be rejected.\n\n"
+                            "3. **Reasoning (Chain-of-Thought):**\n"
+                            "    * Briefly explain *why* you are making your decision. Focus your reasoning on both RELEVANCE and DISTINCTIVENESS (or lack thereof), and refer to specific points within the content and captions (if rejecting).\n\n"
+                            "**Output (JSON Format - Strictly Adhere):**\n\n"
+                            "Respond with *only* one of the following JSON objects.  Do not include any other text.\n\n"
+                            "*   **If the image is BOTH relevant AND distinct:**\n"
+                            "    ```json\n"
+                            "    {\"relevant\": true, \"info\": \"Your concise reasoning (1-2 sentences).\", \"caption\": \"A short, descriptive caption for the image (1-2 sentences).\"}\n"
+                            "    ```\n\n"
+                            "*   **If the image is NOT relevant OR NOT distinct:**\n"
+                            "    ```json\n"
+                            "    {\"relevant\": false, \"info\": \"Your concise reasoning (1-2 sentences).\"}\n"
+                            "    ```\n\n"
+
+                            "**Example Reasoning (Relevant):**\n"
+                            "```json\n"
+                            "{\"relevant\": true, \"info\": \"The image clearly depicts the experimental setup described in the section, providing a visual aid for understanding the procedure.\", \"caption\": \"Experimental setup showing the sensor and data acquisition system.\"}\n"
+                            "```\n"
+
+                            "**Example Reasoning (Not Relevant):**\n"
+                            "```json\n"
+                            "{\"relevant\": false, \"info\": \"The image shows a generic graph, but it doesn't directly relate to the specific data analysis techniques discussed in this section.\"}\n"
+                            "```\n"
+
+                            "**Example Reasoning (Not Distinct):**\n"
+                            "```json\n"
+                            "{\"relevant\": false, \"info\": \"This image is very similar to a previously selected image from Section 1 that also showed the overall system architecture. It doesn't add new visual information.\"}\n"  # Example now refers to another section
+                            "```\n"
+                        )
+
+                        message_content = [
+                            {"type": "text", "text": user_prompt_text},
+                            image_data_item,
+                        ]
+                        message_to_llama = [HumanMessage(content=message_content)]
+                        llm_span_name = f"Frame Relevance - M{module_index} S{section_index} F{frame_index}"
+
+                        try:
+                            # Nested call to Groq using helper
+                            response = call_groq_with_retry(
+                                groq_llm, # Use the LLM instance directly
+                                message_to_llama,
+                                span_name=llm_span_name,
+                                # parent_span=span # Not needed
+                            )
+                            cleaned_response = clean_json_string(response.content)
+                            logger.info("Frame processing response for %s: %s", frame_path, cleaned_response)
+                            result = json.loads(cleaned_response)
+
+                            if isinstance(result, dict) and result.get("relevant") is True:
+                                if "info" in result and "caption" in result:
+                                    new_frame_entry = {
+                                        "frame_path": frame_path,
+                                        "caption": result["caption"],
+                                        "info": result["info"],
+                                        "timestamp": float(frame_timestamp), # Ensure float
+                                    }
+                                    # Append to the section in structured_content FIRST
+                                    # This is crucial because module_previous_captions relies on it
+                                    state["structured_content"]["modules"][module_index]["sections"][section_index]["frames"].append(new_frame_entry)
+
+                                    # Add to overall selected list (if needed, though maybe redundant now)
+                                    selected_frames_with_info.append(frame_data) # Keep original frame data? Or the new entry? Let's use new.
+                                    # selected_frames_with_info.append(new_frame_entry)
+
+                                    # Add new caption to module-level list for subsequent checks in THIS module
+                                    module_previous_captions.append(result["caption"])
+                                    total_frames_selected += 1
+                                    logger.info("Frame %s (%s) selected for section: %s", frame_path, frame_timestamp, section_title)
+                                    span.add_event("frame_selected", attributes={
+                                        "frame_path": frame_path, "section_title": section_title, "caption": result["caption"]
+                                    })
+                                else:
+                                    logger.warning(f"Relevant frame missing info/caption in response for {frame_path}: {result}")
+                                    span.add_event("frame_relevant_missing_data", attributes={"frame_path": frame_path, "response": str(result)})
+                            else:
+                                logger.info("Frame %s deemed not relevant/distinct for section '%s'. Reason: %s", frame_path, section_title, result.get("info", "N/A"))
+                                span.add_event("frame_rejected", attributes={"frame_path": frame_path, "section_title": section_title, "reason": result.get("info", "N/A")})
+
+
+                        except (json.JSONDecodeError, ValueError, KeyError) as e:
+                            logger.exception("Frame processing JSON/Key error for %s: %s", frame_path, e)
+                            span.add_event("frame_selection_error", attributes={"frame_path": frame_path, "error": str(e)})
+                            span.record_exception(e) # Optionally record the exception
+                        except Exception as e: # Catch potential Groq API errors if not caught by retry helper
+                            logger.exception("Frame processing unexpected error for %s: %s", frame_path, e)
+                            span.add_event("frame_selection_unexpected_error", attributes={"frame_path": frame_path, "error": str(e)})
+                            span.record_exception(e)
+
+                else: # if not section_frames_paths:
+                    logger.info("No frames found in timestamp range for section: %s", section_title)
+                    span.add_event("no_frames_in_range", attributes={"section_title": section_title})
+
+        # Add selected frames to course_content AFTER processing all structured_content
+        if course_content and course_content.get("modules"):
+            for module_idx, module_data in enumerate(course_content["modules"]):
+                for section_idx, section_data in enumerate(module_data.get("sections", [])):
+                    try:
+                        # Get the frames added during the processing above
+                        structured_section = structured_content["modules"][module_idx]["sections"][section_idx]
+                        # Ensure 'media' key exists in the target course_content section
+                        if "media" not in state["course_content"]["modules"][module_idx]["sections"][section_idx]:
+                            state["course_content"]["modules"][module_idx]["sections"][section_idx]["media"] = []
+
+                        state["course_content"]["modules"][module_idx]["sections"][section_idx]["media"] = structured_section.get("frames", [])
+
+                    except (KeyError, IndexError) as e:
+                        logger.warning("Could not find matching structured/course section for final media update: Mod %d, Sec %d. Error: %s", module_idx, section_idx, e)
+                        span.add_event("media_update_match_error", attributes={"module": module_idx, "section": section_idx, "error": str(e)})
+
+
+        span.set_attribute("output.total_frames_processed", total_frames_processed)
+        span.set_attribute("output.total_frames_selected", total_frames_selected)
+        span.add_event("frame_selector_completed", attributes={"message": "Frame selection complete"})
+        span.set_status(Status(StatusCode.OK))
+        # Update state['frames'] ? Maybe it's better to let course_content hold the final selected media?
+        # If state['frames'] is needed later, update it with 'selected_frames_with_info'
+        state["frames"] = selected_frames_with_info # Re-evaluate if this overwrite is desired
     return state
 
-
 def course_content_generator(state: GraphState) -> GraphState:
-    """Generate course content based on structured content and selected frames."""
+    """Generate course content based on structured content."""
     logger.info("Running Course Content Generator Node")
-    course_content_span = trace.span(SpanConfig(id=str(uuid4()), name="Course Content Generator"))
-    course_content_span.event("course_content_generation_start", "Course Content Generation Start")
+    with tracer.start_as_current_span("Course Content Generator") as span:
+        span.add_event("course_content_generation_start", attributes={"message": "Course Content Generation Start"})
+        structured_content = state.get("structured_content")
+        transcript = state.get("transcript", "")
 
-    system_message = """
-You are an Educational Content Designer. Create blog-style course content based on the provided structure, transcript.
+        if not structured_content or not structured_content.get("modules"):
+            logger.warning("No structured content available. Skipping course content generation.")
+            span.add_event("course_content_skipped", attributes={"reason": "No structured content"})
+            state["course_content"] = {"modules": []}
+            span.set_status(Status(StatusCode.OK)) # Successfully did nothing
+            return state
 
-Output JSON in the specified format.  Do NOT include markdown code blocks.
-"""
-    prompt_template = """
-    {structured_content}
-    Transcript: {transcript}
+        span.set_attribute("input.module_count", len(structured_content.get("modules", [])))
 
-    For each section:
-    1.  Write a 300-500 word explanation of the concept.
-    2. Include a "Key Insight" callout.
-    3. Insert timestamps only where necessary in the generated section content.
-    Each timestamp must strictly follow the [HH:MM:SS] format, using two digits for hours, minutes, and seconds. 
-    For example, use [00:06:09] instead of [00:00:369].
+        system_message = """
+        You are an Educational Content Designer. Create blog-style course content based on the provided structure, transcript.
 
-    Output JSON:
-    {{        
-        "modules": [
-            {{
-                "module_title": "...",
-                "sections": [
-                    {{
-                        "section_title": "...",
-                        "content": "Markdown formatted content...",
-                        "media": [],
-                    }},
-                    ...
-                ]
-            }},
-            ...
-        ]
-    }}
+        Output JSON in the specified format. Do NOT include markdown code blocks.
+        """
+        prompt_template_str = """
+        {structured_content}
+        Transcript: {transcript}
+
+        For each section:
+        1.  Write a 300-500 word explanation of the concept.
+        2.  If frames are provided for the section, include a "media" field with the frame_path and caption *exactly* as provided.
+        3. Include a "Key Insight" callout.
+        4. Include timestamps (only where required) in the generated section content (format: [HH:MM:SS]).
+
+        Output JSON:
+        {{        
+            "modules": [
+                {{
+                    "module_title": "...",
+                    "sections": [
+                        {{
+                            "section_title": "...",
+                            "content": "Markdown formatted content...",
+                            "media": [{{ "frame_path": "...", "caption": "...", "info": "...", "timestamp": x.xx }}],
+                        }},
+                        ...
+                    ]
+                }},
+                ...
+            ]
+        }}
         """
 
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", system_message),
-        ("user", prompt_template)
-    ])
-    chain = prompt | gemini_llm # pylint: disable=unsupported-binary-operation
-    messages = [
-        GenerationRequestMessage(role="system", content=system_message),
-        GenerationRequestMessage(role="user", content=prompt_template.format(
-            structured_content=state["structured_content"],
-            transcript=state["transcript"]
-        )),
-    ]
-    generation_config = GenerationConfig(
-        id=str(uuid4()),
-        name="Course Content Generation",
-        provider="google",
-        model="gemini-1.5-flash",
-        model_parameters={"temperature": 0.7},
-        messages=messages,
-    )
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", system_message),
+            ("user", prompt_template_str)
+        ])
+        chain = prompt | gemini_llm # pylint: disable=unsupported-binary-operation
 
-    try:
-        course_content_response = call_gemini_with_retry(
-            chain,
-            {
-                "structured_content": state["structured_content"],
-                "transcript": state["transcript"],
-            },
-            generation_config,
-            course_content_span
-        )
-        cleaned_content = clean_json_string(course_content_response.content)
-        logger.info("Course Content Generation output: %s", cleaned_content)
-        state["course_content"] = json.loads(cleaned_content)
-        course_content_span.event("course_content_generation_success", "Course Content Generation Succeeded")
-    except (json.JSONDecodeError, ValueError, google.api_core.exceptions.GoogleAPIError) as e:
-        logger.exception("Course Content Generation error: %s", e)
-        course_content_span.event("course_content_error", "Error in course content generation", {"error": str(e)})
-        state["course_content"] = {"modules": []}
-    finally:
-        course_content_span.end()
+        try:
+            course_content_response = call_gemini_with_retry(
+                chain,
+                {
+                    "structured_content": json.dumps(structured_content, indent=2),
+                    "transcript": transcript,
+                },
+                span_name="Course Content LLM Generation",
+            )
+            cleaned_content = clean_json_string(course_content_response.content)
+            logger.info("Course Content Generation output: %s", cleaned_content)
+            generated_data = json.loads(cleaned_content)
+            state["course_content"] = generated_data
+
+            span.add_event("course_content_generation_success", attributes={"message": "Course Content Generation Succeeded"})
+            span.set_attribute("output.module_count", len(generated_data.get("modules", [])))
+            span.set_status(Status(StatusCode.OK))
+
+        except (json.JSONDecodeError, ValueError, google.api_core.exceptions.GoogleAPIError) as e:
+            logger.exception("Course Content Generation error: %s", e)
+            span.record_exception(e)
+            span.set_status(Status(StatusCode.ERROR, description=f"Course Content Generation error: {e}"))
+            span.add_event("course_content_error", attributes={"error.message": str(e)})
+            state["course_content"] = {"modules": []}
     return state
 
 def quiz_architect(state: GraphState) -> GraphState:
     """Generate quiz questions based on the structured content."""
     logger.info("Running Quiz Architect Node")
-    quiz_architect_span = trace.span(SpanConfig(id=str(uuid4()), name="Quiz Architect"))
-    quiz_architect_span.event("quiz_architect_start", "Quiz Architect Start")
+    with tracer.start_as_current_span("Quiz Architect") as span:
+        span.add_event("quiz_architect_start", attributes={"message": "Quiz Architect Start"})
+        structured_content = state.get("structured_content")
 
-    prompt_template = """
-    You are an Assessment Designer creating quizzes for a blog-style course. Design multiple-choice questions (MCQs) for each section.
+        if not structured_content or not structured_content.get("modules"):
+            logger.warning("No structured content available. Skipping quiz generation.")
+            span.add_event("quiz_architect_skipped", attributes={"reason": "No structured content"})
+            state["quiz_content"] = {"quizzes": []}
+            span.set_status(Status(StatusCode.OK))
+            return state
 
-    Quiz Requirements:
+        span.set_attribute("input.module_count", len(structured_content.get("modules", [])))
 
-    Placement: 1-2 MCQs per section.
-    Question Details:
-        Difficulty Rating (1-5)
-        Rationale: Explanation of correct answer and distractors.
-        Review Timestamp: Reference a timestamp in the video.
+        prompt_template_str = """
+        You are an Assessment Designer creating quizzes for a blog-style course. Design multiple-choice questions (MCQs) for each section based on the provided structured content.
 
-    Output Format: Plain JSON. Do NOT include markdown code blocks.
+        Quiz Requirements:
 
-    {{
-      "quizzes": [
+        Placement: Generate 1-2 relevant MCQs for *each section* within the modules.
+        Question Details: For each MCQ, provide:
+            - type: "multiple_choice"
+            - text: The question text.
+            - options: A list of 4 plausible answer strings (one correct, three distractors).
+            - correct_answer: The exact string of the correct option.
+            - rationale: A brief explanation (1-2 sentences) why the correct answer is right and the others are wrong.
+            - review_timestamp: A relevant timestamp from the section's `start_ts` or `end_ts` (formatted as HH:MM:SS like [00:05:30]) to help learners find the answer in the video. Use the `start_ts` if possible.
+            - difficulty: A numerical rating from 1 (easy) to 5 (hard).
+
+        Output Format: Plain JSON. Do NOT include markdown code blocks. Ensure the JSON is valid.
+
         {{
-            "module_title": "...",
-            "section_title": "...",
-            "questions": [
-                {{
-                    "type": "multiple_choice",
-                    "text": "...",
-                    "options": [...],
-                    "correct_answer": "...",
-                    "rationale": "...",
-                    "review_timestamp": "...",
-                    "difficulty": X
-                }},
-                ...
-            ]
-        }},
-        ...
-      ]
-    }}
+        "quizzes": [
+            {{
+                "module_title": "...", // Match the module title from input
+                "section_title": "...", // Match the section title from input
+                "questions": [
+                    {{
+                        "type": "multiple_choice",
+                        "text": "What is the primary mechanism of action for Famotidine?",
+                        "options": ["Proton pump inhibitor", "H2 receptor antagonist", "Antacid", "Antibiotic"],
+                        "correct_answer": "H2 receptor antagonist",
+                        "rationale": "Famotidine selectively blocks H2 receptors on parietal cells, reducing gastric acid secretion. It's not a PPI, antacid, or antibiotic.",
+                        "review_timestamp": "[00:01:15]", // Example timestamp from the section
+                        "difficulty": 2
+                    }},
+                    // ... potentially another question for the same section ...
+                ]
+            }},
+            // ... more sections/modules ...
+        ]
+        }}
 
-    Structured Content:
-    {structured_content}
-    """
+        Structured Content:
+        {structured_content_json}
+        """
 
-    prompt = PromptTemplate.from_template(prompt_template)
-    chain = prompt | gemini_llm # pylint: disable=unsupported-binary-operation
-    messages = [GenerationRequestMessage(role="user", content=prompt_template.format(
-        structured_content=state["structured_content"]
-    ))]
-    generation_config = GenerationConfig(
-        id=str(uuid4()),
-        name="Quiz Generation",
-        provider="google",
-        model="gemini-1.5-flash",
-        model_parameters={"temperature": 0.7},
-        messages=messages,
-    )
-    try:
-        quiz_content = call_gemini_with_retry(
-            chain,
-            {"structured_content": state["structured_content"]},
-            generation_config,
-            quiz_architect_span
-        )
-        cleaned_content = clean_json_string(quiz_content.content)
-        logger.info("Quiz Architect output: %s", cleaned_content)
-        state["quiz_content"] = json.loads(cleaned_content)
-        quiz_architect_span.event("quiz_architect_success", "Quiz Architect Succeeded")
-    except (json.JSONDecodeError, ValueError, google.api_core.exceptions.GoogleAPIError) as e:
-        logger.exception("Quiz Architect error: %s", e)
-        quiz_architect_span.event("quiz_architect_error", "Error in Quiz Architect", {"error": str(e)})
-        state["quiz_content"] = {"quizzes": []}
-    finally:
-        quiz_architect_span.end()
+        prompt = PromptTemplate.from_template(prompt_template_str)
+        chain = prompt | gemini_llm # pylint: disable=unsupported-binary-operation
+
+        try:
+            quiz_content_response = call_gemini_with_retry(
+                chain,
+                {"structured_content_json": json.dumps(structured_content, indent=2)}, # Pass as JSON string
+                span_name="Quiz Generation",
+                # parent_span=span
+            )
+            cleaned_content = clean_json_string(quiz_content_response.content)
+            logger.info("Quiz Architect output received.")
+            # logger.debug("Quiz Architect output: %s", cleaned_content)
+            quiz_data = json.loads(cleaned_content)
+            state["quiz_content"] = quiz_data
+            span.add_event("quiz_architect_success", attributes={"message": "Quiz Architect Succeeded"})
+            span.set_attribute("output.quiz_count", len(quiz_data.get("quizzes", [])))
+            total_questions = sum(len(q.get("questions", [])) for q in quiz_data.get("quizzes", []))
+            span.set_attribute("output.total_questions", total_questions)
+            span.set_status(Status(StatusCode.OK))
+
+        except (json.JSONDecodeError, ValueError, google.api_core.exceptions.GoogleAPIError) as e:
+            logger.exception("Quiz Architect error: %s", e)
+            span.record_exception(e)
+            span.set_status(Status(StatusCode.ERROR, description=f"Quiz Architect error: {e}"))
+            span.add_event("quiz_architect_error", attributes={"error.message": str(e)})
+            state["quiz_content"] = {"quizzes": []}
     return state
 
 def retention_designer(state: GraphState) -> GraphState:
     """Design a retention plan based on structured content."""
     logger.info("Running Retention Designer Node")
-    retention_designer_span = trace.span(SpanConfig(id=str(uuid4()), name="Retention Designer"))
-    retention_designer_span.event("retention_designer_start", "Retention Designer Start")
+    with tracer.start_as_current_span("Retention Designer") as span:
+        span.add_event("retention_designer_start", attributes={"message": "Retention Designer Start"})
+        structured_content = state.get("structured_content")
 
-    prompt_template = """
-You are a Learning Experience Designer focused on enhancing retention. Design a retention plan, focusing on text-based strategies, for a course based on the provided structured content.
+        if not structured_content or not structured_content.get("modules"):
+            logger.warning("No structured content available. Skipping retention design.")
+            span.add_event("retention_designer_skipped", attributes={"reason": "No structured content"})
+            state["retention_plan"] = {"retention_plan": {"module_retention": [], "overall_summary": ""}}
+            span.set_status(Status(StatusCode.OK))
+            return state
 
-Retention Features (at the MODULE level):
+        span.set_attribute("input.module_count", len(structured_content.get("modules", [])))
 
-Retention Tips: 2-3 per MODULE. Use the SPECIFIC JSON format below. Choose tip types appropriate for the content.
-Spaced Repetition Prompts: 1-2 per MODULE. Short questions/prompts to review material.
-Scenario Examples: 1-2 per MODULE. Short scenarios applying the concepts.
-Summary: A text-based summary, with comparison tables if relevant (at the end of the entire course).
+        prompt_template_str = """
+        You are a Learning Experience Designer focused on enhancing retention. Design a retention plan, focusing on text-based strategies, for a course based on the provided structured content.
 
-Output Format: Plain JSON. Do NOT include markdown code blocks.
+        Retention Features (at the MODULE level):
 
-{{
-    "retention_plan": {{
-        "module_retention": [
-            {{
-                "module_title": "...",
-                "retention_tips": [
+        For *each module* in the structured content:
+        - retention_tips: Generate 2-3 concise tips. Each tip MUST have a specific "type" from the allowed list and a "description" that clearly states *what* the learner should do or create, related to the module's content.
+            - Allowed `type` values: analogy, real_world_example, table_creation, mnemonic_device, categorization, prioritization, role_playing, example, explanation, summary, comparison, question_generation.
+            - The `description` should be an instruction for the *next* agent (Retention Tip Executor) to fulfill. Example (for table_creation): "Create a table comparing the side effects of Drug A and Drug B discussed in this module." Example (for analogy): "Develop an analogy to explain the concept of receptor binding from this module."
+        - spaced_repetition_prompts: Generate 1-2 short questions or prompts (just the text) designed for later review of the module's key concepts.
+        - scenario_examples: Generate 1-2 brief (1-3 sentence) scenarios illustrating the application of concepts from the module.
+
+        Overall Retention Feature (at the end):
+        - overall_summary: Generate a concise text-based summary of the *entire* course content based on the structured content. If appropriate, include comparison tables within the summary using Markdown.
+
+        Output Format: Plain JSON. Do NOT include markdown code blocks. Ensure the JSON is valid.
+
+        {{
+            "retention_plan": {{
+                "module_retention": [
                     {{
-                        "type": "analogy",  // MUST be one of: analogy, real_world_example, table_creation, mnemonic_device, categorization, prioritization, role_playing, example, explanation, summary, comparison, question_generation
-                        "description": "..." // Description of the tip, related to the MODULE content.
+                        "module_title": "...", // Match module title from input
+                        "retention_tips": [
+                            {{
+                                "type": "analogy",  // MUST be one of the allowed types
+                                "description": "Develop an analogy comparing the H2 blocking mechanism to a gatekeeper for acid production." // Actionable instruction for the executor agent
+                            }},
+                            {{
+                                "type": "table_creation",
+                                "description": "Create a markdown table summarizing the common use cases and typical dosages for Famotidine mentioned in this module."
+                            }}
+                            // ... more tips if applicable (max 3) ...
+                        ],
+                        "spaced_repetition_prompts": [
+                            "What are the main differences between Famotidine and PPIs?",
+                            "Recall the key side effect mentioned for Famotidine."
+                            // ... more prompts if applicable (max 2) ...
+                        ],
+                        "scenario_examples": [
+                            "A patient complains of frequent heartburn after meals. Based on this module, when might Famotidine be considered?",
+                            "Imagine explaining to a friend how Famotidine works using a simple non-medical analogy."
+                            // ... more scenarios if applicable (max 2) ...
+                        ]
                     }},
-                    ... // More tips
+                    // ... more modules ...
                 ],
-                "spaced_repetition_prompts": [...],
-                "scenario_examples": [...]
-            }},
-            ...
-        ],
-        "overall_summary": "..."
-    }}
-}}
+                "overall_summary": "This course covered the fundamentals of Famotidine, including its mechanism as an H2 receptor antagonist, common uses for conditions like GERD and ulcers, typical dosages, and potential side effects. Key differences from other acid reducers like PPIs were highlighted. [Include Markdown table here if useful, e.g., comparing features]" // Overall summary text
+            }}
+        }}
 
-Structured Content:
-{structured_content}
+        Structured Content:
+        {structured_content_json}
 """
-    prompt = PromptTemplate.from_template(prompt_template)
-    chain = prompt | gemini_llm # pylint: disable=unsupported-binary-operation
-    messages = [GenerationRequestMessage(role="user", content=prompt_template.format(
-        structured_content=state["structured_content"]
-    ))]
-    generation_config = GenerationConfig(
-        id=str(uuid4()),
-        name="Retention Plan Generation",
-        provider="google",
-        model="gemini-1.5-flash",
-        model_parameters={"temperature": 0.7},
-        messages=messages,
-    )
-    try:
-        retention_plan = call_gemini_with_retry(
-            chain,
-            {"structured_content": state["structured_content"]},
-            generation_config,
-            retention_designer_span
-        )
-        cleaned_content = clean_json_string(retention_plan.content)
-        logger.info("Retention Designer output: %s", cleaned_content)
-        state["retention_plan"] = json.loads(cleaned_content)
-        retention_designer_span.event("retention_design_success", "Retention Designer Succeeded")
-    except (json.JSONDecodeError, ValueError, google.api_core.exceptions.GoogleAPIError) as e:
-        logger.exception("Retention Designer error: %s", e)
-        retention_designer_span.event("retention_design_error", "Error in retention design", {"error": str(e)})
-        state["retention_plan"] = {"retention_plan": {"module_retention": [], "overall_summary": ""}}
-    finally:
-        retention_designer_span.end()
+        prompt = PromptTemplate.from_template(prompt_template_str)
+        chain = prompt | gemini_llm  # pylint: disable=unsupported-binary-operation
+
+        try:
+            retention_plan_response = call_gemini_with_retry(
+                chain,
+                {"structured_content_json": json.dumps(structured_content, indent=2)},
+                span_name="Retention Plan Generation",
+                # parent_span=span
+            )
+            cleaned_content = clean_json_string(retention_plan_response.content)
+            logger.info("Retention Designer output received.")
+            # logger.debug("Retention Designer output: %s", cleaned_content)
+            retention_data = json.loads(cleaned_content)
+            state["retention_plan"] = retention_data
+
+            span.add_event("retention_design_success", attributes={"message": "Retention Designer Succeeded"})
+            span.set_attribute("output.module_retention_count", len(retention_data.get("retention_plan", {}).get("module_retention", [])))
+            span.set_attribute("output.has_summary", bool(retention_data.get("retention_plan", {}).get("overall_summary")))
+            span.set_status(Status(StatusCode.OK))
+
+        except (json.JSONDecodeError, ValueError, google.api_core.exceptions.GoogleAPIError) as e:
+            logger.exception("Retention Designer error: %s", e)
+            span.record_exception(e)
+            span.set_status(Status(StatusCode.ERROR, description=f"Retention Designer error: {e}"))
+            span.add_event("retention_design_error", attributes={"error.message": str(e)})
+            state["retention_plan"] = {"retention_plan": {"module_retention": [], "overall_summary": ""}}
     return state
 
 def retention_tip_executor(state: GraphState) -> GraphState:
     """Execute retention tips by generating additional content based on tip type."""
     logger.info("Running Retention Tip Executor Node")
-    retention_tip_executor_span = trace.span(SpanConfig(id=str(uuid4()), name="Retention Tip Executor"))
-    retention_tip_executor_span.event("retention_tip_executor_start", "Retention Tip Executor Start")
+    with tracer.start_as_current_span("Retention Tip Executor") as span:
+        span.add_event("retention_tip_executor_start", attributes={"message": "Retention Tip Executor Start"})
 
-    retention_plan_data = state["retention_plan"]
-    if not retention_plan_data or "retention_plan" not in retention_plan_data:
-        logger.warning("No retention plan. Skipping Retention Tip Executor.")
-        retention_tip_executor_span.event("retention_plan_missing", "No Retention Plan Found")
-        retention_tip_executor_span.end()
-        return state
+        retention_plan_data = state.get("retention_plan")
+        if not retention_plan_data or "retention_plan" not in retention_plan_data or not retention_plan_data["retention_plan"].get("module_retention"):
+            logger.warning("No valid retention plan data or module retention found. Skipping Retention Tip Executor.")
+            span.add_event("retention_plan_missing_or_invalid", attributes={"reason": "No valid retention plan data"})
+            span.set_status(Status(StatusCode.OK))
+            return state
 
-    modules_retention = retention_plan_data["retention_plan"]["module_retention"]
+        modules_retention = retention_plan_data["retention_plan"]["module_retention"]
+        span.set_attribute("input.module_retention_count", len(modules_retention))
+        total_tips_processed = 0
+        total_tips_executed = 0
+        total_tips_failed = 0
 
-    for module_index, module_retention in enumerate(modules_retention):
-        for tip_index, retention_tip_dict in enumerate(module_retention.get("retention_tips", [])):
-            instruction = None
-            executed_content = None
-            prompt = None
-            tip_type = retention_tip_dict.get("type", "Unknown")
-            tip_description = retention_tip_dict.get("description", "")
+        # --- Define prompts OUTSIDE the loop ---
+        tip_prompts = {
+            "table_creation": PromptTemplate.from_template("Based on the module's content, fulfill this request: {instruction}. Respond with *only* the Markdown table. Do not add explanations before or after."),
+            "real_world_example": PromptTemplate.from_template("Based on the module's content, provide a real-world example as described: {instruction}. Respond concisely in 2-3 sentences."),
+            "analogy": PromptTemplate.from_template("Based on the module's content, expand on the following analogy: {instruction}. Explain the analogy clearly in 2-3 sentences."),
+            "mnemonic_device": PromptTemplate.from_template("Explain this mnemonic device and how it relates to the module's content: {instruction}. Explain clearly in 2-3 sentences."),
+            "categorization": PromptTemplate.from_template("Based on the module's content, provide an example of categorization as requested: {instruction}. Give a short example in 2-3 sentences or a brief list."),
+            "prioritization": PromptTemplate.from_template("Based on the module's content, explain how to prioritize as described: {instruction}. Explain clearly in 2-3 sentences."),
+            "role_playing": PromptTemplate.from_template("Based on the module's content, describe a brief role-playing scenario as requested: {instruction}. Describe the scenario (2-4 sentences)."),
+            "example": PromptTemplate.from_template("Based on the module's content, provide an example as requested: {instruction}. Respond concisely in 2-3 sentences."),
+            "explanation": PromptTemplate.from_template("Based on the module's content, provide an explanation as requested: {instruction}. Respond clearly in 2-3 sentences."),
+            "summary": PromptTemplate.from_template("Based on the module's content, provide a summary as requested: {instruction}. Respond concisely in 2-3 sentences."),
+            "comparison": PromptTemplate.from_template("Based on the module's content, provide a comparison as requested: {instruction}. Respond clearly in 2-3 sentences or a brief list/table if appropriate."),
+            "question_generation": PromptTemplate.from_template("Based on the module's content, generate 1-2 questions related to: {instruction}. Provide *only* the questions, not the answers."),
+        }
+        # --- End prompt definitions ---
 
-            if tip_type == "table_creation":
-                instruction = tip_description
-                prompt_template = "Create a markdown table: {instruction}. Respond with only the markdown table."
-                prompt = PromptTemplate.from_template(prompt_template)
-            elif tip_type == "real_world_example":
-                instruction = tip_description
-                prompt_template = "Provide a real-world example: {instruction}. Respond in 2-3 sentences."
-                prompt = PromptTemplate.from_template(prompt_template)
-            elif tip_type == "analogy":
-                instruction = tip_description
-                prompt_template = "Expand on the following analogy: {instruction}. Explain in 2-3 sentences."
-                prompt = PromptTemplate.from_template(prompt_template)
-            elif tip_type == "mnemonic_device":
-                instruction = tip_description
-                prompt_template = "Explain this mnemonic and how it helps: {instruction}. Explain in 2-3 sentences."
-                prompt = PromptTemplate.from_template(prompt_template)
-            elif tip_type == "categorization":
-                instruction = tip_description
-                prompt_template = "Provide an example of categorization: {instruction}. Give a short example in 2-3 sentences."
-                prompt = PromptTemplate.from_template(prompt_template)
-            elif tip_type == "prioritization":
-                instruction = tip_description
-                prompt_template = "Explain how to prioritize based on: {instruction}. Explain in 2-3 sentences."
-                prompt = PromptTemplate.from_template(prompt_template)
-            elif tip_type == "role_playing":
-                instruction = tip_description
-                prompt_template = "Suggest a role-playing scenario: {instruction}. Describe a brief scenario (2-4 sentences)."
-                prompt = PromptTemplate.from_template(prompt_template)
-            elif tip_type == "example":
-                instruction = tip_description
-                prompt_template = "Provide an example: {instruction}. Respond in 2-3 sentences."
-                prompt = PromptTemplate.from_template(prompt_template)
-            elif tip_type == "explanation":
-                instruction = tip_description
-                prompt_template = "Provide an explanation: {instruction}. Respond in 2-3 sentences."
-                prompt = PromptTemplate.from_template(prompt_template)
-            elif tip_type == "summary":
-                instruction = tip_description
-                prompt_template = "Provide a summary: {instruction}. Respond in 2-3 sentences."
-                prompt = PromptTemplate.from_template(prompt_template)
-            elif tip_type == "comparison":
-                instruction = tip_description
-                prompt_template = "Provide a comparison: {instruction}. Respond in 2-3 sentences."
-                prompt = PromptTemplate.from_template(prompt_template)
-            elif tip_type == "question_generation":
-                instruction = tip_description
-                prompt_template = "Generate 1-2 questions related to: {instruction}. Provide only the questions, not the answers."
-                prompt = PromptTemplate.from_template(prompt_template)
 
-            if prompt:
-                chain = prompt | gemini_llm # pylint: disable=unsupported-binary-operation
-                messages = [GenerationRequestMessage(role="user",
-                                                     content=prompt_template.format(instruction=instruction))]
-                generation_config = GenerationConfig(
-                    id=str(uuid4()),
-                    name=f"Retention Tip - {tip_type} - Mod {module_index} - Tip {tip_index}",
-                    provider="google",
-                    model="gemini-1.5-flash",
-                    model_parameters={"temperature": 0.7},
-                    messages=messages,
-                )
-                try:
-                    response = call_gemini_with_retry(
-                        chain,
-                        {"instruction": instruction},
-                        generation_config,
-                        retention_tip_executor_span
-                    )
-                    executed_content = response.content
-                    retention_tip_dict["executed_content"] = executed_content
-                    logger.info("Executed retention tip '%s' for module '%s'.",
-                                 tip_type,
-                                 module_retention["module_title"])
-                    retention_tip_executor_span.event("retention_tip_execution_success", "Retention Tip Execution Succeeded")
-                except (google.api_core.exceptions.GoogleAPIError,
-                        json.JSONDecodeError, ValueError) as e:
-                    logger.exception("Retention tip execution error (%s): %s", tip_type, e)
-                    retention_tip_dict["executed_content"] = "Error"
-                    retention_tip_executor_span.event(
-                        f"retention_tip_error_{tip_type}",
-                        "Retention Tip Error",
-                        {"error": str(e)}
-                    )
-            else:
-                retention_tip_executor_span.event(f"unknown_tip_type_{tip_type}",
-                                                  "Unknown Tip Type")
-                retention_tip_dict["executed_content"] = "Unknown"
-    retention_tip_executor_span.end()
-    state["retention_plan"] = retention_plan_data
+        for module_index, module_retention in enumerate(modules_retention):
+            module_title = module_retention.get("module_title", f"Module {module_index}")
+            for tip_index, retention_tip_dict in enumerate(module_retention.get("retention_tips", [])):
+                total_tips_processed += 1
+                prompt = None
+                executed_content = "Not Executed" # Default
+                tip_type = retention_tip_dict.get("type", "Unknown")
+                instruction = retention_tip_dict.get("description", "")
+
+                if not instruction:
+                    logger.warning(f"Skipping tip {tip_index} in module '{module_title}' due to missing description.")
+                    span.add_event("tip_skipped_no_description", attributes={"module": module_title, "tip_index": tip_index, "tip_type": tip_type})
+                    retention_tip_dict["executed_content"] = "Skipped - No Description"
+                    continue
+
+                if tip_type in tip_prompts:
+                    prompt = tip_prompts[tip_type]
+                else:
+                    logger.warning(f"Unknown retention tip type '{tip_type}' for instruction: {instruction}")
+                    span.add_event(f"unknown_tip_type", attributes={"tip_type": tip_type, "module": module_title})
+                    retention_tip_dict["executed_content"] = f"Skipped - Unknown Type: {tip_type}"
+                    continue
+
+                if prompt:
+                    chain = prompt | gemini_llm # pylint: disable=unsupported-binary-operation
+                    llm_span_name = f"Retention Tip Exec - {tip_type} - M{module_index} T{tip_index}"
+
+                    try:
+                        response = call_gemini_with_retry(
+                            chain,
+                            {"instruction": instruction},
+                            span_name=llm_span_name,
+                            # parent_span=span
+                        )
+                        executed_content = response.content
+                        retention_tip_dict["executed_content"] = executed_content # Update the dict IN PLACE
+                        total_tips_executed += 1
+                        logger.info("Executed retention tip '%s' for module '%s'.", tip_type, module_title)
+                        span.add_event("retention_tip_execution_success", attributes={"tip_type": tip_type, "module": module_title})
+                    except (google.api_core.exceptions.GoogleAPIError, json.JSONDecodeError, ValueError) as e:
+                        logger.exception("Retention tip execution error (%s) for module '%s': %s", tip_type, module_title, e)
+                        executed_content = f"Error executing tip: {e}"
+                        retention_tip_dict["executed_content"] = executed_content # Update dict in place with error
+                        total_tips_failed += 1
+                        span.add_event(f"retention_tip_error", attributes={"tip_type": tip_type, "module": module_title, "error": str(e)})
+                        span.record_exception(e) # Record exception on the main node span
+
+
+        span.set_attribute("output.total_tips_processed", total_tips_processed)
+        span.set_attribute("output.total_tips_executed", total_tips_executed)
+        span.set_attribute("output.total_tips_failed", total_tips_failed)
+        span.set_status(Status(StatusCode.OK if total_tips_failed == 0 else StatusCode.ERROR if total_tips_processed > 0 else StatusCode.OK))
+        span.add_event("retention_tip_executor_finished")
+        # State is updated because we modified retention_tip_dict in place within retention_plan_data
+        state["retention_plan"] = retention_plan_data # Assign back to state explicitly for clarity
     return state
 
 graph = StateGraph(GraphState)
@@ -795,7 +880,7 @@ graph.add_node("quiz_architect", quiz_architect)
 graph.add_node("retention_designer", retention_designer)
 graph.add_node("retention_tip_executor", retention_tip_executor)
 graph.add_edge("content_structurer", "course_content_generator")
-graph.add_edge("course_content_generator","frame_selector")
+graph.add_edge("course_content_generator", "frame_selector")
 graph.add_edge("frame_selector", "quiz_architect")
 graph.add_edge("quiz_architect", "retention_designer")
 graph.add_edge("retention_designer", "retention_tip_executor")
