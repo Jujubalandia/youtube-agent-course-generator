@@ -597,11 +597,19 @@ const UploadPage: React.FC = () => {
                                     </Box>
                                 ))}
                                 {response.course.retention_plan.retention_plan.overall_summary && (
-                                    <Box sx={{ mt: 4 }}>
-                                        <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>Overall Summary:</Typography>
-                                        <Typography paragraph>{response.course.retention_plan.retention_plan.overall_summary}</Typography>
-                                    </Box>
-                                )}
+                                    <ReactMarkdown
+                                        remarkPlugins={[remarkGfm]}
+                                        components={{
+                                        p: ({ children }) => (
+                                            <Typography variant="body2" component="div" sx={{ mt: 1 }}>
+                                            {children}
+                                            </Typography>
+                                        ),
+                                        }}
+                                    >
+                                        {response.course.retention_plan.retention_plan.overall_summary}
+                                    </ReactMarkdown>
+                                    )}
                             </Box>
                         )}
 
