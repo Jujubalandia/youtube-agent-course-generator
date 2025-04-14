@@ -12,8 +12,7 @@
   - Quiz generation with difficulty ratings
   - Retention-focused learning strategies
 - **Full-Stack Architecture**: FastAPI backend + React frontend
-- **Maxim Integration:** Integrates [Maxim](https://www.getmaxim.ai/) for logging and observability. Traces, spans, and generations are logged to a Maxim repository, providing detailed insights into the agentic workflow execution.
-
+- **Opentelemetry Integration:** Integrates for logging and observability. Traces, spans, and llm generations.
 ## Installation
 ### Clone repository
 ```
@@ -35,8 +34,11 @@ Create a .env file in the project root with the following:
 ```
 GEMINI_API_KEY=your_gemini_api_key
 GROQ_API_KEY=your_groq_api_key
-MAXIM_API_KEY=your_maxim_api_key
-LOG_REPO_ID=your_log_repository_id
+DATABASE_URL=your_database_url
+AWS_ACCESS_KEY_ID=your_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
+AWS_REGION=your_aws_region
+S3_BUCKET_NAME=your_s3_bucket_name
 ```
 ## Usage
 ### Run the backend server:
@@ -52,6 +54,16 @@ cd frontend
 npm start
 ```
 This starts the server locally on port 3000.
+
+### Run jaeger
+```
+docker run -d --name jaeger \
+  -e COLLECTOR_OTLP_ENABLED=true \
+  -p 16686:16686 \
+  -p 4317:4317 \
+  -p 4318:4318 \
+```
+See logs on: http://localhost:16686/search
 
 ## Demo
 https://drive.google.com/file/d/16gN4C70lhdyf4rVMzDzx9rqFxmA8i7x7/view
