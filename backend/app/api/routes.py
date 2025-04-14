@@ -134,13 +134,13 @@ async def generate_course(request: VideoRequest) -> Dict[str, Any]:
             A list of selected unique frames with their paths.
         """
         vid_id, video_path = frame_extraction.download_video(request.videoUrl)
-        scenes: List[Any] = frame_extraction.detect_scenes(video_path, threshold=20.0)
+        scenes: List[Any] = frame_extraction.detect_scenes(video_path, threshold=50.0)
         frames: List[Any] = frame_extraction.extract_keyframes_with_timestamps(
             video_path, scenes, output_dir="frames"
         )
         dataset = frame_extraction.load_frames_into_fiftyone(frames, video_id=vid_id)
         selected_frames: List[Dict[str, Any]] = frame_extraction.select_unique_frames(
-            dataset, uniqueness_threshold=0.7
+            dataset, uniqueness_threshold=0.45
         )
         for frame in selected_frames:
             frame["path"] = os.path.join(

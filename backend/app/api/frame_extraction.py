@@ -48,7 +48,7 @@ def download_video(url: str) -> Tuple[str, str]:
         return video_id, video_path
 
 
-def detect_scenes(video_path: str, threshold: float = 30.0) -> List[Tuple[Any, Any]]:
+def detect_scenes(video_path: str, threshold: float = 40.0) -> List[Tuple[Any, Any]]:
     """
     Detect scenes in a video file using scenedetect.
 
@@ -124,7 +124,7 @@ def extract_keyframes_with_timestamps(video_path: str,
             subprocess.run(command, shell=True, check=True,
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             frames.append({"timestamp": frame_timestamp, "path": frame_path, "scene_index": idx})
-            optimize_frame(frame_path)
+            # optimize_frame(frame_path)
 
     logger.info("Extracted %s keyframes", len(frames))
     return frames
@@ -181,7 +181,7 @@ def load_frames_into_fiftyone(frames: List[Dict[str, Any]], video_id: str) -> fo
 
 
 def select_unique_frames(dataset: fo.Dataset,
-                         uniqueness_threshold: float = 0.7) -> List[Dict[str, Any]]:
+                         uniqueness_threshold: float = 0.3) -> List[Dict[str, Any]]:
     """
     Select unique frames from a FiftyOne dataset based on a uniqueness threshold.
 
@@ -206,6 +206,8 @@ def select_unique_frames(dataset: fo.Dataset,
             "scene_index": sample.scene_index,
             "uniqueness": sample.uniqueness
         })
+    logger.info("Selected %s unique frames", len(selected_frames))
+    logger.info("Unique frames: %s", selected_frames)
     return selected_frames
 
 

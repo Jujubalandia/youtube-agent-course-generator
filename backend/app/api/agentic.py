@@ -27,7 +27,7 @@ from langgraph.graph import StateGraph, END
 from maxim import Maxim, Config
 from maxim.logger import LoggerConfig
 from maxim.logger.components.generation import GenerationConfig
-from maxim.logger.components.span import SpanConfig
+from maxim.logger.components.span import SpanConfig, Span
 from maxim.logger.components.trace import TraceConfig
 from maxim.types import GenerationRequestMessage
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
@@ -96,7 +96,7 @@ def log_retry_error(retry_state):
     retry=retry_if_exception_type(google.api_core.exceptions.ResourceExhausted),
     retry_error_callback=log_retry_error
 )
-def call_gemini_with_retry(chain, input_data, generation_config: GenerationConfig, span):
+def call_gemini_with_retry(chain, input_data, generation_config: GenerationConfig, span: Span):
     """Call Gemini with retries and log the generation result."""
     generation = span.generation(generation_config)
     try:
@@ -128,7 +128,7 @@ def call_gemini_with_retry(chain, input_data, generation_config: GenerationConfi
     wait=wait_exponential(multiplier=1, min=2, max=10),
     retry_error_callback=log_retry_error
 )
-def call_groq_with_retry(chain, input_data, generation_config: GenerationConfig, span):
+def call_groq_with_retry(chain, input_data, generation_config: GenerationConfig, span: Span):
     """Call Groq with retries and log the generation result."""
     generation = span.generation(generation_config)
     try:
@@ -250,19 +250,29 @@ Transcript:
         content_structurer_span.end()
     return state
 
+
+
 def frame_selector(state: GraphState) -> GraphState:
-    """Select frames from the video based on relevancy."""
+    """Select frames from the video based on relevancy, avoiding repetition across the module."""
     logger.info("Running Frame Selector Node")
     frame_selector_span = trace.span(SpanConfig(id=str(uuid4()), name="Frame Selector"))
     frame_selector_span.event("frame_selector_start", "Frame Selector Start")
 
     frames = state["frames"]
     selected_frames_with_info = []
+    logger.info("Initial frames to assess: %s", frames)
 
     for module_index, module in enumerate(state["structured_content"]["modules"]):
         module_start_ts = int(float(module["sections"][0]["start_ts"]))
         module_end_ts = int(float(module["sections"][-1]["end_ts"]))
         module_content = state["transcript"][module_start_ts:module_end_ts]
+
+        # --- Maintain a list of captions for the entire module ---
+        module_previous_captions = []
+        for sec in module["sections"]:  # Iterate to collect existing captions
+            if "frames" in sec:
+                module_previous_captions.extend([f["caption"] for f in sec["frames"]])
+        # --- End of module caption list maintenance ---
 
         for section_index, section in enumerate(module["sections"]):
             start_ts = float(section["start_ts"])
@@ -270,21 +280,31 @@ def frame_selector(state: GraphState) -> GraphState:
             section_content = state["transcript"][int(start_ts):int(end_ts)]
             section_frames = []
 
+
+            # --- Get corresponding generated content ---
+            generated_section_content = ""
+            if "course_content" in state and state["course_content"]["modules"]:
+                try:
+                    generated_section_content = state["course_content"]["modules"][module_index]["sections"][section_index]["content"]
+                except (KeyError, IndexError) as e:
+                    logger.warning("Could not retrieve generated content for module %d, section %d: %s", module_index, section_index, e)
+            # --- End of getting generated content ---
+
+
             for frame in frames:
                 frame_ts = float(frame["timestamp"])
                 if start_ts <= frame_ts <= end_ts:
-                    section_frames.append(frame) # Add frame to section if timestamp is within range
+                    section_frames.append(frame)
 
             if "frames" not in section:
-                section["frames"] = []
+                section["frames"] = []  # Initialize
 
-            if section_frames: # Process section_frames only if it's not empty
-                logger.info("Processing %d frames for section: '%s'",
-                            len(section_frames),
-                            section['section_title'])
-                for frame_index, frame in enumerate(section_frames): #Iterate through section_frames
-                    logger.info("Processing frame: %s (Index within section: %d) for section: '%s'",
-                                frame['path'], frame_index, section['section_title'])
+
+            if section_frames:
+                logger.info("Processing %d frames for section: '%s'", len(section_frames), section['section_title'])
+                logger.info("Frames within section '%s' timestamp range: %s", section['section_title'], section_frames)
+                for frame_index, frame in enumerate(section_frames):
+                    logger.info("Processing frame: %s (Index within section: %d) for section: '%s'", frame['path'], frame_index, section['section_title'])
 
                     image_path = os.path.join(os.getcwd(), frame["path"].lstrip('/'))
                     base64_image = encode_image(image_path)
@@ -297,24 +317,65 @@ def frame_selector(state: GraphState) -> GraphState:
                         "image_url": {"url": f"data:image/png;base64,{base64_image}"},
                     }
 
+
                     user_prompt_text = (
-                        "**You MUST respond *only* with valid JSON. Do not include any introductory text, explanations, \
-                        or markdown formatting. Just the JSON object.**\n\n"
-                        f"Module content:\n{module_content}\n\n"
-                        f"Section content:\n{section_content}\n\n"
-                        "Given this module and section context, and the provided image, determine if the image is relevant "
-                        "to the *section*. "
-                        "If the image IS relevant, ALSO generate a short caption (1-2 sentences) for it. "
-                        "Return a JSON object in one of these two formats:\n"
-                        "- If the image is relevant: `{\"relevant\": true, \"info\": \"Your 1-2 sentence reason\", \
-                        \"caption\": \"Generated caption\"}`\n"
-                        "- If the image is NOT relevant: `{\"relevant\": false}`\n\n"
-                        "Example of a relevant response: `{\"relevant\": true, \"info\": \"This image shows the device setup.\", \
-                        \"caption\": \"The experimental setup with the sensor attached.\"}`\n"
-                        "Example of a not relevant response: `{\"relevant\": false}`\n\n"
-                        "**Remember, ONLY output the JSON.  No other text. you are strictly told to only \
-                            return expected json else u will be heavily penalized**"
+                        "**You MUST respond *only* with valid JSON.  No other text is permitted.**\n\n"
+                        "You are an expert image selector for educational content. Your task is to analyze an image and determine its "
+                        "relevance and distinctiveness within the context of a specific section of a learning module.  "
+                        "You will be provided with the module content, section content, generated section content, "
+                        "and a list of captions from previously selected images for *this entire module*.\n\n"  # Changed wording
+
+                        f"**Module Content:**\n{module_content}\n\n"
+                        f"**Section Content (Transcript):**\n{section_content}\n\n"
+                        f"**Generated Section Content (Refined):**\n{generated_section_content}\n\n"
+                        f"**Captions of Previously Selected Images (for this ENTIRE MODULE):**\n{module_previous_captions}\n\n"  # Key change: module_previous_captions
+
+                        "**Image Analysis Task:**\n\n"
+
+                        "1. **Relevance:** Assess whether the image directly supports, illustrates, or clarifies the concepts "
+                        "   discussed in the *section content* (both transcript and generated) and the overall *module content*.  "
+                        "   Consider whether the image adds educational value to the section.\n\n"
+
+                        "2. **Distinctiveness:**  Carefully compare the current image to the captions of previously selected images *for the entire module*.  " # Changed wording
+                        "   Determine if the current image offers *new* visual information or a *different perspective* compared to "
+                        "   *any* of the previously selected images *in this module*.  Avoid selecting images that are visually similar, redundant, "
+                        "   or convey essentially the same information as a previously selected image *anywhere in the module*.\n\n"  # Key change: module-wide distinctiveness
+                        "   *  Consider the visual elements, composition, and the overall message conveyed by the image.\n"
+                        "   *  Even if an image is relevant, if it's too similar to a previous image *from any section in this module*, it should be rejected.\n\n"  # Key change
+
+                        "3. **Reasoning (Chain-of-Thought):**\n"
+                        "    * Briefly explain *why* you are making your decision. Focus your reasoning on both RELEVANCE and DISTINCTIVENESS (or lack thereof), and refer to specific points within the content and captions (if rejecting).\n\n"
+
+                        "**Output (JSON Format - Strictly Adhere):**\n\n"
+                        "Respond with *only* one of the following JSON objects.  Do not include any other text.\n\n"
+
+                        "*   **If the image is BOTH relevant AND distinct:**\n"
+                        "    ```json\n"
+                        "    {\"relevant\": true, \"info\": \"Your concise reasoning (1-2 sentences).\", \"caption\": \"A short, descriptive caption for the image (1-2 sentences).\"}\n"
+                        "    ```\n\n"
+
+                        "*   **If the image is NOT relevant OR NOT distinct:**\n"
+                        "    ```json\n"
+                        "    {\"relevant\": false, \"info\": \"Your concise reasoning (1-2 sentences).\"}\n"
+                        "    ```\n\n"
+
+                        "**Example Reasoning (Relevant):**\n"
+                        "```json\n"
+                        "{\"relevant\": true, \"info\": \"The image clearly depicts the experimental setup described in the section, providing a visual aid for understanding the procedure.\", \"caption\": \"Experimental setup showing the sensor and data acquisition system.\"}\n"
+                        "```\n"
+
+                        "**Example Reasoning (Not Relevant):**\n"
+                        "```json\n"
+                        "{\"relevant\": false, \"info\": \"The image shows a generic graph, but it doesn't directly relate to the specific data analysis techniques discussed in this section.\"}\n"
+                        "```\n"
+
+                        "**Example Reasoning (Not Distinct):**\n"
+                        "```json\n"
+                        "{\"relevant\": false, \"info\": \"This image is very similar to a previously selected image from Section 1 that also showed the overall system architecture. It doesn't add new visual information.\"}\n"  # Example now refers to another section
+                        "```\n"
                     )
+
+
 
                     message_content = [
                         {"type": "text", "text": user_prompt_text},
@@ -332,13 +393,11 @@ def frame_selector(state: GraphState) -> GraphState:
                     message_to_llama = [HumanMessage(content=message_content)]
 
                     try:
-                        response = call_groq_with_retry(groq_llm,
-                                                        message_to_llama,
-                                                        generation_config,
-                                                        frame_selector_span)
+                        response = call_groq_with_retry(groq_llm, message_to_llama, generation_config, frame_selector_span)
                         cleaned_response = clean_json_string(response.content)
                         logger.info("Frame processing response: %s", cleaned_response)
                         result = json.loads(cleaned_response)
+
                         if isinstance(result, dict) and result.get("relevant") is True:
                             if "info" in result and "caption" in result:
                                 section["frames"].append({
@@ -348,23 +407,36 @@ def frame_selector(state: GraphState) -> GraphState:
                                     "timestamp": float(frame["timestamp"]),
                                 })
                                 selected_frames_with_info.append(frame)
-                                logger.info("Timestamp %s appended to section: %s",
-                                            frame["timestamp"], section["section_title"])
-                        frame_selector_span.event(
-                                    "frame_selection_success",
-                                    "Successfully generated frame relevance result"
-                                )
+                                # --- Add new caption to module-level list ---
+                                module_previous_captions.append(result["caption"])
+                                # --- End of adding caption ---
+                                logger.info("Timestamp %s appended to section: %s", frame["timestamp"], section["section_title"])
+
                     except (json.JSONDecodeError, ValueError, KeyError) as e:
                         logger.exception("Frame processing error: %s", e)
-                        frame_selector_span.event("frame_selection_error",
-                                                  "Error in frame selection",
-                                                  {"error": str(e)})
+                        frame_selector_span.event("frame_selection_error", "Error in frame selection", {"error": str(e)})
             else:
-                frame_selector_span.event("no_frames_in_range",
-                                          f"No frames in range for section: {section['section_title']}")
+                logger.info("No frames in range for section: %s", section['section_title'])
+                frame_selector_span.event("no_frames_in_range", f"No frames in range for section: {section['section_title']}")
+
+    # Add selected frames to course_content (no change here)
+    if "course_content" in state and state["course_content"]["modules"]:
+        for module_index, module in enumerate(state["course_content"]["modules"]):
+            for section_index, section in enumerate(module["sections"]):
+                try:
+                    structured_section = state["structured_content"]["modules"][module_index]["sections"][section_index]
+                    if "frames" in structured_section and structured_section["frames"]:
+                         state["course_content"]["modules"][module_index]["sections"][section_index]["media"] = structured_section["frames"]
+                    else:
+                        state["course_content"]["modules"][module_index]["sections"][section_index]["media"] = []
+                except (KeyError, IndexError) as e:
+                     logger.warning("Could not find matching structured section for course content update: %s", e)
+
+    frame_selector_span.event("frame_selector_completed", "Frame selection complete")
     frame_selector_span.end()
     state["frames"] = selected_frames_with_info
     return state
+
 
 def course_content_generator(state: GraphState) -> GraphState:
     """Generate course content based on structured content and selected frames."""
@@ -372,30 +444,21 @@ def course_content_generator(state: GraphState) -> GraphState:
     course_content_span = trace.span(SpanConfig(id=str(uuid4()), name="Course Content Generator"))
     course_content_span.event("course_content_generation_start", "Course Content Generation Start")
 
-    structured_content_with_frames = state["structured_content"].copy()
-    for module_index, module in enumerate(structured_content_with_frames["modules"]):
-        for section_index, section in enumerate(module["sections"]):
-            if "frames" in section:
-                structured_content_with_frames["modules"][module_index]["sections"][section_index]["media"] = section["frames"]
-            else:
-                structured_content_with_frames["modules"][module_index]["sections"][section_index]["media"] = []
-
-
-
     system_message = """
-You are an Educational Content Designer. Create blog-style course content based on the provided structure, transcript, and selected frames (if any).
+You are an Educational Content Designer. Create blog-style course content based on the provided structure, transcript.
 
 Output JSON in the specified format.  Do NOT include markdown code blocks.
 """
     prompt_template = """
-    {structured_content_with_frames}
+    {structured_content}
     Transcript: {transcript}
 
     For each section:
     1.  Write a 300-500 word explanation of the concept.
-    2.  If frames are provided for the section, include a "media" field with the frame_path and caption *exactly* as provided.
-    3. Include a "Key Insight" callout.
-    4. Include timestamps (only where required) in the generated section content (format: [HH:MM:SS]).
+    2. Include a "Key Insight" callout.
+    3. Insert timestamps only where necessary in the generated section content.
+    Each timestamp must strictly follow the [HH:MM:SS] format, using two digits for hours, minutes, and seconds. 
+    For example, use [00:06:09] instead of [00:00:369].
 
     Output JSON:
     {{        
@@ -406,7 +469,7 @@ Output JSON in the specified format.  Do NOT include markdown code blocks.
                     {{
                         "section_title": "...",
                         "content": "Markdown formatted content...",
-                        "media": [{{ "frame_path": "...", "caption": "...", "info": "...", "timestamp": x.xx }}],
+                        "media": [],
                     }},
                     ...
                 ]
@@ -424,7 +487,7 @@ Output JSON in the specified format.  Do NOT include markdown code blocks.
     messages = [
         GenerationRequestMessage(role="system", content=system_message),
         GenerationRequestMessage(role="user", content=prompt_template.format(
-            structured_content_with_frames=json.dumps(structured_content_with_frames),
+            structured_content=state["structured_content"],
             transcript=state["transcript"]
         )),
     ]
@@ -441,7 +504,7 @@ Output JSON in the specified format.  Do NOT include markdown code blocks.
         course_content_response = call_gemini_with_retry(
             chain,
             {
-                "structured_content_with_frames": json.dumps(structured_content_with_frames),
+                "structured_content": state["structured_content"],
                 "transcript": state["transcript"],
             },
             generation_config,
@@ -726,14 +789,14 @@ def retention_tip_executor(state: GraphState) -> GraphState:
 
 graph = StateGraph(GraphState)
 graph.add_node("content_structurer", content_structurer)
-graph.add_node("frame_selector", frame_selector)
 graph.add_node("course_content_generator", course_content_generator)
+graph.add_node("frame_selector", frame_selector)
 graph.add_node("quiz_architect", quiz_architect)
 graph.add_node("retention_designer", retention_designer)
 graph.add_node("retention_tip_executor", retention_tip_executor)
-graph.add_edge("content_structurer", "frame_selector")
-graph.add_edge("frame_selector", "course_content_generator")
-graph.add_edge("course_content_generator", "quiz_architect")
+graph.add_edge("content_structurer", "course_content_generator")
+graph.add_edge("course_content_generator","frame_selector")
+graph.add_edge("frame_selector", "quiz_architect")
 graph.add_edge("quiz_architect", "retention_designer")
 graph.add_edge("retention_designer", "retention_tip_executor")
 graph.add_edge("retention_tip_executor", END)
