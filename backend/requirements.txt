@@ -25,3 +25,11 @@ requests
 tenacity
 google-api-core
 maxim
+opentelemetry-api
+opentelemetry-sdk
+opentelemetry-instrumentation
+opentelemetry-distro-0.53b0
+boto3 
+asyncpg 
+SQLAlchemy 
+psycopg2-binary
