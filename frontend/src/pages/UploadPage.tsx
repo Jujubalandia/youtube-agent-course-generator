@@ -290,7 +290,7 @@ const UploadPage: React.FC = () => {
         // Ensure no existing connection
         closeEventSource();
 
-        const url = `http://localhost:8000/api/progress/${videoId}`;
+        const url = `${process.env.REACT_APP_API_BASE_URL || "http://localhost:8000"}/api/progress/${videoId}`;
         console.log(`Connecting to SSE: ${url}`);
         const es = new EventSource(url);
         eventSourceRef.current = es;

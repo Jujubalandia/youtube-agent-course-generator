@@ -1,0 +1,11 @@
+# Keep the build context small and deterministic.
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.git/
+frames/
+transcripts/
+*.log
+.DS_Store

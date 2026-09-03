@@ -3,7 +3,10 @@ import axios, { AxiosResponse } from "axios";
 // Keep ParsedBackendResponse if needed elsewhere, but the initial response changes
 import { ParsedBackendResponse } from "../pages/UploadPage";
 
-const API_BASE_URL = "http://localhost:8000/api";
+// API base is configurable at build time (REACT_APP_API_BASE_URL, e.g. when the
+// frontend is served from a different host than the backend). Default matches the
+// original localhost workflow.
+const API_BASE_URL = `${process.env.REACT_APP_API_BASE_URL || "http://localhost:8000"}/api`;
 
 // Define the response type for the initial request
 interface StartGenerationResponse {

@@ -4,16 +4,23 @@ sqlalchemy
 asyncpg
 python-dotenv
 yt-dlp
-numba==0.56.4 
+numba==0.56.4
 langchain
 langchain-groq
 langchain-core
 langchain-community
 langchain-google-genai
 langgraph
-scipy>=1.16.5,<1.23.0  # Specify compatible version range!
-numpy>=1.16.5,<1.23.0 
-base64
+# NOTE (docker): the original pins below (scipy>=1.16.5,<1.23.0 together with
+# numpy<1.23.0 and numba==0.56.4) are unsatisfiable on any Python: scipy 1.16+
+# requires numpy>=1.26, while numba 0.56.4 requires numpy<1.24. The container
+# targets Python 3.10 with a consistent, wheel-available set instead.
+scipy>=1.15.0,<1.16.0  # numpy 1.23.x compatible
+numpy==1.23.5
+# scenedetect needs a video-decoder backend (opencv or PyAV); include them
+# explicitly so a clean container has them (upstream relied on transitive deps).
+opencv-python-headless
+av
 httpx
 youtube-transcript-api==0.6.1
 openai-whisper
@@ -28,7 +35,11 @@ maxim
 opentelemetry-api
 opentelemetry-sdk
 opentelemetry-instrumentation
-opentelemetry-distro-0.53b0
+# NOTE (docker): upstream listed `opentelemetry-distro-0.53b0`, a legacy
+# requirement that no longer resolves on modern pip (and nothing imports the
+# distro). agentic.py imports the OTLP gRPC span exporter directly, so that
+# package is installed explicitly instead.
+opentelemetry-exporter-otlp-proto-grpc
 boto3 
 asyncpg 
 SQLAlchemy 

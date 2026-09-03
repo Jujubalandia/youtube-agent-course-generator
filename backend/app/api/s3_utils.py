@@ -14,6 +14,13 @@ AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_REGION = os.getenv("AWS_REGION", "us-east-1") # Default region if not set
 S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
+# S3-compatible endpoint override (e.g. a self-hosted MinIO service).
+# When set/truthy, boto3 talks to that endpoint (path-style addressing)
+# instead of real AWS S3.
+S3_ENDPOINT_URL = os.getenv("S3_ENDPOINT_URL", "").strip() or None
+# Publicly reachable base URL baked into generated courses so the browser can
+# load the uploaded frames. Falls back to S3_ENDPOINT_URL when unset.
+S3_PUBLIC_URL = os.getenv("S3_PUBLIC_URL", "").strip() or S3_ENDPOINT_URL
 
 if not all([AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, S3_BUCKET_NAME]):
     logger.warning("AWS S3 credentials or bucket name not fully configured. S3 operations will fail.")
@@ -25,10 +32,14 @@ else:
             aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
             region_name=AWS_REGION
         )
-        s3_client = session.client('s3')
+        client_kwargs = {}
+        if S3_ENDPOINT_URL:
+            client_kwargs["endpoint_url"] = S3_ENDPOINT_URL
+        s3_client = session.client('s3', **client_kwargs)
         # Test connection by listing buckets (optional, requires ListBuckets permission)
         # s3_client.list_buckets()
-        logger.info("AWS S3 client initialized successfully for region %s and bucket %s", AWS_REGION, S3_BUCKET_NAME)
+        target = S3_ENDPOINT_URL or f"https://s3.{AWS_REGION}.amazonaws.com"
+        logger.info("S3 client initialized successfully (endpoint %s, bucket %s)", target, S3_BUCKET_NAME)
     except NoCredentialsError:
         logger.error("AWS credentials not found. Please configure AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY.")
         s3_client = None
@@ -57,7 +68,12 @@ def upload_frame_to_s3(local_file_path: str, video_id: str, frame_filename: str)
         return None
 
     s3_key = f"frames/{video_id}/{frame_filename}"
-    s3_url = f"https://{S3_BUCKET_NAME}.s3.{AWS_REGION}.amazonaws.com/{s3_key}"
+    if S3_PUBLIC_URL:
+        # Self-hosted / S3-compatible storage (e.g. MinIO): path-style URL that
+        # the browser can reach (e.g. http://localhost:9000/<bucket>/<key>).
+        s3_url = f"{S3_PUBLIC_URL.rstrip('/')}/{S3_BUCKET_NAME}/{s3_key}"
+    else:
+        s3_url = f"https://{S3_BUCKET_NAME}.s3.{AWS_REGION}.amazonaws.com/{s3_key}"
 
     try:
         # Check if the file exists locally before uploading
