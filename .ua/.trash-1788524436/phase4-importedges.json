@@ -1,0 +1,128 @@
+[
+  {
+    "source": "file:frontend/src/App.test.tsx",
+    "target": "file:frontend/src/App.tsx",
+    "type": "imports",
+    "direction": "forward",
+    "weight": 0.7
+  },
+  {
+    "source": "file:frontend/src/App.tsx",
+    "target": "file:frontend/src/pages/UploadPage.tsx",
+    "type": "imports",
+    "direction": "forward",
+    "weight": 0.7
+  },
+  {
+    "source": "file:frontend/src/index.tsx",
+    "target": "file:frontend/src/App.tsx",
+    "type": "imports",
+    "direction": "forward",
+    "weight": 0.7
+  },
+  {
+    "source": "file:frontend/src/index.tsx",
+    "target": "file:frontend/src/index.css",
+    "type": "imports",
+    "direction": "forward",
+    "weight": 0.7
+  },
+  {
+    "source": "file:frontend/src/index.tsx",
+    "target": "file:frontend/src/reportWebVitals.ts",
+    "type": "imports",
+    "direction": "forward",
+    "weight": 0.7
+  },
+  {
+    "source": "file:frontend/src/pages/UploadPage.tsx",
+    "target": "file:frontend/src/services/api.ts",
+    "type": "imports",
+    "direction": "forward",
+    "weight": 0.7
+  },
+  {
+    "source": "file:frontend/src/services/api.ts",
+    "target": "file:frontend/src/pages/UploadPage.tsx",
+    "type": "imports",
+    "direction": "forward",
+    "weight": 0.7
+  },
+  {
+    "source": "file:backend/app/api/routes.py",
+    "target": "file:backend/app/api/__init__.py",
+    "type": "imports",
+    "direction": "forward",
+    "weight": 0.7
+  },
+  {
+    "source": "file:backend/app/api/routes.py",
+    "target": "file:backend/app/api/agentic.py",
+    "type": "imports",
+    "direction": "forward",
+    "weight": 0.7
+  },
+  {
+    "source": "file:backend/app/api/routes.py",
+    "target": "file:backend/app/api/frame_extraction.py",
+    "type": "imports",
+    "direction": "forward",
+    "weight": 0.7
+  },
+  {
+    "source": "file:backend/app/api/routes.py",
+    "target": "file:backend/app/api/s3_utils.py",
+    "type": "imports",
+    "direction": "forward",
+    "weight": 0.7
+  },
+  {
+    "source": "file:backend/app/api/routes.py",
+    "target": "file:backend/app/db/crud.py",
+    "type": "imports",
+    "direction": "forward",
+    "weight": 0.7
+  },
+  {
+    "source": "file:backend/app/api/routes.py",
+    "target": "file:backend/app/db/database.py",
+    "type": "imports",
+    "direction": "forward",
+    "weight": 0.7
+  },
+  {
+    "source": "file:backend/app/main.py",
+    "target": "file:backend/app/api/routes.py",
+    "type": "imports",
+    "direction": "forward",
+    "weight": 0.7
+  },
+  {
+    "source": "file:backend/app/db/crud.py",
+    "target": "file:backend/app/db/models.py",
+    "type": "imports",
+    "direction": "forward",
+    "weight": 0.7
+  },
+  {
+    "source": "file:backend/scripts/init_db.py",
+    "target": "file:backend/app/db/database.py",
+    "type": "imports",
+    "direction": "forward",
+    "weight": 0.7
+  },
+  {
+    "source": "file:backend/scripts/init_db.py",
+    "target": "file:backend/app/db/models.py",
+    "type": "imports",
+    "direction": "forward",
+    "weight": 0.7
+  },
+  {
+    "source": "file:backend/app/api/agentic.py",
+    "target": "file:backend/app/api/utils.py",
+    "type": "imports",
+    "direction": "forward",
+    "weight": 0.7
+  }
+]

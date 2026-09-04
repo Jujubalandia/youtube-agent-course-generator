@@ -1,0 +1,66 @@
+{
+  "nodes": [
+    {
+      "id": "service:frontend/.dockerignore",
+      "type": "service",
+      "name": ".dockerignore",
+      "filePath": "frontend/.dockerignore",
+      "summary": "Excludes node_modules, build output, .git, and log/OS artifacts from the Docker build context for the frontend image, keeping image builds fast and reproducible.",
+      "tags": ["containerization", "infrastructure", "build-context", "docker"],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:frontend/Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "frontend/Dockerfile",
+      "summary": "Multi-stage Docker build that compiles the CRA (react-scripts 5) frontend with node:20-alpine and serves the resulting static bundle from nginx:1.27-alpine on port 80.",
+      "tags": ["containerization", "infrastructure", "deployment", "multi-stage-build", "frontend"],
+      "complexity": "moderate",
+      "languageNotes": "Multi-stage build separates the Node build toolchain from the final nginx runtime image, keeping the shipped image small. Uses --legacy-peer-deps to work around a react@19 vs @testing-library/react peer-dependency conflict, and bakes REACT_APP_API_BASE_URL into the bundle at build time via an ARG/ENV pair (default http://localhost:8000)."
+    },
+    {
+      "id": "service:frontend/Dockerfile:build",
+      "type": "service",
+      "name": "build",
+      "filePath": "frontend/Dockerfile",
+      "lineRange": [7, 28],
+      "summary": "Build stage on node:20-alpine: installs dependencies with npm ci --legacy-peer-deps, copies public/src/tsconfig.json, bakes REACT_APP_API_BASE_URL, and runs npm run build to produce the static bundle.",
+      "tags": ["build-stage", "npm", "react", "docker"],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:frontend/Dockerfile:nginx",
+      "type": "service",
+      "name": "nginx",
+      "filePath": "frontend/Dockerfile",
+      "lineRange": [29, 35],
+      "summary": "Runtime stage on nginx:1.27-alpine: installs a custom nginx.conf and copies the built static bundle from the build stage, exposing port 80 to serve the frontend.",
+      "tags": ["nginx", "static-hosting", "docker", "runtime-stage"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "service:frontend/Dockerfile",
+      "target": "service:frontend/Dockerfile:build",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:frontend/Dockerfile",
+      "target": "service:frontend/Dockerfile:nginx",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:frontend/.dockerignore",
+      "target": "service:frontend/Dockerfile",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

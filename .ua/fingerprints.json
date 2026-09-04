@@ -1,0 +1,1731 @@
+{
+  "version": "1.0.0",
+  "gitCommitHash": "9561c118043f1b43f2cf94b083ff3656e85e82bc",
+  "generatedAt": "2026-09-04T12:20:27.497Z",
+  "files": {
+    ".env.example": {
+      "filePath": ".env.example",
+      "contentHash": "8e7c6584d9b0d635f8d04d6167c321a946e575ab7a4ed1dd01ac2ba67290a541",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 60,
+      "hasStructuralAnalysis": true
+    },
+    ".serena/project.yml": {
+      "filePath": ".serena/project.yml",
+      "contentHash": "13b234eb4ea51a57e31b871ff81b702e6e31c6d5b7344e1d92ec828ea1cab74f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 170,
+      "hasStructuralAnalysis": true
+    },
+    ".ua/.understandignore": {
+      "filePath": ".ua/.understandignore",
+      "contentHash": "7fab906c27cd8b901d62d3a30d5b2ddc1aacb05edb3bea4dd0b923c1b4025e28",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 86,
+      "hasStructuralAnalysis": false
+    },
+    "README.md": {
+      "filePath": "README.md",
+      "contentHash": "2a42aec5eea6104a99c683f1647c2bd5f569cded22c0799f864b015e5738d3bd",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 129,
+      "hasStructuralAnalysis": true
+    },
+    "backend/.dockerignore": {
+      "filePath": "backend/.dockerignore",
+      "contentHash": "27f436677864e65487b802f6a745f139272eac84d6eb1f50ccf5009206557845",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 12,
+      "hasStructuralAnalysis": false
+    },
+    "backend/Dockerfile": {
+      "filePath": "backend/Dockerfile",
+      "contentHash": "855f0c38b25e0052db2c9e51b450ebda3e88f2ca7dcf9d684c8d8e13959eb2c1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 56,
+      "hasStructuralAnalysis": true
+    },
+    "backend/app/__init__.py": {
+      "filePath": "backend/app/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "backend/app/api/__init__.py": {
+      "filePath": "backend/app/api/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "backend/app/api/agentic.py": {
+      "filePath": "backend/app/api/agentic.py",
+      "contentHash": "c83ded66107665b2479cef33422ab83fdb995e5da12d81393e48906778b49e44",
+      "functions": [
+        {
+          "name": "log_retry_error",
+          "params": [
+            "retry_state"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "call_gemini_with_retry",
+          "params": [
+            "chain",
+            "input_data",
+            "span_name"
+          ],
+          "returnType": "BaseMessage",
+          "exported": true,
+          "lineCount": 38
+        },
+        {
+          "name": "call_groq_with_retry",
+          "params": [
+            "chain",
+            "input_data",
+            "span_name"
+          ],
+          "returnType": "BaseMessage",
+          "exported": true,
+          "lineCount": 40
+        },
+        {
+          "name": "content_structurer",
+          "params": [
+            "state"
+          ],
+          "returnType": "GraphState",
+          "exported": true,
+          "lineCount": 75
+        },
+        {
+          "name": "frame_selector",
+          "params": [
+            "state"
+          ],
+          "returnType": "GraphState",
+          "exported": true,
+          "lineCount": 248
+        },
+        {
+          "name": "course_content_generator",
+          "params": [
+            "state"
+          ],
+          "returnType": "GraphState",
+          "exported": true,
+          "lineCount": 82
+        },
+        {
+          "name": "quiz_architect",
+          "params": [
+            "state"
+          ],
+          "returnType": "GraphState",
+          "exported": true,
+          "lineCount": 87
+        },
+        {
+          "name": "retention_designer",
+          "params": [
+            "state"
+          ],
+          "returnType": "GraphState",
+          "exported": true,
+          "lineCount": 97
+        },
+        {
+          "name": "retention_tip_executor",
+          "params": [
+            "state"
+          ],
+          "returnType": "GraphState",
+          "exported": true,
+          "lineCount": 93
+        }
+      ],
+      "classes": [
+        {
+          "name": "GraphState",
+          "methods": [],
+          "properties": [
+            "transcript",
+            "frames",
+            "structured_content",
+            "course_content",
+            "quiz_content",
+            "retention_plan"
+          ],
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "time",
+          "specifiers": [
+            "time"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Dict",
+            "List",
+            "TypedDict",
+            "Any"
+          ]
+        },
+        {
+          "source": "dotenv",
+          "specifiers": [
+            "load_dotenv"
+          ]
+        },
+        {
+          "source": "google.api_core.exceptions",
+          "specifiers": [
+            "google.api_core.exceptions"
+          ]
+        },
+        {
+          "source": "langchain_google_genai",
+          "specifiers": [
+            "ChatGoogleGenerativeAI"
+          ]
+        },
+        {
+          "source": "langchain.prompts",
+          "specifiers": [
+            "ChatPromptTemplate",
+            "PromptTemplate"
+          ]
+        },
+        {
+          "source": "langchain.schema",
+          "specifiers": [
+            "HumanMessage",
+            "BaseMessage"
+          ]
+        },
+        {
+          "source": "langchain_groq",
+          "specifiers": [
+            "ChatGroq"
+          ]
+        },
+        {
+          "source": "langgraph.checkpoint.memory",
+          "specifiers": [
+            "MemorySaver"
+          ]
+        },
+        {
+          "source": "langgraph.graph",
+          "specifiers": [
+            "StateGraph",
+            "END"
+          ]
+        },
+        {
+          "source": "tenacity",
+          "specifiers": [
+            "retry",
+            "stop_after_attempt",
+            "wait_exponential",
+            "retry_if_exception_type"
+          ]
+        },
+        {
+          "source": "app.api.utils",
+          "specifiers": [
+            "clean_json_string",
+            "encode_image"
+          ]
+        },
+        {
+          "source": "opentelemetry",
+          "specifiers": [
+            "trace"
+          ]
+        },
+        {
+          "source": "opentelemetry.sdk.trace",
+          "specifiers": [
+            "TracerProvider"
+          ]
+        },
+        {
+          "source": "opentelemetry.sdk.trace.export",
+          "specifiers": [
+            "BatchSpanProcessor"
+          ]
+        },
+        {
+          "source": "opentelemetry.exporter.otlp.proto.grpc.trace_exporter",
+          "specifiers": [
+            "OTLPSpanExporter"
+          ]
+        },
+        {
+          "source": "opentelemetry.sdk.resources",
+          "specifiers": [
+            "SERVICE_NAME",
+            "Resource"
+          ]
+        },
+        {
+          "source": "opentelemetry.trace",
+          "specifiers": [
+            "Status",
+            "StatusCode"
+          ]
+        }
+      ],
+      "exports": [
+        "GraphState",
+        "log_retry_error",
+        "call_gemini_with_retry",
+        "call_groq_with_retry",
+        "content_structurer",
+        "frame_selector",
+        "course_content_generator",
+        "quiz_architect",
+        "retention_designer",
+        "retention_tip_executor"
+      ],
+      "totalLines": 891,
+      "hasStructuralAnalysis": true
+    },
+    "backend/app/api/frame_extraction.py": {
+      "filePath": "backend/app/api/frame_extraction.py",
+      "contentHash": "1b830c2c5daeb5b2f5d05d6d5e7f29a39c6e7c3229bcd18deb3868a1664f2949",
+      "functions": [
+        {
+          "name": "download_video",
+          "params": [
+            "url"
+          ],
+          "returnType": "Tuple[str, str]",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "detect_scenes",
+          "params": [
+            "video_path",
+            "threshold"
+          ],
+          "returnType": "List[Tuple[Any, Any]]",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "extract_keyframes_with_timestamps",
+          "params": [
+            "video_path",
+            "scenes",
+            "output_dir"
+          ],
+          "returnType": "List[Dict[str, Any]]",
+          "exported": true,
+          "lineCount": 56
+        },
+        {
+          "name": "optimize_frame",
+          "params": [
+            "frame_path",
+            "resolution",
+            "quality"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "load_frames_into_fiftyone",
+          "params": [
+            "frames",
+            "video_id"
+          ],
+          "returnType": "fo.Dataset",
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "select_unique_frames",
+          "params": [
+            "dataset",
+            "uniqueness_threshold"
+          ],
+          "returnType": "List[Dict[str, Any]]",
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "align_frames_to_transcript",
+          "params": [
+            "frames",
+            "transcript_segments"
+          ],
+          "returnType": "List[Dict[str, Any]]",
+          "exported": true,
+          "lineCount": 31
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "subprocess",
+          "specifiers": [
+            "subprocess"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "List",
+            "Dict",
+            "Tuple",
+            "Any"
+          ]
+        },
+        {
+          "source": "yt_dlp",
+          "specifiers": [
+            "YoutubeDL"
+          ]
+        },
+        {
+          "source": "scenedetect",
+          "specifiers": [
+            "VideoManager",
+            "SceneManager"
+          ]
+        },
+        {
+          "source": "scenedetect.detectors",
+          "specifiers": [
+            "ContentDetector"
+          ]
+        },
+        {
+          "source": "PIL",
+          "specifiers": [
+            "Image"
+          ]
+        },
+        {
+          "source": "fiftyone",
+          "specifiers": [
+            "fo"
+          ]
+        },
+        {
+          "source": "fiftyone.brain",
+          "specifiers": [
+            "fob"
+          ]
+        }
+      ],
+      "exports": [
+        "download_video",
+        "detect_scenes",
+        "extract_keyframes_with_timestamps",
+        "optimize_frame",
+        "load_frames_into_fiftyone",
+        "select_unique_frames",
+        "align_frames_to_transcript"
+      ],
+      "totalLines": 245,
+      "hasStructuralAnalysis": true
+    },
+    "backend/app/api/routes.py": {
+      "filePath": "backend/app/api/routes.py",
+      "contentHash": "8332061e5295ab62371a94f8ff13e3e6049d9d3213f2daed1894aa7b25ed6e62",
+      "functions": [
+        {
+          "name": "send_progress",
+          "params": [
+            "queue",
+            "status",
+            "detail",
+            "error",
+            "final_result"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_run_course_generation",
+          "params": [
+            "video_id",
+            "video_url",
+            "queue"
+          ],
+          "exported": true,
+          "lineCount": 336
+        },
+        {
+          "name": "generate_course_request",
+          "params": [
+            "request"
+          ],
+          "returnType": "Dict[str, Any]",
+          "exported": true,
+          "lineCount": 57
+        },
+        {
+          "name": "stream_progress",
+          "params": [
+            "request",
+            "video_id"
+          ],
+          "exported": true,
+          "lineCount": 88
+        },
+        {
+          "name": "save_transcript",
+          "params": [
+            "transcript",
+            "video_id"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "_safe_delete",
+          "params": [
+            "filepath"
+          ],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "process_and_upload_frames",
+          "params": [
+            "course_content",
+            "structured_content",
+            "video_id"
+          ],
+          "returnType": "Tuple[Dict[str, Any], Dict[str, Any]]",
+          "exported": true,
+          "lineCount": 134
+        },
+        {
+          "name": "_get_whisper_transcript",
+          "params": [
+            "video_id",
+            "video_url"
+          ],
+          "returnType": "Tuple[str, List[Dict[str, Any]]]",
+          "exported": true,
+          "lineCount": 61
+        }
+      ],
+      "classes": [
+        {
+          "name": "VideoRequest",
+          "methods": [],
+          "properties": [
+            "videoUrl"
+          ],
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "ProgressStatus",
+          "methods": [],
+          "properties": [
+            "status",
+            "detail",
+            "error",
+            "final_result"
+          ],
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "subprocess",
+          "specifiers": [
+            "subprocess"
+          ]
+        },
+        {
+          "source": "asyncio",
+          "specifiers": [
+            "asyncio"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "time",
+          "specifiers": [
+            "time"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Dict",
+            "List",
+            "Tuple",
+            "Set",
+            "Optional"
+          ]
+        },
+        {
+          "source": "whisper",
+          "specifiers": [
+            "whisper"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "APIRouter",
+            "HTTPException",
+            "Request"
+          ]
+        },
+        {
+          "source": "fastapi.responses",
+          "specifiers": [
+            "StreamingResponse"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel"
+          ]
+        },
+        {
+          "source": "youtube_transcript_api",
+          "specifiers": [
+            "YouTubeTranscriptApi"
+          ]
+        },
+        {
+          "source": "youtube_transcript_api._errors",
+          "specifiers": [
+            "NoTranscriptFound",
+            "TranscriptsDisabled"
+          ]
+        },
+        {
+          "source": "dotenv",
+          "specifiers": [
+            "load_dotenv"
+          ]
+        },
+        {
+          "source": "app.api",
+          "specifiers": [
+            "frame_extraction",
+            "agentic"
+          ]
+        },
+        {
+          "source": "app.api.s3_utils",
+          "specifiers": [
+            "upload_frame_to_s3"
+          ]
+        },
+        {
+          "source": "app.db.database",
+          "specifiers": [
+            "async_session"
+          ]
+        },
+        {
+          "source": "app.db.crud",
+          "specifiers": [
+            "create_course",
+            "get_course_by_video_id"
+          ]
+        }
+      ],
+      "exports": [
+        "VideoRequest",
+        "ProgressStatus",
+        "send_progress",
+        "_run_course_generation",
+        "generate_course_request",
+        "stream_progress",
+        "save_transcript",
+        "_safe_delete",
+        "process_and_upload_frames",
+        "_get_whisper_transcript"
+      ],
+      "totalLines": 778,
+      "hasStructuralAnalysis": true
+    },
+    "backend/app/api/s3_utils.py": {
+      "filePath": "backend/app/api/s3_utils.py",
+      "contentHash": "9945a7d19d137b64e3da8333336cebf4bda947ad2b7bc2f0ea873ecb31fd0e34",
+      "functions": [
+        {
+          "name": "upload_frame_to_s3",
+          "params": [
+            "local_file_path",
+            "video_id",
+            "frame_filename"
+          ],
+          "returnType": "Union[str, None]",
+          "exported": true,
+          "lineCount": 49
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "boto3",
+          "specifiers": [
+            "boto3"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Union"
+          ]
+        },
+        {
+          "source": "botocore.exceptions",
+          "specifiers": [
+            "ClientError",
+            "NoCredentialsError"
+          ]
+        },
+        {
+          "source": "dotenv",
+          "specifiers": [
+            "load_dotenv"
+          ]
+        }
+      ],
+      "exports": [
+        "upload_frame_to_s3"
+      ],
+      "totalLines": 102,
+      "hasStructuralAnalysis": true
+    },
+    "backend/app/api/utils.py": {
+      "filePath": "backend/app/api/utils.py",
+      "contentHash": "deb55586262c65d1d93ddba4fc75c9885dc595f1795316108048bdba9c659834",
+      "functions": [
+        {
+          "name": "clean_json_string",
+          "params": [
+            "json_string_with_markdown"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 43
+        },
+        {
+          "name": "encode_image",
+          "params": [
+            "image_path"
+          ],
+          "returnType": "Optional[str]",
+          "exported": true,
+          "lineCount": 19
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Optional"
+          ]
+        },
+        {
+          "source": "base64",
+          "specifiers": [
+            "base64"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        }
+      ],
+      "exports": [
+        "clean_json_string",
+        "encode_image"
+      ],
+      "totalLines": 126,
+      "hasStructuralAnalysis": true
+    },
+    "backend/app/db/__init__.py": {
+      "filePath": "backend/app/db/__init__.py",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "backend/app/db/crud.py": {
+      "filePath": "backend/app/db/crud.py",
+      "contentHash": "0e4ecee04bb78fdb2a2444f5eb91b855a60f6220df81493df8b0dd2f012108c8",
+      "functions": [
+        {
+          "name": "create_course",
+          "params": [
+            "session",
+            "video_id",
+            "transcript_text",
+            "structured_content",
+            "course_content",
+            "quiz_content",
+            "retention_plan",
+            "status"
+          ],
+          "returnType": "Union[Course, None]",
+          "exported": true,
+          "lineCount": 65
+        },
+        {
+          "name": "update_course_status",
+          "params": [
+            "session",
+            "video_id",
+            "status"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "get_course_by_video_id",
+          "params": [
+            "session",
+            "video_id"
+          ],
+          "returnType": "Union[Course, None]",
+          "exported": true,
+          "lineCount": 13
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Dict",
+            "Union",
+            "Any"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "AsyncSession"
+          ]
+        },
+        {
+          "source": "sqlalchemy.exc",
+          "specifiers": [
+            "IntegrityError"
+          ]
+        },
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "update",
+            "select"
+          ]
+        },
+        {
+          "source": "sqlalchemy.sql",
+          "specifiers": [
+            "func"
+          ]
+        },
+        {
+          "source": "app.db.models",
+          "specifiers": [
+            "Course"
+          ]
+        }
+      ],
+      "exports": [
+        "create_course",
+        "update_course_status",
+        "get_course_by_video_id"
+      ],
+      "totalLines": 115,
+      "hasStructuralAnalysis": true
+    },
+    "backend/app/db/database.py": {
+      "filePath": "backend/app/db/database.py",
+      "contentHash": "08fdf3969043d9615692d5be2dd4966aa702903b2da21fb7200683be3c572333",
+      "functions": [
+        {
+          "name": "test_connection",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Optional"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "dotenv",
+          "specifiers": [
+            "load_dotenv"
+          ]
+        },
+        {
+          "source": "sqlalchemy.sql",
+          "specifiers": [
+            "text"
+          ]
+        },
+        {
+          "source": "sqlalchemy.ext.asyncio",
+          "specifiers": [
+            "create_async_engine",
+            "AsyncSession",
+            "AsyncEngine"
+          ]
+        },
+        {
+          "source": "sqlalchemy.orm",
+          "specifiers": [
+            "sessionmaker"
+          ]
+        }
+      ],
+      "exports": [
+        "test_connection"
+      ],
+      "totalLines": 56,
+      "hasStructuralAnalysis": true
+    },
+    "backend/app/db/models.py": {
+      "filePath": "backend/app/db/models.py",
+      "contentHash": "ea30568d6bde9066f54b2108ae40fb72209934399c8331c03ec7902df28a1b79",
+      "functions": [],
+      "classes": [
+        {
+          "name": "Course",
+          "methods": [
+            "__repr__"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 20
+        }
+      ],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "sqlalchemy",
+          "specifiers": [
+            "Column",
+            "Integer",
+            "String",
+            "Text",
+            "DateTime"
+          ]
+        },
+        {
+          "source": "sqlalchemy.dialects.postgresql",
+          "specifiers": [
+            "JSONB"
+          ]
+        },
+        {
+          "source": "sqlalchemy.orm",
+          "specifiers": [
+            "declarative_base"
+          ]
+        },
+        {
+          "source": "sqlalchemy.sql",
+          "specifiers": [
+            "func"
+          ]
+        }
+      ],
+      "exports": [
+        "Course"
+      ],
+      "totalLines": 35,
+      "hasStructuralAnalysis": true
+    },
+    "backend/app/main.py": {
+      "filePath": "backend/app/main.py",
+      "contentHash": "16ba9b7a0d6834567f263dee049ff77e4950548c4139cdf2fca661d96a3d22b6",
+      "functions": [
+        {
+          "name": "root",
+          "params": [],
+          "returnType": "Dict[str, str]",
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Dict"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "FastAPI"
+          ]
+        },
+        {
+          "source": "fastapi.middleware.cors",
+          "specifiers": [
+            "CORSMiddleware"
+          ]
+        },
+        {
+          "source": "fastapi.staticfiles",
+          "specifiers": [
+            "StaticFiles"
+          ]
+        },
+        {
+          "source": "app.api.routes",
+          "specifiers": [
+            "router"
+          ]
+        }
+      ],
+      "exports": [
+        "root"
+      ],
+      "totalLines": 43,
+      "hasStructuralAnalysis": true
+    },
+    "backend/app/sse/broadcaster.py": {
+      "filePath": "backend/app/sse/broadcaster.py",
+      "contentHash": "40334f7486678b3a77d5f27d20605b3d94c21de924fd53a96fd4374add8cbcaf",
+      "functions": [
+        {
+          "name": "format_sse",
+          "params": [
+            "data"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "classes": [
+        {
+          "name": "MessageAnnouncer",
+          "methods": [
+            "__init__",
+            "subscribe",
+            "unsubscribe",
+            "publish",
+            "get_job_status",
+            "set_job_status",
+            "clear_job"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 115
+        }
+      ],
+      "imports": [
+        {
+          "source": "asyncio",
+          "specifiers": [
+            "asyncio"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "collections",
+          "specifiers": [
+            "defaultdict"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Dict",
+            "List",
+            "Any",
+            "DefaultDict",
+            "Optional"
+          ]
+        }
+      ],
+      "exports": [
+        "MessageAnnouncer",
+        "format_sse"
+      ],
+      "totalLines": 146,
+      "hasStructuralAnalysis": true
+    },
+    "backend/requirements.txt": {
+      "filePath": "backend/requirements.txt",
+      "contentHash": "85ad4206f5a752cf0066bd4ac0a73a259585f6ad8adddb2b92eb216244d44bb8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 46,
+      "hasStructuralAnalysis": false
+    },
+    "backend/scripts/init_db.py": {
+      "filePath": "backend/scripts/init_db.py",
+      "contentHash": "291f3df1baecde4578eed3a213eed8c97047c7172ddf093bb0009d26ec14de59",
+      "functions": [
+        {
+          "name": "_wait_for_db",
+          "params": [
+            "retries",
+            "delay"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "main",
+          "params": [],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "asyncio",
+          "specifiers": [
+            "asyncio"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "app.db.models",
+          "specifiers": [
+            "app.db.models"
+          ]
+        },
+        {
+          "source": "app.db.database",
+          "specifiers": [
+            "engine"
+          ]
+        },
+        {
+          "source": "app.db.models",
+          "specifiers": [
+            "Base"
+          ]
+        }
+      ],
+      "exports": [
+        "_wait_for_db",
+        "main"
+      ],
+      "totalLines": 60,
+      "hasStructuralAnalysis": true
+    },
+    "backend/scripts/start.sh": {
+      "filePath": "backend/scripts/start.sh",
+      "contentHash": "85dda556c9abc2472478a4e8473c7db811942b4a3a79fd45845110df0479e54c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 20,
+      "hasStructuralAnalysis": true
+    },
+    "docker-compose.yml": {
+      "filePath": "docker-compose.yml",
+      "contentHash": "4e634c4ec0e9f8ef118a7d90a8bbc500ab5ae8133f690c0e3bd5d05698540227",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 160,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/.dockerignore": {
+      "filePath": "frontend/.dockerignore",
+      "contentHash": "44fde0b90957fcf685854c570083a5f0ab24778b40bde39bc21a57a6388c5b97",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 6,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/Dockerfile": {
+      "filePath": "frontend/Dockerfile",
+      "contentHash": "6907fc730d2e9f087483f947d7f27a87776a0c2a9edb71a9883ae750441b2515",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 35,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/README.md": {
+      "filePath": "frontend/README.md",
+      "contentHash": "749ba82e0f7f6528d3611c5b74870b6fe2ee98243bf84ecc3a3d8b507291a3c0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 47,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/nginx.conf": {
+      "filePath": "frontend/nginx.conf",
+      "contentHash": "940a671bfaacccdc4c5fb333f46cd2ee0d8f39935c434c81495b74bcf3d44740",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 24,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/package.json": {
+      "filePath": "frontend/package.json",
+      "contentHash": "cf0caf4960822e655330761c2c5afe38d6a984f00800133fc2c099c851550297",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 58,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/public/index.html": {
+      "filePath": "frontend/public/index.html",
+      "contentHash": "537b6b41671a14ece890d61e60c40cadc9dfb3d8bf195111eb2c77293c5d2542",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 47,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/public/manifest.json": {
+      "filePath": "frontend/public/manifest.json",
+      "contentHash": "50b3d8c3903af3f78d871b94557ab14f4e39ca192eaca3d2cfa863c867279a14",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 26,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/public/robots.txt": {
+      "filePath": "frontend/public/robots.txt",
+      "contentHash": "90d24bc3bf698ac1e173739502298ccca72adf1f564fab05f484b8c48d1cadd2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/src/App.css": {
+      "filePath": "frontend/src/App.css",
+      "contentHash": "c5ac42e56bf8c34eb741d752bc879144f186d7ca0a48fcbb73b967177f7a9240",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 39,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/src/App.test.tsx": {
+      "filePath": "frontend/src/App.test.tsx",
+      "contentHash": "1f0914ca057e799130da87a78d48021657aba67e01fcbcb50b099944ee2ea864",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "React"
+          ]
+        },
+        {
+          "source": "@testing-library/react",
+          "specifiers": [
+            "render",
+            "screen"
+          ]
+        },
+        {
+          "source": "./App",
+          "specifiers": [
+            "App"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 10,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/App.tsx": {
+      "filePath": "frontend/src/App.tsx",
+      "contentHash": "8116a788f06acd295a5d58a6f9f0db5a01993dc56f7ae92fecd7555f4668902a",
+      "functions": [
+        {
+          "name": "App",
+          "params": [],
+          "exported": false,
+          "lineCount": 10
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "React"
+          ]
+        },
+        {
+          "source": "react-router-dom",
+          "specifiers": [
+            "Router",
+            "Routes",
+            "Route"
+          ]
+        },
+        {
+          "source": "./pages/UploadPage",
+          "specifiers": [
+            "UploadPage"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 17,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/index.css": {
+      "filePath": "frontend/src/index.css",
+      "contentHash": "daf22c296c801d3d533083361cc59fbdc22e5bfe528aa4bad1973b54cc5448a4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 14,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/src/index.tsx": {
+      "filePath": "frontend/src/index.tsx",
+      "contentHash": "3406039f2208d02e99c0c41c9e429c5b559df4a32f494b5bbea4ee9c99bb437a",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "React"
+          ]
+        },
+        {
+          "source": "react-dom/client",
+          "specifiers": [
+            "ReactDOM"
+          ]
+        },
+        {
+          "source": "./index.css",
+          "specifiers": []
+        },
+        {
+          "source": "./App",
+          "specifiers": [
+            "App"
+          ]
+        },
+        {
+          "source": "./reportWebVitals",
+          "specifiers": [
+            "reportWebVitals"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 20,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/pages/UploadPage.tsx": {
+      "filePath": "frontend/src/pages/UploadPage.tsx",
+      "contentHash": "6dd3e7598ad46bc48ca1ba004d5e85cc4ebfe8f7d8d1f6ae8c872f810856fd2c",
+      "functions": [
+        {
+          "name": "UploadPage",
+          "params": [],
+          "exported": false,
+          "lineCount": 587
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "React",
+            "useState",
+            "useRef",
+            "useEffect",
+            "useCallback"
+          ]
+        },
+        {
+          "source": "@mui/material",
+          "specifiers": [
+            "Box",
+            "Tabs",
+            "Tab",
+            "Accordion",
+            "AccordionSummary",
+            "AccordionDetails",
+            "Typography",
+            "Grid",
+            "Card",
+            "CardContent",
+            "Button",
+            "LinearProgress",
+            "Snackbar",
+            "Alert",
+            "ThemeProvider",
+            "createTheme"
+          ]
+        },
+        {
+          "source": "@mui/icons-material/ExpandMore",
+          "specifiers": [
+            "ExpandMoreIcon"
+          ]
+        },
+        {
+          "source": "../services/api",
+          "specifiers": [
+            "startCourseGeneration"
+          ]
+        },
+        {
+          "source": "react-markdown",
+          "specifiers": [
+            "ReactMarkdown"
+          ]
+        },
+        {
+          "source": "remark-gfm",
+          "specifiers": [
+            "remarkGfm"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 817,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/react-app-env.d.ts": {
+      "filePath": "frontend/src/react-app-env.d.ts",
+      "contentHash": "57eda4c4c04a1dca45c62857326882ce9cc948c4b52973c0e3c3b7e4c3fa3990",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/reportWebVitals.ts": {
+      "filePath": "frontend/src/reportWebVitals.ts",
+      "contentHash": "fa208d5a5ab6d20b64122998b074707dea08d12ed619652955f77df958d85786",
+      "functions": [
+        {
+          "name": "reportWebVitals",
+          "params": [
+            "onPerfEntry"
+          ],
+          "exported": false,
+          "lineCount": 11
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "web-vitals",
+          "specifiers": [
+            "ReportHandler"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 16,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/services/api.ts": {
+      "filePath": "frontend/src/services/api.ts",
+      "contentHash": "a06b40e03248e347b4146df0511754a2edcb0448eb7f3b10bc9ee400c968d1c4",
+      "functions": [
+        {
+          "name": "startCourseGeneration",
+          "params": [
+            "videoUrl"
+          ],
+          "returnType": "Promise<AxiosResponse<StartGenerationResponse>>",
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "axios",
+          "specifiers": [
+            "axios",
+            "AxiosResponse"
+          ]
+        },
+        {
+          "source": "../pages/UploadPage",
+          "specifiers": [
+            "ParsedBackendResponse"
+          ]
+        }
+      ],
+      "exports": [
+        "startCourseGeneration"
+      ],
+      "totalLines": 28,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/src/setupTests.ts": {
+      "filePath": "frontend/src/setupTests.ts",
+      "contentHash": "22583759d0045fdf8d62c9db0aacba9fd8bddde79c671aa08c97dcfd4e930cc6",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@testing-library/jest-dom",
+          "specifiers": []
+        }
+      ],
+      "exports": [],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/tsconfig.json": {
+      "filePath": "frontend/tsconfig.json",
+      "contentHash": "cb9cee8200f8070c9e36ee74299938966d5a10718171bb671a95829b8a6b06a5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 27,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/tsconfig.tsbuildinfo": {
+      "filePath": "frontend/tsconfig.tsbuildinfo",
+      "contentHash": "cf9c900d874609a4c75a006c37ff946764b15d5fb190c13c4f6ccc73eaa8d226",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "package.json": {
+      "filePath": "package.json",
+      "contentHash": "f329ab72389882b62254093ed8dadb7d8141bbdb4de5b7e5dc8bccf6c917dafe",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    }
+  }
+}

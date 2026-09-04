@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1
 # Backend image for the YouTube -> Course generator (FastAPI + LangGraph agent).
 #
 # Python 3.10 is deliberate: the backend requirements pin set (numpy==1.23.5,
@@ -28,22 +27,24 @@ RUN apt-get update \
 
 WORKDIR /srv/backend
 
-# Install CPU-only PyTorch first so that the generic `pip install -r
-# requirements.txt` below never resolves CUDA wheels for torch / torchvision /
-# torchaudio (multi-GB downloads). The 2.2.2 trio is pinned because newer torch
-# releases require numpy>=2.x, which would fight the numpy 1.23 pin the rest of
-# the stack needs (see requirements.txt). The +cpu local versions exist only on
-# the PyTorch CPU index, so --extra-index-url picks them up while every other
-# dependency resolves from PyPI.
-# setuptools 79 + wheel + --no-build-isolation: openai-whisper ships only as an
-# sdist whose setup.py imports pkg_resources, which newer setuptools removed
-# (and pip's isolated build envs install that newer setuptools). Installing
-# setuptools 79 globally and disabling isolation makes the sdist build work.
-COPY requirements.txt ./
+# Install from the fully-pinned snapshot (requirements.freeze.txt) so the build
+# is deterministic and fast (no dependency backtracking). requirements.txt is
+# the human-readable manifest; freeze.txt is regenerated from a known-good
+# environment when the manifest changes.
+#
+# Details behind the flags:
+#  * --extra-index-url cpu: the +cpu torch/torchvision/torchaudio builds only
+#    exist on the PyTorch CPU index. We pin the 2.2.2 trio because newer torch
+#    releases require numpy>=2.x, which fights the numpy 1.23 pin the stack
+#    needs. Every other dependency resolves from PyPI.
+#  * setuptools 79 + wheel + --no-build-isolation: openai-whisper ships only as
+#    an sdist whose setup.py imports pkg_resources, which newer setuptools
+#    removed (and pip's isolated build envs install that newer setuptools).
+COPY requirements.freeze.txt ./
 RUN pip install setuptools==79.0.1 wheel \
-    && pip install --extra-index-url https://download.pytorch.org/whl/cpu \
-        torch==2.2.2+cpu torchvision==0.17.2+cpu torchaudio==2.2.2+cpu \
-    && pip install --no-build-isolation -r requirements.txt
+    && pip install --no-build-isolation \
+        --extra-index-url https://download.pytorch.org/whl/cpu \
+        -r requirements.freeze.txt
 
 # Application code (absolute imports expect `app` on sys.path, hence WORKDIR
 # /srv/backend with ./app) plus container helper scripts.

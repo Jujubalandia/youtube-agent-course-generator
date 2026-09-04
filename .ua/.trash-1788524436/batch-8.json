@@ -1,0 +1,41 @@
+{
+  "nodes": [
+    {
+      "id": "file:frontend/public/index.html",
+      "type": "file",
+      "name": "index.html",
+      "filePath": "frontend/public/index.html",
+      "summary": "HTML shell template for the React frontend (Create React App), providing the root mount div, manifest/favicon links, and Google Fonts (Inter) preconnect tags into which the bundled JS is injected at build time.",
+      "tags": ["entry-point", "markup", "html-template", "react-shell"],
+      "complexity": "simple",
+      "languageNotes": "Standard Create React App public/index.html with %PUBLIC_URL% placeholder substitution during build."
+    },
+    {
+      "id": "config:frontend/public/manifest.json",
+      "type": "config",
+      "name": "manifest.json",
+      "filePath": "frontend/public/manifest.json",
+      "summary": "Web app manifest declaring PWA metadata (app name, icons, theme/background colors, start URL) for when the frontend is installed on a mobile or desktop device.",
+      "tags": ["configuration", "pwa", "manifest", "metadata"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:frontend/public/robots.txt",
+      "type": "document",
+      "name": "robots.txt",
+      "filePath": "frontend/public/robots.txt",
+      "summary": "Search engine crawler policy allowing all user agents unrestricted access to the site (no paths disallowed).",
+      "tags": ["documentation", "seo", "crawler-policy"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "config:frontend/public/manifest.json",
+      "target": "file:frontend/public/index.html",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

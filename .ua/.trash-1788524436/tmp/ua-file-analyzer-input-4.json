@@ -1,0 +1,11 @@
+{
+  "projectRoot": "/home/bera/deep-harn",
+  "batchFiles": [
+    {"path": "backend/.dockerignore", "language": "unknown", "sizeLines": 11, "fileCategory": "infra"},
+    {"path": "backend/Dockerfile", "language": "dockerfile", "sizeLines": 55, "fileCategory": "infra"}
+  ],
+  "batchImportData": {
+    "backend/.dockerignore": [],
+    "backend/Dockerfile": []
+  }
+}

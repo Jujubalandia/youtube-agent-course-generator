@@ -1,0 +1,211 @@
+{
+  "nodes": [
+    {
+      "id": "config:.env.example",
+      "type": "config",
+      "name": ".env.example",
+      "filePath": ".env.example",
+      "summary": "Template environment file listing required and optional variables for the docker-compose stack: LLM API keys (Gemini, Groq), Postgres credentials, MinIO/S3 storage settings, and the frontend API base URL.",
+      "tags": ["configuration", "environment-variables", "secrets", "docker"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Project README for the Docker-Compose launcher of the YouTube Video to Structured Course Generator, covering quick start, usage, .env configuration, changes made vs. the upstream project, troubleshooting, and manual (non-Docker) development instructions.",
+      "tags": ["documentation", "entry-point", "quick-start", "overview"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "service:docker-compose.yml",
+      "type": "service",
+      "name": "docker-compose.yml",
+      "filePath": "docker-compose.yml",
+      "summary": "Docker Compose stack definition that launches the full local application: Postgres for persistence, MinIO for S3-compatible frame storage plus a bucket-init job, Jaeger for tracing, the FastAPI/LangGraph backend with a DB-init job, and the nginx-served React frontend.",
+      "tags": ["orchestration", "infrastructure", "containerization", "docker-compose"],
+      "complexity": "complex",
+      "languageNotes": "Uses depends_on with service_healthy/service_completed_successfully conditions to sequence one-shot init containers (minio-init, backend-init) ahead of the services that need them."
+    },
+    {
+      "id": "config:package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "package.json",
+      "summary": "Minimal root-level npm manifest declaring a single dependency, remark-breaks, likely used for markdown line-break rendering somewhere in the project's tooling or frontend.",
+      "tags": ["configuration", "npm", "dependencies"],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:docker-compose.yml:postgres",
+      "type": "service",
+      "name": "postgres",
+      "filePath": "docker-compose.yml",
+      "summary": "Postgres 16 Alpine database service providing course/JSONB persistence, with a healthcheck gating dependent services.",
+      "tags": ["database", "infrastructure"],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:docker-compose.yml:minio",
+      "type": "service",
+      "name": "minio",
+      "filePath": "docker-compose.yml",
+      "summary": "MinIO service providing local S3-compatible object storage for extracted video frame images, exposing the S3 API and web console.",
+      "tags": ["storage", "infrastructure", "s3"],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:docker-compose.yml:minio-init",
+      "type": "service",
+      "name": "minio-init",
+      "filePath": "docker-compose.yml",
+      "summary": "One-shot bootstrap job that waits for MinIO to be healthy, creates the storage bucket, and sets it to public-read for local image serving.",
+      "tags": ["initialization", "infrastructure", "s3"],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:docker-compose.yml:jaeger",
+      "type": "service",
+      "name": "jaeger",
+      "filePath": "docker-compose.yml",
+      "summary": "Jaeger all-in-one service acting as the OpenTelemetry/OTLP trace collector and UI for the stack.",
+      "tags": ["observability", "tracing", "infrastructure"],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:docker-compose.yml:backend",
+      "type": "service",
+      "name": "backend",
+      "filePath": "docker-compose.yml",
+      "summary": "FastAPI + LangGraph agent backend service, built from ./backend, wired to Postgres, MinIO/S3, and Jaeger via environment variables, exposed on port 8000.",
+      "tags": ["backend", "api", "infrastructure"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "service:docker-compose.yml:backend-init",
+      "type": "service",
+      "name": "backend-init",
+      "filePath": "docker-compose.yml",
+      "summary": "One-shot database schema initialization job that runs scripts/init_db.py against the backend image to create the courses table once Postgres is healthy.",
+      "tags": ["initialization", "database", "infrastructure"],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:docker-compose.yml:frontend",
+      "type": "service",
+      "name": "frontend",
+      "filePath": "docker-compose.yml",
+      "summary": "React SPA built from ./frontend and served by nginx on port 3000, configured with the backend API base URL at build time.",
+      "tags": ["frontend", "infrastructure", "nginx"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "service:docker-compose.yml",
+      "target": "service:docker-compose.yml:postgres",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:docker-compose.yml",
+      "target": "service:docker-compose.yml:minio",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:docker-compose.yml",
+      "target": "service:docker-compose.yml:minio-init",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:docker-compose.yml",
+      "target": "service:docker-compose.yml:jaeger",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:docker-compose.yml",
+      "target": "service:docker-compose.yml:backend",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:docker-compose.yml",
+      "target": "service:docker-compose.yml:backend-init",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:docker-compose.yml",
+      "target": "service:docker-compose.yml:frontend",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:docker-compose.yml:minio-init",
+      "target": "service:docker-compose.yml:minio",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:docker-compose.yml:backend",
+      "target": "service:docker-compose.yml:postgres",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:docker-compose.yml:backend",
+      "target": "service:docker-compose.yml:minio-init",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:docker-compose.yml:backend-init",
+      "target": "service:docker-compose.yml:postgres",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:docker-compose.yml:frontend",
+      "target": "service:docker-compose.yml:backend",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:.env.example",
+      "target": "service:docker-compose.yml",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:README.md",
+      "target": "service:docker-compose.yml",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "config:.env.example",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

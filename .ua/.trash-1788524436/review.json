@@ -1,0 +1,43 @@
+{
+  "issues": [],
+  "warnings": [
+    "Node 'config:package.json' has no edges (orphan)",
+    "Node 'document:frontend/public/robots.txt' has no edges (orphan)",
+    "Node 'config:.serena/project.yml' has no edges (orphan)",
+    "Node 'file:.ua/.understandignore' has no edges (orphan)",
+    "Node 'file:backend/app/__init__.py' has no edges (orphan)",
+    "Node 'file:backend/app/db/__init__.py' has no edges (orphan)",
+    "Node 'document:backend/requirements.txt' has no edges (orphan)",
+    "Node 'file:frontend/nginx.conf' has no edges (orphan)",
+    "Node 'file:frontend/src/App.css' has no edges (orphan)",
+    "Node 'file:frontend/src/react-app-env.d.ts' has no edges (orphan)",
+    "Node 'file:frontend/src/setupTests.ts' has no edges (orphan)",
+    "Node 'file:frontend/tsconfig.tsbuildinfo' has no edges (orphan)"
+  ],
+  "stats": {
+    "totalNodes": 97,
+    "totalEdges": 162,
+    "totalLayers": 6,
+    "tourSteps": 14,
+    "nodeTypes": {
+      "file": 29,
+      "function": 39,
+      "class": 5,
+      "service": 14,
+      "config": 6,
+      "document": 4
+    },
+    "edgeTypes": {
+      "imports": 18,
+      "contains": 46,
+      "exports": 44,
+      "calls": 32,
+      "tested_by": 1,
+      "related": 2,
+      "deploys": 1,
+      "depends_on": 13,
+      "configures": 2,
+      "documents": 3
+    }
+  }
+}

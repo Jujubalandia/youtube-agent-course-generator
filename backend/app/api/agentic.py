@@ -48,6 +48,11 @@ if not gemini_api_key:
 if not groq_api_key:
     raise ValueError("GROQ_API_KEY environment variable not set.")
 
+# Model names are configurable so a retired model (e.g. the original
+# `gemini-1.5-flash`) can be swapped without a code change.
+gemini_model = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+groq_model = os.environ.get("GROQ_MODEL", "meta-llama/llama-4-scout-17b-16e-instruct")
+
 resource = Resource(attributes={
     SERVICE_NAME: "video-to-course-agent"
 })
@@ -70,18 +75,18 @@ class GraphState(TypedDict):
     retention_plan: Dict
 
 gemini_llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash",
+    model=gemini_model,
     temperature=0.7,
     google_api_key=gemini_api_key
 )
-logger.info("Initialized ChatGoogleGenerativeAI with model gemini-1.5-flash.")
+logger.info("Initialized ChatGoogleGenerativeAI with model %s.", gemini_model)
 
 groq_llm = ChatGroq(
-    model="meta-llama/llama-4-scout-17b-16e-instruct",
+    model=groq_model,
     temperature=0.7,
     api_key=groq_api_key
 )
-logger.info("Initialized Groq with meta-llama/llama-4-scout-17b-16e-instruct.")
+logger.info("Initialized Groq with %s.", groq_model)
 
 memory = MemorySaver()
 

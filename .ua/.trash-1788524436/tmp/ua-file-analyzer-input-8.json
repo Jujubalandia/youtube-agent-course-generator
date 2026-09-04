@@ -1,0 +1,13 @@
+{
+  "projectRoot": "/home/bera/deep-harn",
+  "batchFiles": [
+    {"path": "frontend/public/index.html", "language": "html", "sizeLines": 46, "fileCategory": "markup"},
+    {"path": "frontend/public/manifest.json", "language": "json", "sizeLines": 25, "fileCategory": "config"},
+    {"path": "frontend/public/robots.txt", "language": "txt", "sizeLines": 3, "fileCategory": "docs"}
+  ],
+  "batchImportData": {
+    "frontend/public/index.html": [],
+    "frontend/public/manifest.json": [],
+    "frontend/public/robots.txt": []
+  }
+}

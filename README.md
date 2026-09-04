@@ -13,6 +13,7 @@ original README with a reproducible full stack:
 | `frontend`    | React (CRA) SPA, served by nginx                                   | http://localhost:3000          |
 | `backend`     | FastAPI + LangGraph agent (Python 3.10, CPU PyTorch)               | http://localhost:8000          |
 | `postgres`    | Course / quiz / retention persistence (JSONB)                      | internal only                  |
+| `mongo`       | MongoDB used by FiftyOne's keyframe-uniqueness step                | internal only                  |
 | `minio`       | Local S3-compatible storage for extracted frame images             | http://localhost:9000 (API), http://localhost:9001 (console) |
 | `jaeger`      | OpenTelemetry collector + UI (traces for LLM generations)          | http://localhost:16686         |
 
@@ -87,7 +88,8 @@ the original behavior):
 | File | Change |
 |------|--------|
 | `backend/app/api/s3_utils.py` | Honors `S3_ENDPOINT_URL` / `S3_PUBLIC_URL` so frames can go to self-hosted MinIO (path-style) instead of only real AWS S3. |
-| `backend/requirements.txt` | Replaced an unsatisfiable pin set (`scipy>=1.16.5,<1.23` + `numpy<1.23` + `numba==0.56.4` cannot co-exist on any Python) with a consistent Python-3.10 set; added `opencv-python-headless` + `av` (scenedetect video backends that upstream only had transitively). |
+| `backend/app/api/routes.py` | Robust YouTube video-id extraction (`youtu.be/…`, `watch?v=…`, `shorts`, `live`, `embed`, `?si=` etc.) and a Whisper fallback when the transcript API returns empty/broken XML. |
+| `backend/requirements.txt` | Replaced an unsatisfiable pin set (`scipy>=1.16.5,<1.23` + `numpy<1.23` + `numba==0.56.4` cannot co-exist on any Python) with a consistent Python-3.10 set; pinned `scenedetect==0.6.6` (0.7.x removed the `VideoManager`/`SceneManager` API the code uses); added `opencv-python-headless` + `av` (video backends). `requirements.freeze.txt` is the fully-pinned snapshot the image actually builds from (fast/deterministic). |
 | `frontend/src/services/api.ts`, `frontend/src/pages/UploadPage.tsx` | API/SSE base URL comes from `REACT_APP_API_BASE_URL` (default unchanged). |
 | `backend/scripts/init_db.py` | One-shot schema initializer — upstream never ran `create_all`, so the `courses` table is now created on first start (`backend-init` service). |
 | `backend/scripts/start.sh` | Preflight import check (torch/FiftyOne/agent) then `uvicorn` (single worker). |
@@ -112,6 +114,12 @@ the original behavior):
   downloads the `base` model on first use into the `whisper_cache` volume; this
   needs internet at that moment.
 - **Backend must reach the internet** at runtime (YouTube, Gemini, Groq).
+- **LLM model names.** The agent's models are env-configurable: `GEMINI_MODEL`
+  (default `gemini-2.5-flash`; Google retired the original `gemini-1.5-flash`)
+  and `GROQ_MODEL` (default `meta-llama/llama-4-scout-17b-16e-instruct`). If a
+  provider retires/renames a model, set the matching value in `.env` and restart
+  with `docker compose up -d backend`. Frame selection sends images to Groq, so
+  keep a **vision-capable** Groq model there.
 - **Rebuild after editing code**: `docker compose up -d --build backend frontend`.
 - **Reset everything**: `docker compose down -v` (drops Postgres + MinIO data).
 

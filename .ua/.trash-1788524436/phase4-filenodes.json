@@ -1,0 +1,684 @@
+[
+  {
+    "id": "file:frontend/src/App.test.tsx",
+    "type": "file",
+    "name": "App.test.tsx",
+    "filePath": "frontend/src/App.test.tsx",
+    "summary": "Default Create React App smoke test that renders the App component and asserts a 'learn react' link is present; a leftover CRA template test not updated for this project's actual UI.",
+    "tags": [
+      "test",
+      "smoke-test",
+      "react",
+      "unmodified-boilerplate"
+    ]
+  },
+  {
+    "id": "file:frontend/src/App.tsx",
+    "type": "file",
+    "name": "App.tsx",
+    "filePath": "frontend/src/App.tsx",
+    "summary": "Root application component that sets up React Router and routes the single '/' path to the UploadPage component.",
+    "tags": [
+      "entry-point",
+      "routing",
+      "component",
+      "react",
+      "tested"
+    ]
+  },
+  {
+    "id": "file:frontend/src/index.tsx",
+    "type": "file",
+    "name": "index.tsx",
+    "filePath": "frontend/src/index.tsx",
+    "summary": "CRA bootstrap file that mounts the App component into the DOM root element inside React.StrictMode and kicks off web-vitals reporting.",
+    "tags": [
+      "entry-point",
+      "bootstrap",
+      "react",
+      "dom-mount"
+    ]
+  },
+  {
+    "id": "file:frontend/src/pages/UploadPage.tsx",
+    "type": "file",
+    "name": "UploadPage.tsx",
+    "filePath": "frontend/src/pages/UploadPage.tsx",
+    "summary": "Main and only application page: lets a user submit a YouTube URL, triggers course generation via the backend API, streams live progress over Server-Sent Events, and renders the resulting course content, quiz, and retention-plan tabs using Material UI.",
+    "tags": [
+      "component",
+      "api-handler",
+      "event-handler",
+      "sse",
+      "material-ui"
+    ]
+  },
+  {
+    "id": "file:frontend/src/reportWebVitals.ts",
+    "type": "file",
+    "name": "reportWebVitals.ts",
+    "filePath": "frontend/src/reportWebVitals.ts",
+    "summary": "CRA performance-measurement helper that lazily loads the web-vitals library and reports Core Web Vitals metrics (CLS, FID, FCP, LCP, TTFB) to a caller-supplied callback.",
+    "tags": [
+      "utility",
+      "performance",
+      "monitoring"
+    ]
+  },
+  {
+    "id": "file:frontend/src/services/api.ts",
+    "type": "file",
+    "name": "api.ts",
+    "filePath": "frontend/src/services/api.ts",
+    "summary": "Thin Axios-based API client that kicks off course generation on the backend by POSTing a YouTube video URL to /api/generate-course, with the base URL configurable via REACT_APP_API_BASE_URL.",
+    "tags": [
+      "service",
+      "api-handler",
+      "http-client"
+    ]
+  },
+  {
+    "id": "file:backend/app/api/__init__.py",
+    "type": "file",
+    "name": "__init__.py",
+    "filePath": "backend/app/api/__init__.py",
+    "summary": "Empty package marker that makes the api directory importable as the backend.app.api Python package.",
+    "tags": [
+      "package-init",
+      "empty-file",
+      "python-package"
+    ]
+  },
+  {
+    "id": "file:backend/app/api/frame_extraction.py",
+    "type": "file",
+    "name": "frame_extraction.py",
+    "filePath": "backend/app/api/frame_extraction.py",
+    "summary": "Video processing pipeline that downloads a YouTube video via yt-dlp, detects scene boundaries, extracts and optimizes keyframes, loads them into a FiftyOne dataset to select visually unique frames, and aligns the selected frames to transcript timestamps.",
+    "tags": [
+      "video-processing",
+      "utility",
+      "computer-vision",
+      "pipeline"
+    ]
+  },
+  {
+    "id": "file:backend/app/api/routes.py",
+    "type": "file",
+    "name": "routes.py",
+    "filePath": "backend/app/api/routes.py",
+    "summary": "Core FastAPI router for the course-generation feature: exposes endpoints to kick off course generation from a YouTube URL and to stream progress over SSE, orchestrating transcript fetching (with Whisper fallback), frame extraction, the LangGraph agent pipeline, S3 frame uploads, and course persistence.",
+    "tags": [
+      "api-handler",
+      "entry-point",
+      "orchestration",
+      "streaming",
+      "background-task"
+    ]
+  },
+  {
+    "id": "file:backend/app/api/s3_utils.py",
+    "type": "file",
+    "name": "s3_utils.py",
+    "filePath": "backend/app/api/s3_utils.py",
+    "summary": "Initializes a boto3 S3 (or S3-compatible, e.g. MinIO) client from environment variables and provides a helper to upload a local keyframe file to the configured bucket, returning its public URL.",
+    "tags": [
+      "storage",
+      "s3",
+      "utility",
+      "aws"
+    ]
+  },
+  {
+    "id": "file:backend/app/main.py",
+    "type": "file",
+    "name": "main.py",
+    "filePath": "backend/app/main.py",
+    "summary": "FastAPI application entry point: creates the app, configures CORS, mounts the local frames directory as static files, and registers the API router under /api.",
+    "tags": [
+      "entry-point",
+      "fastapi",
+      "bootstrap",
+      "middleware"
+    ]
+  },
+  {
+    "id": "file:backend/app/db/crud.py",
+    "type": "file",
+    "name": "crud.py",
+    "filePath": "backend/app/db/crud.py",
+    "summary": "Async CRUD layer for the courses table: creates a new Course record (with IntegrityError handling for duplicate video IDs), updates a course's status, and fetches a course by YouTube video ID.",
+    "tags": [
+      "data-model",
+      "service",
+      "database",
+      "async"
+    ]
+  },
+  {
+    "id": "file:backend/app/db/database.py",
+    "type": "file",
+    "name": "database.py",
+    "filePath": "backend/app/db/database.py",
+    "summary": "Configures the SQLAlchemy async engine and session factory from the DATABASE_URL environment variable, and exposes a test_connection helper used to verify database connectivity at startup.",
+    "tags": [
+      "config",
+      "database",
+      "entry-point",
+      "service"
+    ]
+  },
+  {
+    "id": "file:backend/app/db/models.py",
+    "type": "file",
+    "name": "models.py",
+    "filePath": "backend/app/db/models.py",
+    "summary": "Defines the SQLAlchemy declarative Base and the Course ORM model storing generated course data (transcript, structured content, course content with S3 frame URLs, quiz content, retention plan, and status).",
+    "tags": [
+      "data-model",
+      "database",
+      "schema-definition"
+    ]
+  },
+  {
+    "id": "file:backend/scripts/init_db.py",
+    "type": "file",
+    "name": "init_db.py",
+    "filePath": "backend/scripts/init_db.py",
+    "summary": "One-shot database initializer run by the backend-init compose service: polls the configured DATABASE_URL until Postgres accepts connections, then idempotently creates any missing tables via Base.metadata.create_all.",
+    "tags": [
+      "entry-point",
+      "database",
+      "migration",
+      "script"
+    ]
+  },
+  {
+    "id": "service:backend/Dockerfile",
+    "type": "service",
+    "name": "Dockerfile",
+    "filePath": "backend/Dockerfile",
+    "summary": "Single-stage Docker build for the FastAPI + LangGraph backend, pinned to Python 3.10-slim for numpy/numba wheel compatibility, installing CPU-only PyTorch from a dedicated index before the rest of requirements.txt, then copying in the app and scripts directories and launching via scripts/start.sh on port 8000.",
+    "tags": [
+      "containerization",
+      "infrastructure",
+      "deployment",
+      "python",
+      "build-system"
+    ]
+  },
+  {
+    "id": "service:backend/.dockerignore",
+    "type": "service",
+    "name": ".dockerignore",
+    "filePath": "backend/.dockerignore",
+    "summary": "Excludes caches, virtualenvs, git metadata, and generated artifacts (frames/, transcripts/, logs) from the backend Docker build context to keep image builds small and deterministic.",
+    "tags": [
+      "infrastructure",
+      "containerization",
+      "build-context",
+      "configuration"
+    ]
+  },
+  {
+    "id": "service:frontend/.dockerignore",
+    "type": "service",
+    "name": ".dockerignore",
+    "filePath": "frontend/.dockerignore",
+    "summary": "Excludes node_modules, build output, .git, and log/OS artifacts from the Docker build context for the frontend image, keeping image builds fast and reproducible.",
+    "tags": [
+      "containerization",
+      "infrastructure",
+      "build-context",
+      "docker"
+    ]
+  },
+  {
+    "id": "service:frontend/Dockerfile",
+    "type": "service",
+    "name": "Dockerfile",
+    "filePath": "frontend/Dockerfile",
+    "summary": "Multi-stage Docker build that compiles the CRA (react-scripts 5) frontend with node:20-alpine and serves the resulting static bundle from nginx:1.27-alpine on port 80.",
+    "tags": [
+      "containerization",
+      "infrastructure",
+      "deployment",
+      "multi-stage-build",
+      "frontend"
+    ]
+  },
+  {
+    "id": "service:frontend/Dockerfile:build",
+    "type": "service",
+    "name": "build",
+    "filePath": "frontend/Dockerfile",
+    "summary": "Build stage on node:20-alpine: installs dependencies with npm ci --legacy-peer-deps, copies public/src/tsconfig.json, bakes REACT_APP_API_BASE_URL, and runs npm run build to produce the static bundle.",
+    "tags": [
+      "build-stage",
+      "npm",
+      "react",
+      "docker"
+    ]
+  },
+  {
+    "id": "service:frontend/Dockerfile:nginx",
+    "type": "service",
+    "name": "nginx",
+    "filePath": "frontend/Dockerfile",
+    "summary": "Runtime stage on nginx:1.27-alpine: installs a custom nginx.conf and copies the built static bundle from the build stage, exposing port 80 to serve the frontend.",
+    "tags": [
+      "nginx",
+      "static-hosting",
+      "docker",
+      "runtime-stage"
+    ]
+  },
+  {
+    "id": "config:.env.example",
+    "type": "config",
+    "name": ".env.example",
+    "filePath": ".env.example",
+    "summary": "Template environment file listing required and optional variables for the docker-compose stack: LLM API keys (Gemini, Groq), Postgres credentials, MinIO/S3 storage settings, and the frontend API base URL.",
+    "tags": [
+      "configuration",
+      "environment-variables",
+      "secrets",
+      "docker"
+    ]
+  },
+  {
+    "id": "document:README.md",
+    "type": "document",
+    "name": "README.md",
+    "filePath": "README.md",
+    "summary": "Project README for the Docker-Compose launcher of the YouTube Video to Structured Course Generator, covering quick start, usage, .env configuration, changes made vs. the upstream project, troubleshooting, and manual (non-Docker) development instructions.",
+    "tags": [
+      "documentation",
+      "entry-point",
+      "quick-start",
+      "overview"
+    ]
+  },
+  {
+    "id": "service:docker-compose.yml",
+    "type": "service",
+    "name": "docker-compose.yml",
+    "filePath": "docker-compose.yml",
+    "summary": "Docker Compose stack definition that launches the full local application: Postgres for persistence, MinIO for S3-compatible frame storage plus a bucket-init job, Jaeger for tracing, the FastAPI/LangGraph backend with a DB-init job, and the nginx-served React frontend.",
+    "tags": [
+      "orchestration",
+      "infrastructure",
+      "containerization",
+      "docker-compose"
+    ]
+  },
+  {
+    "id": "config:package.json",
+    "type": "config",
+    "name": "package.json",
+    "filePath": "package.json",
+    "summary": "Minimal root-level npm manifest declaring a single dependency, remark-breaks, likely used for markdown line-break rendering somewhere in the project's tooling or frontend.",
+    "tags": [
+      "configuration",
+      "npm",
+      "dependencies"
+    ]
+  },
+  {
+    "id": "service:docker-compose.yml:postgres",
+    "type": "service",
+    "name": "postgres",
+    "filePath": "docker-compose.yml",
+    "summary": "Postgres 16 Alpine database service providing course/JSONB persistence, with a healthcheck gating dependent services.",
+    "tags": [
+      "database",
+      "infrastructure"
+    ]
+  },
+  {
+    "id": "service:docker-compose.yml:minio",
+    "type": "service",
+    "name": "minio",
+    "filePath": "docker-compose.yml",
+    "summary": "MinIO service providing local S3-compatible object storage for extracted video frame images, exposing the S3 API and web console.",
+    "tags": [
+      "storage",
+      "infrastructure",
+      "s3"
+    ]
+  },
+  {
+    "id": "service:docker-compose.yml:minio-init",
+    "type": "service",
+    "name": "minio-init",
+    "filePath": "docker-compose.yml",
+    "summary": "One-shot bootstrap job that waits for MinIO to be healthy, creates the storage bucket, and sets it to public-read for local image serving.",
+    "tags": [
+      "initialization",
+      "infrastructure",
+      "s3"
+    ]
+  },
+  {
+    "id": "service:docker-compose.yml:jaeger",
+    "type": "service",
+    "name": "jaeger",
+    "filePath": "docker-compose.yml",
+    "summary": "Jaeger all-in-one service acting as the OpenTelemetry/OTLP trace collector and UI for the stack.",
+    "tags": [
+      "observability",
+      "tracing",
+      "infrastructure"
+    ]
+  },
+  {
+    "id": "service:docker-compose.yml:backend",
+    "type": "service",
+    "name": "backend",
+    "filePath": "docker-compose.yml",
+    "summary": "FastAPI + LangGraph agent backend service, built from ./backend, wired to Postgres, MinIO/S3, and Jaeger via environment variables, exposed on port 8000.",
+    "tags": [
+      "backend",
+      "api",
+      "infrastructure"
+    ]
+  },
+  {
+    "id": "service:docker-compose.yml:backend-init",
+    "type": "service",
+    "name": "backend-init",
+    "filePath": "docker-compose.yml",
+    "summary": "One-shot database schema initialization job that runs scripts/init_db.py against the backend image to create the courses table once Postgres is healthy.",
+    "tags": [
+      "initialization",
+      "database",
+      "infrastructure"
+    ]
+  },
+  {
+    "id": "service:docker-compose.yml:frontend",
+    "type": "service",
+    "name": "frontend",
+    "filePath": "docker-compose.yml",
+    "summary": "React SPA built from ./frontend and served by nginx on port 3000, configured with the backend API base URL at build time.",
+    "tags": [
+      "frontend",
+      "infrastructure",
+      "nginx"
+    ]
+  },
+  {
+    "id": "document:frontend/README.md",
+    "type": "document",
+    "name": "README.md",
+    "filePath": "frontend/README.md",
+    "summary": "Default Create React App boilerplate README for the frontend, documenting the standard npm scripts (start, test, build, eject) and links to CRA/React learning resources.",
+    "tags": [
+      "documentation",
+      "frontend",
+      "create-react-app",
+      "getting-started"
+    ]
+  },
+  {
+    "id": "config:frontend/package.json",
+    "type": "config",
+    "name": "package.json",
+    "filePath": "frontend/package.json",
+    "summary": "npm manifest for the React/TypeScript frontend, declaring dependencies (React 19, MUI, axios, react-router-dom, react-player, react-markdown, dompurify) and the CRA-based start/build/test/eject scripts.",
+    "tags": [
+      "configuration",
+      "npm",
+      "dependencies",
+      "react",
+      "build-system"
+    ]
+  },
+  {
+    "id": "config:frontend/tsconfig.json",
+    "type": "config",
+    "name": "tsconfig.json",
+    "filePath": "frontend/tsconfig.json",
+    "summary": "TypeScript compiler configuration for the frontend, enabling standard CRA-generated strict/JSX/module settings and scoping compilation to the src directory.",
+    "tags": [
+      "configuration",
+      "typescript",
+      "compiler-options",
+      "frontend"
+    ]
+  },
+  {
+    "id": "file:frontend/public/index.html",
+    "type": "file",
+    "name": "index.html",
+    "filePath": "frontend/public/index.html",
+    "summary": "HTML shell template for the React frontend (Create React App), providing the root mount div, manifest/favicon links, and Google Fonts (Inter) preconnect tags into which the bundled JS is injected at build time.",
+    "tags": [
+      "entry-point",
+      "markup",
+      "html-template",
+      "react-shell"
+    ]
+  },
+  {
+    "id": "config:frontend/public/manifest.json",
+    "type": "config",
+    "name": "manifest.json",
+    "filePath": "frontend/public/manifest.json",
+    "summary": "Web app manifest declaring PWA metadata (app name, icons, theme/background colors, start URL) for when the frontend is installed on a mobile or desktop device.",
+    "tags": [
+      "configuration",
+      "pwa",
+      "manifest",
+      "metadata"
+    ]
+  },
+  {
+    "id": "document:frontend/public/robots.txt",
+    "type": "document",
+    "name": "robots.txt",
+    "filePath": "frontend/public/robots.txt",
+    "summary": "Search engine crawler policy allowing all user agents unrestricted access to the site (no paths disallowed).",
+    "tags": [
+      "documentation",
+      "seo",
+      "crawler-policy"
+    ]
+  },
+  {
+    "id": "config:.serena/project.yml",
+    "type": "config",
+    "name": "project.yml",
+    "filePath": ".serena/project.yml",
+    "summary": "Serena MCP project configuration defining language servers, workspace folders, ignored paths, tool exclusions, and default operating modes for the deep-harn repository.",
+    "tags": [
+      "configuration",
+      "tooling",
+      "mcp",
+      "serena"
+    ]
+  },
+  {
+    "id": "file:.ua/.understandignore",
+    "type": "file",
+    "name": ".understandignore",
+    "filePath": ".ua/.understandignore",
+    "summary": "Template ignore-pattern file for the Understand-Anything analysis tool, listing commented-out glob patterns (from .gitignore conventions and common test-file naming) that can be uncommented to exclude paths from codebase analysis.",
+    "tags": [
+      "configuration",
+      "tooling",
+      "ignore-patterns",
+      "understand-anything"
+    ]
+  },
+  {
+    "id": "file:backend/app/__init__.py",
+    "type": "file",
+    "name": "__init__.py",
+    "filePath": "backend/app/__init__.py",
+    "summary": "Empty Python package marker file that makes backend/app importable as a package.",
+    "tags": [
+      "package-marker",
+      "python",
+      "empty"
+    ]
+  },
+  {
+    "id": "file:backend/app/api/agentic.py",
+    "type": "file",
+    "name": "agentic.py",
+    "filePath": "backend/app/api/agentic.py",
+    "summary": "LangGraph agent pipeline that turns a lecture transcript and extracted video frames into a structured multi-module course \u2014 orchestrating Gemini/Groq LLM calls (with tenacity retry and OpenTelemetry tracing) across content structuring, frame selection, course content generation, quiz creation, and spaced-retention plan design.",
+    "tags": [
+      "langgraph",
+      "llm-pipeline",
+      "agentic",
+      "api-handler",
+      "opentelemetry"
+    ]
+  },
+  {
+    "id": "file:backend/app/api/utils.py",
+    "type": "file",
+    "name": "utils.py",
+    "filePath": "backend/app/api/utils.py",
+    "summary": "Small utility module providing LLM-output JSON cleanup (stripping markdown code fences) and base64 image encoding helpers used by the agentic course-generation pipeline.",
+    "tags": [
+      "utility",
+      "json-parsing",
+      "image-encoding",
+      "helper"
+    ]
+  },
+  {
+    "id": "file:backend/app/db/__init__.py",
+    "type": "file",
+    "name": "__init__.py",
+    "filePath": "backend/app/db/__init__.py",
+    "summary": "Empty Python package marker file for the backend/app/db package.",
+    "tags": [
+      "package-marker",
+      "python",
+      "empty",
+      "database"
+    ]
+  },
+  {
+    "id": "file:backend/app/sse/broadcaster.py",
+    "type": "file",
+    "name": "broadcaster.py",
+    "filePath": "backend/app/sse/broadcaster.py",
+    "summary": "In-memory Server-Sent Events broadcaster (MessageAnnouncer) that manages per-job async queues for progress subscribers, publishes JSON-formatted progress events, and tracks job status for the course-generation SSE stream.",
+    "tags": [
+      "sse",
+      "real-time",
+      "broadcaster",
+      "async",
+      "event-handler"
+    ]
+  },
+  {
+    "id": "document:backend/requirements.txt",
+    "type": "document",
+    "name": "requirements.txt",
+    "filePath": "backend/requirements.txt",
+    "summary": "Python dependency manifest for the backend service, pinning FastAPI/uvicorn, LangChain/LangGraph with Gemini and Groq integrations, video/audio processing libraries (yt-dlp, opencv, whisper, scenedetect, fiftyone), OpenTelemetry instrumentation, and PostgreSQL/S3 clients, with inline notes explaining resolved version conflicts.",
+    "tags": [
+      "dependencies",
+      "python",
+      "build-system",
+      "documentation"
+    ]
+  },
+  {
+    "id": "file:backend/scripts/start.sh",
+    "type": "file",
+    "name": "start.sh",
+    "filePath": "backend/scripts/start.sh",
+    "summary": "Container entrypoint script that runs a preflight import check of the heavy dependency stack (fiftyone, the LangGraph agent, the FastAPI app) before launching uvicorn as a single worker on port 8000, since in-memory progress queues require a single process.",
+    "tags": [
+      "entry-point",
+      "shell-script",
+      "containerization",
+      "deployment"
+    ]
+  },
+  {
+    "id": "file:frontend/nginx.conf",
+    "type": "file",
+    "name": "nginx.conf",
+    "filePath": "frontend/nginx.conf",
+    "summary": "Nginx server configuration serving the built React SPA \u2014 enables gzip compression, sets long-lived immutable caching for hashed static assets, and falls back all unmatched routes to index.html for client-side routing.",
+    "tags": [
+      "nginx",
+      "spa",
+      "static-assets",
+      "configuration"
+    ]
+  },
+  {
+    "id": "file:frontend/src/App.css",
+    "type": "file",
+    "name": "App.css",
+    "filePath": "frontend/src/App.css",
+    "summary": "Default Create React App stylesheet for the root App component, providing the boilerplate centered layout, spinning logo animation, and header styling from the CRA template.",
+    "tags": [
+      "css",
+      "styling",
+      "boilerplate",
+      "create-react-app"
+    ]
+  },
+  {
+    "id": "file:frontend/src/index.css",
+    "type": "file",
+    "name": "index.css",
+    "filePath": "frontend/src/index.css",
+    "summary": "Global base stylesheet setting the default system font stack and monospace code font for the whole React application.",
+    "tags": [
+      "css",
+      "global-styles",
+      "typography",
+      "boilerplate"
+    ]
+  },
+  {
+    "id": "file:frontend/src/react-app-env.d.ts",
+    "type": "file",
+    "name": "react-app-env.d.ts",
+    "filePath": "frontend/src/react-app-env.d.ts",
+    "summary": "Create React App TypeScript ambient type declaration reference file enabling CRA's built-in type definitions (e.g. for static asset imports).",
+    "tags": [
+      "type-definition",
+      "typescript",
+      "boilerplate",
+      "create-react-app"
+    ]
+  },
+  {
+    "id": "file:frontend/src/setupTests.ts",
+    "type": "file",
+    "name": "setupTests.ts",
+    "filePath": "frontend/src/setupTests.ts",
+    "summary": "Jest test setup file that imports jest-dom's custom DOM matchers (e.g. toHaveTextContent) for use across the frontend test suite.",
+    "tags": [
+      "test",
+      "jest",
+      "setup",
+      "boilerplate"
+    ]
+  },
+  {
+    "id": "file:frontend/tsconfig.tsbuildinfo",
+    "type": "file",
+    "name": "tsconfig.tsbuildinfo",
+    "filePath": "frontend/tsconfig.tsbuildinfo",
+    "summary": "Auto-generated TypeScript incremental build cache file tracking compiled file state for faster rebuilds; not hand-maintained source.",
+    "tags": [
+      "build-artifact",
+      "typescript",
+      "generated",
+      "cache"
+    ]
+  }
+]

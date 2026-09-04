@@ -1,0 +1,13 @@
+{
+  "projectRoot": "/home/bera/deep-harn",
+  "batchFiles": [
+    {"path": "frontend/README.md", "language": "markdown", "sizeLines": 46, "fileCategory": "docs"},
+    {"path": "frontend/package.json", "language": "json", "sizeLines": 57, "fileCategory": "config"},
+    {"path": "frontend/tsconfig.json", "language": "json", "sizeLines": 26, "fileCategory": "config"}
+  ],
+  "batchImportData": {
+    "frontend/README.md": [],
+    "frontend/package.json": [],
+    "frontend/tsconfig.json": []
+  }
+}

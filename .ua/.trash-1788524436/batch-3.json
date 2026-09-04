@@ -1,0 +1,260 @@
+{
+  "nodes": [
+    {
+      "id": "file:backend/app/db/crud.py",
+      "type": "file",
+      "name": "crud.py",
+      "filePath": "backend/app/db/crud.py",
+      "summary": "Async CRUD layer for the courses table: creates a new Course record (with IntegrityError handling for duplicate video IDs), updates a course's status, and fetches a course by YouTube video ID.",
+      "tags": ["data-model", "service", "database", "async"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/app/db/database.py",
+      "type": "file",
+      "name": "database.py",
+      "filePath": "backend/app/db/database.py",
+      "summary": "Configures the SQLAlchemy async engine and session factory from the DATABASE_URL environment variable, and exposes a test_connection helper used to verify database connectivity at startup.",
+      "tags": ["config", "database", "entry-point", "service"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/app/db/models.py",
+      "type": "file",
+      "name": "models.py",
+      "filePath": "backend/app/db/models.py",
+      "summary": "Defines the SQLAlchemy declarative Base and the Course ORM model storing generated course data (transcript, structured content, course content with S3 frame URLs, quiz content, retention plan, and status).",
+      "tags": ["data-model", "database", "schema-definition"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/scripts/init_db.py",
+      "type": "file",
+      "name": "init_db.py",
+      "filePath": "backend/scripts/init_db.py",
+      "summary": "One-shot database initializer run by the backend-init compose service: polls the configured DATABASE_URL until Postgres accepts connections, then idempotently creates any missing tables via Base.metadata.create_all.",
+      "tags": ["entry-point", "database", "migration", "script"],
+      "complexity": "moderate",
+      "languageNotes": "Uses asyncio retry polling with SystemExit on exhaustion, a common belt-and-braces pattern for compose services that start before their database dependency is fully ready."
+    },
+    {
+      "id": "function:backend/app/db/crud.py:create_course",
+      "type": "function",
+      "name": "create_course",
+      "filePath": "backend/app/db/crud.py",
+      "lineRange": [12, 76],
+      "summary": "Inserts a new Course row with transcript, structured content, course content, quiz content, and retention plan; handles IntegrityError on duplicate video_id by returning the existing course.",
+      "tags": ["database", "async", "data-model"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/db/crud.py:update_course_status",
+      "type": "function",
+      "name": "update_course_status",
+      "filePath": "backend/app/db/crud.py",
+      "lineRange": [78, 100],
+      "summary": "Updates the status field (and updated_at timestamp) of a course record identified by video_id.",
+      "tags": ["database", "async"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/db/crud.py:get_course_by_video_id",
+      "type": "function",
+      "name": "get_course_by_video_id",
+      "filePath": "backend/app/db/crud.py",
+      "lineRange": [103, 115],
+      "summary": "Fetches a single Course record by its YouTube video_id, returning None if not found.",
+      "tags": ["database", "async"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/db/database.py:test_connection",
+      "type": "function",
+      "name": "test_connection",
+      "filePath": "backend/app/db/database.py",
+      "lineRange": [42, 55],
+      "summary": "Runs a SELECT 1 query against the configured engine to verify the database connection is healthy, logging the result.",
+      "tags": ["database", "async", "validation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/app/db/models.py:Course",
+      "type": "class",
+      "name": "Course",
+      "filePath": "backend/app/db/models.py",
+      "lineRange": [10, 29],
+      "summary": "SQLAlchemy ORM model for the 'courses' table, storing the transcript, structured content, generated course content (with S3 frame URLs), quiz content, retention plan, and processing status for each YouTube video.",
+      "tags": ["data-model", "database", "schema-definition"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/scripts/init_db.py:_wait_for_db",
+      "type": "function",
+      "name": "_wait_for_db",
+      "filePath": "backend/scripts/init_db.py",
+      "lineRange": [26, 44],
+      "summary": "Polls the database engine with retries until it accepts connections, raising SystemExit if the database remains unavailable after the retry budget is exhausted.",
+      "tags": ["database", "async", "utility"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/scripts/init_db.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "backend/scripts/init_db.py",
+      "lineRange": [47, 52],
+      "summary": "Entry point that waits for the database to be reachable, then creates any missing tables from the SQLAlchemy metadata and disposes of the engine.",
+      "tags": ["entry-point", "database", "async"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:backend/app/db/crud.py",
+      "target": "file:backend/app/db/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/scripts/init_db.py",
+      "target": "file:backend/app/db/database.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/scripts/init_db.py",
+      "target": "file:backend/app/db/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/app/db/crud.py",
+      "target": "function:backend/app/db/crud.py:create_course",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/db/crud.py",
+      "target": "function:backend/app/db/crud.py:update_course_status",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/db/crud.py",
+      "target": "function:backend/app/db/crud.py:get_course_by_video_id",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/db/crud.py",
+      "target": "function:backend/app/db/crud.py:create_course",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/db/crud.py",
+      "target": "function:backend/app/db/crud.py:update_course_status",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/db/crud.py",
+      "target": "function:backend/app/db/crud.py:get_course_by_video_id",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/db/database.py",
+      "target": "function:backend/app/db/database.py:test_connection",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/db/database.py",
+      "target": "function:backend/app/db/database.py:test_connection",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/db/models.py",
+      "target": "class:backend/app/db/models.py:Course",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/db/models.py",
+      "target": "class:backend/app/db/models.py:Course",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/scripts/init_db.py",
+      "target": "function:backend/scripts/init_db.py:_wait_for_db",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/scripts/init_db.py",
+      "target": "function:backend/scripts/init_db.py:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/scripts/init_db.py",
+      "target": "function:backend/scripts/init_db.py:_wait_for_db",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/scripts/init_db.py",
+      "target": "function:backend/scripts/init_db.py:main",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/scripts/init_db.py:main",
+      "target": "function:backend/scripts/init_db.py:_wait_for_db",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/db/crud.py:create_course",
+      "target": "class:backend/app/db/models.py:Course",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/db/crud.py:update_course_status",
+      "target": "class:backend/app/db/models.py:Course",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/db/crud.py:get_course_by_video_id",
+      "target": "class:backend/app/db/models.py:Course",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

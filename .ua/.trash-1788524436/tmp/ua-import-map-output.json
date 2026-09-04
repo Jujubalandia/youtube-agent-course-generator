@@ -1,0 +1,82 @@
+{
+  "scriptCompleted": true,
+  "stats": {
+    "filesScanned": 44,
+    "filesWithImports": 10,
+    "totalEdges": 18
+  },
+  "importMap": {
+    ".env.example": [],
+    ".serena/project.yml": [],
+    ".ua/.understandignore": [],
+    "README.md": [],
+    "backend/.dockerignore": [],
+    "backend/Dockerfile": [],
+    "backend/app/__init__.py": [],
+    "backend/app/api/__init__.py": [],
+    "backend/app/api/agentic.py": [
+      "backend/app/api/utils.py"
+    ],
+    "backend/app/api/frame_extraction.py": [],
+    "backend/app/api/routes.py": [
+      "backend/app/api/__init__.py",
+      "backend/app/api/agentic.py",
+      "backend/app/api/frame_extraction.py",
+      "backend/app/api/s3_utils.py",
+      "backend/app/db/crud.py",
+      "backend/app/db/database.py"
+    ],
+    "backend/app/api/s3_utils.py": [],
+    "backend/app/api/utils.py": [],
+    "backend/app/db/__init__.py": [],
+    "backend/app/db/crud.py": [
+      "backend/app/db/models.py"
+    ],
+    "backend/app/db/database.py": [],
+    "backend/app/db/models.py": [],
+    "backend/app/main.py": [
+      "backend/app/api/routes.py"
+    ],
+    "backend/app/sse/broadcaster.py": [],
+    "backend/requirements.txt": [],
+    "backend/scripts/init_db.py": [
+      "backend/app/db/database.py",
+      "backend/app/db/models.py"
+    ],
+    "backend/scripts/start.sh": [],
+    "docker-compose.yml": [],
+    "frontend/.dockerignore": [],
+    "frontend/Dockerfile": [],
+    "frontend/README.md": [],
+    "frontend/nginx.conf": [],
+    "frontend/package.json": [],
+    "frontend/public/index.html": [],
+    "frontend/public/manifest.json": [],
+    "frontend/public/robots.txt": [],
+    "frontend/src/App.css": [],
+    "frontend/src/App.test.tsx": [
+      "frontend/src/App.tsx"
+    ],
+    "frontend/src/App.tsx": [
+      "frontend/src/pages/UploadPage.tsx"
+    ],
+    "frontend/src/index.css": [],
+    "frontend/src/index.tsx": [
+      "frontend/src/App.tsx",
+      "frontend/src/index.css",
+      "frontend/src/reportWebVitals.ts"
+    ],
+    "frontend/src/pages/UploadPage.tsx": [
+      "frontend/src/services/api.ts"
+    ],
+    "frontend/src/react-app-env.d.ts": [],
+    "frontend/src/reportWebVitals.ts": [],
+    "frontend/src/services/api.ts": [
+      "frontend/src/pages/UploadPage.tsx"
+    ],
+    "frontend/src/setupTests.ts": [],
+    "frontend/tsconfig.json": [],
+    "frontend/tsconfig.tsbuildinfo": [],
+    "package.json": []
+  }
+}

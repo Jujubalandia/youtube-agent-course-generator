@@ -1,0 +1,383 @@
+{
+  "scriptCompleted": true,
+  "directoryGroups": {
+    "frontend": [
+      "file:frontend/src/App.test.tsx",
+      "file:frontend/src/App.tsx",
+      "file:frontend/src/index.tsx",
+      "file:frontend/src/pages/UploadPage.tsx",
+      "file:frontend/src/reportWebVitals.ts",
+      "file:frontend/src/services/api.ts",
+      "service:frontend/.dockerignore",
+      "service:frontend/Dockerfile",
+      "service:frontend/Dockerfile:build",
+      "service:frontend/Dockerfile:nginx",
+      "document:frontend/README.md",
+      "config:frontend/package.json",
+      "config:frontend/tsconfig.json",
+      "file:frontend/public/index.html",
+      "config:frontend/public/manifest.json",
+      "document:frontend/public/robots.txt",
+      "file:frontend/nginx.conf",
+      "file:frontend/src/App.css",
+      "file:frontend/src/index.css",
+      "file:frontend/src/react-app-env.d.ts",
+      "file:frontend/src/setupTests.ts",
+      "file:frontend/tsconfig.tsbuildinfo"
+    ],
+    "backend": [
+      "file:backend/app/api/__init__.py",
+      "file:backend/app/api/frame_extraction.py",
+      "file:backend/app/api/routes.py",
+      "file:backend/app/api/s3_utils.py",
+      "file:backend/app/main.py",
+      "file:backend/app/db/crud.py",
+      "file:backend/app/db/database.py",
+      "file:backend/app/db/models.py",
+      "file:backend/scripts/init_db.py",
+      "service:backend/Dockerfile",
+      "service:backend/.dockerignore",
+      "file:backend/app/__init__.py",
+      "file:backend/app/api/agentic.py",
+      "file:backend/app/api/utils.py",
+      "file:backend/app/db/__init__.py",
+      "file:backend/app/sse/broadcaster.py",
+      "document:backend/requirements.txt",
+      "file:backend/scripts/start.sh"
+    ],
+    "config": [
+      "config:.env.example"
+    ],
+    "_root_md": [
+      "document:README.md"
+    ],
+    "_root_yml": [
+      "service:docker-compose.yml",
+      "service:docker-compose.yml:postgres",
+      "service:docker-compose.yml:minio",
+      "service:docker-compose.yml:minio-init",
+      "service:docker-compose.yml:jaeger",
+      "service:docker-compose.yml:backend",
+      "service:docker-compose.yml:backend-init",
+      "service:docker-compose.yml:frontend"
+    ],
+    "_root_json": [
+      "config:package.json"
+    ],
+    ".serena": [
+      "config:.serena/project.yml"
+    ],
+    ".ua": [
+      "file:.ua/.understandignore"
+    ]
+  },
+  "nodeTypeGroups": {
+    "file": [
+      "file:frontend/src/App.test.tsx",
+      "file:frontend/src/App.tsx",
+      "file:frontend/src/index.tsx",
+      "file:frontend/src/pages/UploadPage.tsx",
+      "file:frontend/src/reportWebVitals.ts",
+      "file:frontend/src/services/api.ts",
+      "file:backend/app/api/__init__.py",
+      "file:backend/app/api/frame_extraction.py",
+      "file:backend/app/api/routes.py",
+      "file:backend/app/api/s3_utils.py",
+      "file:backend/app/main.py",
+      "file:backend/app/db/crud.py",
+      "file:backend/app/db/database.py",
+      "file:backend/app/db/models.py",
+      "file:backend/scripts/init_db.py",
+      "file:frontend/public/index.html",
+      "file:.ua/.understandignore",
+      "file:backend/app/__init__.py",
+      "file:backend/app/api/agentic.py",
+      "file:backend/app/api/utils.py",
+      "file:backend/app/db/__init__.py",
+      "file:backend/app/sse/broadcaster.py",
+      "file:backend/scripts/start.sh",
+      "file:frontend/nginx.conf",
+      "file:frontend/src/App.css",
+      "file:frontend/src/index.css",
+      "file:frontend/src/react-app-env.d.ts",
+      "file:frontend/src/setupTests.ts",
+      "file:frontend/tsconfig.tsbuildinfo"
+    ],
+    "service": [
+      "service:backend/Dockerfile",
+      "service:backend/.dockerignore",
+      "service:frontend/.dockerignore",
+      "service:frontend/Dockerfile",
+      "service:frontend/Dockerfile:build",
+      "service:frontend/Dockerfile:nginx",
+      "service:docker-compose.yml",
+      "service:docker-compose.yml:postgres",
+      "service:docker-compose.yml:minio",
+      "service:docker-compose.yml:minio-init",
+      "service:docker-compose.yml:jaeger",
+      "service:docker-compose.yml:backend",
+      "service:docker-compose.yml:backend-init",
+      "service:docker-compose.yml:frontend"
+    ],
+    "config": [
+      "config:.env.example",
+      "config:package.json",
+      "config:frontend/package.json",
+      "config:frontend/tsconfig.json",
+      "config:frontend/public/manifest.json",
+      "config:.serena/project.yml"
+    ],
+    "document": [
+      "document:README.md",
+      "document:frontend/README.md",
+      "document:frontend/public/robots.txt",
+      "document:backend/requirements.txt"
+    ]
+  },
+  "crossCategoryEdges": [
+    {
+      "fromType": "document",
+      "toType": "config",
+      "edgeType": "documents",
+      "count": 2
+    },
+    {
+      "fromType": "service",
+      "toType": "file",
+      "edgeType": "deploys",
+      "count": 1
+    },
+    {
+      "fromType": "config",
+      "toType": "service",
+      "edgeType": "configures",
+      "count": 1
+    },
+    {
+      "fromType": "document",
+      "toType": "service",
+      "edgeType": "documents",
+      "count": 1
+    },
+    {
+      "fromType": "config",
+      "toType": "file",
+      "edgeType": "configures",
+      "count": 1
+    }
+  ],
+  "interGroupImports": [],
+  "intraGroupDensity": {
+    "frontend": {
+      "internalEdges": 7,
+      "totalEdges": 7,
+      "density": 1
+    },
+    "backend": {
+      "internalEdges": 11,
+      "totalEdges": 11,
+      "density": 1
+    },
+    "config": {
+      "internalEdges": 0,
+      "totalEdges": 0,
+      "density": 0
+    },
+    "_root_md": {
+      "internalEdges": 0,
+      "totalEdges": 0,
+      "density": 0
+    },
+    "_root_yml": {
+      "internalEdges": 0,
+      "totalEdges": 0,
+      "density": 0
+    },
+    "_root_json": {
+      "internalEdges": 0,
+      "totalEdges": 0,
+      "density": 0
+    },
+    ".serena": {
+      "internalEdges": 0,
+      "totalEdges": 0,
+      "density": 0
+    },
+    ".ua": {
+      "internalEdges": 0,
+      "totalEdges": 0,
+      "density": 0
+    }
+  },
+  "patternMatches": {
+    "config": "config"
+  },
+  "deploymentTopology": {
+    "hasDockerfile": true,
+    "hasCompose": true,
+    "hasK8s": false,
+    "hasTerraform": false,
+    "hasCI": false,
+    "infraFiles": [
+      "backend/Dockerfile",
+      "frontend/Dockerfile",
+      "docker-compose.yml"
+    ]
+  },
+  "dataPipeline": {
+    "schemaFiles": [],
+    "migrationFiles": [],
+    "dataModelFiles": [
+      "backend/app/db/crud.py",
+      "backend/app/db/models.py"
+    ],
+    "apiHandlerFiles": [
+      "frontend/src/pages/UploadPage.tsx",
+      "frontend/src/services/api.ts",
+      "backend/app/api/routes.py",
+      "backend/app/api/agentic.py"
+    ]
+  },
+  "docCoverage": {
+    "groupsWithDocs": 3,
+    "totalGroups": 8,
+    "coverageRatio": 0.375,
+    "undocumentedGroups": [
+      "config",
+      "_root_yml",
+      "_root_json",
+      ".serena",
+      ".ua"
+    ]
+  },
+  "dependencyDirection": [],
+  "fileStats": {
+    "totalFileNodes": 53,
+    "filesPerGroup": {
+      "frontend": 22,
+      "backend": 18,
+      "config": 1,
+      "_root_md": 1,
+      "_root_yml": 8,
+      "_root_json": 1,
+      ".serena": 1,
+      ".ua": 1
+    },
+    "nodeTypeCounts": {
+      "file": 29,
+      "service": 14,
+      "config": 6,
+      "document": 4
+    }
+  },
+  "fileFanIn": {
+    "file:frontend/src/App.test.tsx": 0,
+    "file:frontend/src/App.tsx": 2,
+    "file:frontend/src/index.tsx": 0,
+    "file:frontend/src/pages/UploadPage.tsx": 2,
+    "file:frontend/src/reportWebVitals.ts": 1,
+    "file:frontend/src/services/api.ts": 1,
+    "file:backend/app/api/__init__.py": 1,
+    "file:backend/app/api/frame_extraction.py": 1,
+    "file:backend/app/api/routes.py": 1,
+    "file:backend/app/api/s3_utils.py": 1,
+    "file:backend/app/main.py": 0,
+    "file:backend/app/db/crud.py": 1,
+    "file:backend/app/db/database.py": 2,
+    "file:backend/app/db/models.py": 2,
+    "file:backend/scripts/init_db.py": 0,
+    "service:backend/Dockerfile": 0,
+    "service:backend/.dockerignore": 0,
+    "service:frontend/.dockerignore": 0,
+    "service:frontend/Dockerfile": 0,
+    "service:frontend/Dockerfile:build": 0,
+    "service:frontend/Dockerfile:nginx": 0,
+    "config:.env.example": 0,
+    "document:README.md": 0,
+    "service:docker-compose.yml": 0,
+    "config:package.json": 0,
+    "service:docker-compose.yml:postgres": 0,
+    "service:docker-compose.yml:minio": 0,
+    "service:docker-compose.yml:minio-init": 0,
+    "service:docker-compose.yml:jaeger": 0,
+    "service:docker-compose.yml:backend": 0,
+    "service:docker-compose.yml:backend-init": 0,
+    "service:docker-compose.yml:frontend": 0,
+    "document:frontend/README.md": 0,
+    "config:frontend/package.json": 0,
+    "config:frontend/tsconfig.json": 0,
+    "file:frontend/public/index.html": 0,
+    "config:frontend/public/manifest.json": 0,
+    "document:frontend/public/robots.txt": 0,
+    "config:.serena/project.yml": 0,
+    "file:.ua/.understandignore": 0,
+    "file:backend/app/__init__.py": 0,
+    "file:backend/app/api/agentic.py": 1,
+    "file:backend/app/api/utils.py": 1,
+    "file:backend/app/db/__init__.py": 0,
+    "file:backend/app/sse/broadcaster.py": 0,
+    "document:backend/requirements.txt": 0,
+    "file:backend/scripts/start.sh": 0,
+    "file:frontend/nginx.conf": 0,
+    "file:frontend/src/App.css": 0,
+    "file:frontend/src/index.css": 1,
+    "file:frontend/src/react-app-env.d.ts": 0,
+    "file:frontend/src/setupTests.ts": 0,
+    "file:frontend/tsconfig.tsbuildinfo": 0
+  },
+  "fileFanOut": {
+    "file:frontend/src/App.test.tsx": 1,
+    "file:frontend/src/App.tsx": 1,
+    "file:frontend/src/index.tsx": 3,
+    "file:frontend/src/pages/UploadPage.tsx": 1,
+    "file:frontend/src/reportWebVitals.ts": 0,
+    "file:frontend/src/services/api.ts": 1,
+    "file:backend/app/api/__init__.py": 0,
+    "file:backend/app/api/frame_extraction.py": 0,
+    "file:backend/app/api/routes.py": 6,
+    "file:backend/app/api/s3_utils.py": 0,
+    "file:backend/app/main.py": 1,
+    "file:backend/app/db/crud.py": 1,
+    "file:backend/app/db/database.py": 0,
+    "file:backend/app/db/models.py": 0,
+    "file:backend/scripts/init_db.py": 2,
+    "service:backend/Dockerfile": 0,
+    "service:backend/.dockerignore": 0,
+    "service:frontend/.dockerignore": 0,
+    "service:frontend/Dockerfile": 0,
+    "service:frontend/Dockerfile:build": 0,
+    "service:frontend/Dockerfile:nginx": 0,
+    "config:.env.example": 0,
+    "document:README.md": 0,
+    "service:docker-compose.yml": 0,
+    "config:package.json": 0,
+    "service:docker-compose.yml:postgres": 0,
+    "service:docker-compose.yml:minio": 0,
+    "service:docker-compose.yml:minio-init": 0,
+    "service:docker-compose.yml:jaeger": 0,
+    "service:docker-compose.yml:backend": 0,
+    "service:docker-compose.yml:backend-init": 0,
+    "service:docker-compose.yml:frontend": 0,
+    "document:frontend/README.md": 0,
+    "config:frontend/package.json": 0,
+    "config:frontend/tsconfig.json": 0,
+    "file:frontend/public/index.html": 0,
+    "config:frontend/public/manifest.json": 0,
+    "document:frontend/public/robots.txt": 0,
+    "config:.serena/project.yml": 0,
+    "file:.ua/.understandignore": 0,
+    "file:backend/app/__init__.py": 0,
+    "file:backend/app/api/agentic.py": 1,
+    "file:backend/app/api/utils.py": 0,
+    "file:backend/app/db/__init__.py": 0,
+    "file:backend/app/sse/broadcaster.py": 0,
+    "document:backend/requirements.txt": 0,
+    "file:backend/scripts/start.sh": 0,
+    "file:frontend/nginx.conf": 0,
+    "file:frontend/src/App.css": 0,
+    "file:frontend/src/index.css": 0,
+    "file:frontend/src/react-app-env.d.ts": 0,
+    "file:frontend/src/setupTests.ts": 0,
+    "file:frontend/tsconfig.tsbuildinfo": 0
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "projectRoot": "/home/bera/deep-harn",
+  "batchFiles": [
+    {"path": "backend/app/api/__init__.py", "language": "python", "sizeLines": 0, "fileCategory": "code"},
+    {"path": "backend/app/api/frame_extraction.py", "language": "python", "sizeLines": 244, "fileCategory": "code"},
+    {"path": "backend/app/api/routes.py", "language": "python", "sizeLines": 777, "fileCategory": "code"},
+    {"path": "backend/app/api/s3_utils.py", "language": "python", "sizeLines": 101, "fileCategory": "code"},
+    {"path": "backend/app/main.py", "language": "python", "sizeLines": 42, "fileCategory": "code"}
+  ],
+  "batchImportData": {
+    "backend/app/api/__init__.py": [],
+    "backend/app/api/frame_extraction.py": [],
+    "backend/app/api/routes.py": ["backend/app/api/__init__.py", "backend/app/api/agentic.py", "backend/app/api/frame_extraction.py", "backend/app/api/s3_utils.py", "backend/app/db/crud.py", "backend/app/db/database.py"],
+    "backend/app/api/s3_utils.py": [],
+    "backend/app/main.py": ["backend/app/api/routes.py"]
+  }
+}

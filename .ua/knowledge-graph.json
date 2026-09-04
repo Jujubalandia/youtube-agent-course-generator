@@ -1,0 +1,2904 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "deep-harn",
+    "languages": [
+      "css",
+      "dockerfile",
+      "html",
+      "json",
+      "markdown",
+      "python",
+      "shell",
+      "typescript",
+      "yaml"
+    ],
+    "frameworks": [
+      "Docker",
+      "Docker Compose",
+      "FastAPI",
+      "Pydantic",
+      "React",
+      "SQLAlchemy",
+      "Uvicorn"
+    ],
+    "description": "YouTube Video to Structured Course Generator \u2014 a Docker-Compose launcher for a FastAPI + LangGraph backend and React frontend that turns YouTube videos into interactive courses with quizzes and retention plans.",
+    "analyzedAt": "2026-09-04T12:19:49.861761Z",
+    "gitCommitHash": "9561c118043f1b43f2cf94b083ff3656e85e82bc"
+  },
+  "nodes": [
+    {
+      "id": "file:frontend/src/App.test.tsx",
+      "type": "file",
+      "name": "App.test.tsx",
+      "filePath": "frontend/src/App.test.tsx",
+      "summary": "Default Create React App smoke test that renders the App component and asserts a 'learn react' link is present; a leftover CRA template test not updated for this project's actual UI.",
+      "tags": [
+        "test",
+        "smoke-test",
+        "react",
+        "unmodified-boilerplate"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/src/App.tsx",
+      "type": "file",
+      "name": "App.tsx",
+      "filePath": "frontend/src/App.tsx",
+      "summary": "Root application component that sets up React Router and routes the single '/' path to the UploadPage component.",
+      "tags": [
+        "entry-point",
+        "routing",
+        "component",
+        "react",
+        "tested"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/src/App.tsx:App",
+      "type": "function",
+      "name": "App",
+      "filePath": "frontend/src/App.tsx",
+      "lineRange": [
+        5,
+        14
+      ],
+      "summary": "Functional root component wrapping the app in a BrowserRouter and rendering UploadPage at the root route.",
+      "tags": [
+        "component",
+        "routing",
+        "entry-point"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/src/index.tsx",
+      "type": "file",
+      "name": "index.tsx",
+      "filePath": "frontend/src/index.tsx",
+      "summary": "CRA bootstrap file that mounts the App component into the DOM root element inside React.StrictMode and kicks off web-vitals reporting.",
+      "tags": [
+        "entry-point",
+        "bootstrap",
+        "react",
+        "dom-mount"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/src/pages/UploadPage.tsx",
+      "type": "file",
+      "name": "UploadPage.tsx",
+      "filePath": "frontend/src/pages/UploadPage.tsx",
+      "summary": "Main and only application page: lets a user submit a YouTube URL, triggers course generation via the backend API, streams live progress over Server-Sent Events, and renders the resulting course content, quiz, and retention-plan tabs using Material UI.",
+      "tags": [
+        "component",
+        "api-handler",
+        "event-handler",
+        "sse",
+        "material-ui"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Single large functional component using useState/useRef/useEffect/useCallback hooks and a native browser EventSource to consume Server-Sent Events for real-time course-generation progress."
+    },
+    {
+      "id": "function:frontend/src/pages/UploadPage.tsx:UploadPage",
+      "type": "function",
+      "name": "UploadPage",
+      "filePath": "frontend/src/pages/UploadPage.tsx",
+      "lineRange": [
+        229,
+        815
+      ],
+      "summary": "Top-level page component managing video URL input, SSE-based progress tracking of course generation, and tabbed rendering of generated course content, quizzes with answer checking, and a spaced-repetition retention plan.",
+      "tags": [
+        "component",
+        "state-management",
+        "event-handler",
+        "api-handler"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:frontend/src/reportWebVitals.ts",
+      "type": "file",
+      "name": "reportWebVitals.ts",
+      "filePath": "frontend/src/reportWebVitals.ts",
+      "summary": "CRA performance-measurement helper that lazily loads the web-vitals library and reports Core Web Vitals metrics (CLS, FID, FCP, LCP, TTFB) to a caller-supplied callback.",
+      "tags": [
+        "utility",
+        "performance",
+        "monitoring"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/src/reportWebVitals.ts:reportWebVitals",
+      "type": "function",
+      "name": "reportWebVitals",
+      "filePath": "frontend/src/reportWebVitals.ts",
+      "lineRange": [
+        3,
+        13
+      ],
+      "summary": "Lazily imports the web-vitals package and registers the given callback against all five Core Web Vitals metrics.",
+      "tags": [
+        "utility",
+        "performance",
+        "lazy-loading"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/src/services/api.ts",
+      "type": "file",
+      "name": "api.ts",
+      "filePath": "frontend/src/services/api.ts",
+      "summary": "Thin Axios-based API client that kicks off course generation on the backend by POSTing a YouTube video URL to /api/generate-course, with the base URL configurable via REACT_APP_API_BASE_URL.",
+      "tags": [
+        "service",
+        "api-handler",
+        "http-client"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:frontend/src/services/api.ts:startCourseGeneration",
+      "type": "function",
+      "name": "startCourseGeneration",
+      "filePath": "frontend/src/services/api.ts",
+      "lineRange": [
+        20,
+        24
+      ],
+      "summary": "Sends a POST request with the given video URL to the backend's course-generation endpoint and returns the Axios response.",
+      "tags": [
+        "api-handler",
+        "http-client",
+        "async"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/app/api/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/app/api/__init__.py",
+      "summary": "Empty package marker that makes the api directory importable as the backend.app.api Python package.",
+      "tags": [
+        "package-init",
+        "empty-file",
+        "python-package"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/app/api/frame_extraction.py",
+      "type": "file",
+      "name": "frame_extraction.py",
+      "filePath": "backend/app/api/frame_extraction.py",
+      "summary": "Video processing pipeline that downloads a YouTube video via yt-dlp, detects scene boundaries, extracts and optimizes keyframes, loads them into a FiftyOne dataset to select visually unique frames, and aligns the selected frames to transcript timestamps.",
+      "tags": [
+        "video-processing",
+        "utility",
+        "computer-vision",
+        "pipeline"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Combines yt-dlp, PySceneDetect, Pillow, and FiftyOne/fiftyone.brain to turn a raw video into a curated, transcript-aligned set of keyframes."
+    },
+    {
+      "id": "file:backend/app/api/routes.py",
+      "type": "file",
+      "name": "routes.py",
+      "filePath": "backend/app/api/routes.py",
+      "summary": "Core FastAPI router for the course-generation feature: exposes endpoints to kick off course generation from a YouTube URL and to stream progress over SSE, orchestrating transcript fetching (with Whisper fallback), frame extraction, the LangGraph agent pipeline, S3 frame uploads, and course persistence.",
+      "tags": [
+        "api-handler",
+        "entry-point",
+        "orchestration",
+        "streaming",
+        "background-task"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Uses asyncio.Queue-backed Server-Sent Events (StreamingResponse) to stream long-running background task progress to the client, and asyncio.to_thread to offload blocking I/O (yt-dlp, ffmpeg, Whisper, FiftyOne) from the event loop."
+    },
+    {
+      "id": "file:backend/app/api/s3_utils.py",
+      "type": "file",
+      "name": "s3_utils.py",
+      "filePath": "backend/app/api/s3_utils.py",
+      "summary": "Initializes a boto3 S3 (or S3-compatible, e.g. MinIO) client from environment variables and provides a helper to upload a local keyframe file to the configured bucket, returning its public URL.",
+      "tags": [
+        "storage",
+        "s3",
+        "utility",
+        "aws"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/app/main.py",
+      "type": "file",
+      "name": "main.py",
+      "filePath": "backend/app/main.py",
+      "summary": "FastAPI application entry point: creates the app, configures CORS, mounts the local frames directory as static files, and registers the API router under /api.",
+      "tags": [
+        "entry-point",
+        "fastapi",
+        "bootstrap",
+        "middleware"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/api/frame_extraction.py:download_video",
+      "type": "function",
+      "name": "download_video",
+      "filePath": "backend/app/api/frame_extraction.py",
+      "lineRange": [
+        26,
+        48
+      ],
+      "summary": "Downloads a video from a URL using yt-dlp and returns the local file path along with the resolved video ID.",
+      "tags": [
+        "video-processing",
+        "download",
+        "yt-dlp"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/api/frame_extraction.py:detect_scenes",
+      "type": "function",
+      "name": "detect_scenes",
+      "filePath": "backend/app/api/frame_extraction.py",
+      "lineRange": [
+        51,
+        72
+      ],
+      "summary": "Runs PySceneDetect content-based scene detection on a video file and returns the list of detected scene boundaries.",
+      "tags": [
+        "video-processing",
+        "scene-detection",
+        "computer-vision"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/api/frame_extraction.py:extract_keyframes_with_timestamps",
+      "type": "function",
+      "name": "extract_keyframes_with_timestamps",
+      "filePath": "backend/app/api/frame_extraction.py",
+      "lineRange": [
+        75,
+        130
+      ],
+      "summary": "Extracts a representative keyframe image per detected scene using ffmpeg, computing a timestamp offset within each scene and writing frames to the output directory with their scene timing metadata.",
+      "tags": [
+        "video-processing",
+        "ffmpeg",
+        "keyframe-extraction"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:backend/app/api/frame_extraction.py:optimize_frame",
+      "type": "function",
+      "name": "optimize_frame",
+      "filePath": "backend/app/api/frame_extraction.py",
+      "lineRange": [
+        133,
+        153
+      ],
+      "summary": "Resizes and re-saves a frame image with Pillow to reduce its resolution/quality for storage or display.",
+      "tags": [
+        "image-processing",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/api/frame_extraction.py:load_frames_into_fiftyone",
+      "type": "function",
+      "name": "load_frames_into_fiftyone",
+      "filePath": "backend/app/api/frame_extraction.py",
+      "lineRange": [
+        156,
+        180
+      ],
+      "summary": "Loads a set of extracted frame images into a fresh FiftyOne dataset for a given video, replacing any dataset that already exists for it.",
+      "tags": [
+        "computer-vision",
+        "fiftyone",
+        "data-loading"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/api/frame_extraction.py:select_unique_frames",
+      "type": "function",
+      "name": "select_unique_frames",
+      "filePath": "backend/app/api/frame_extraction.py",
+      "lineRange": [
+        183,
+        211
+      ],
+      "summary": "Uses fiftyone.brain's uniqueness computation to filter a dataset down to visually unique frames above a threshold, sorted by scene order.",
+      "tags": [
+        "computer-vision",
+        "fiftyone",
+        "deduplication"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/api/frame_extraction.py:align_frames_to_transcript",
+      "type": "function",
+      "name": "align_frames_to_transcript",
+      "filePath": "backend/app/api/frame_extraction.py",
+      "lineRange": [
+        214,
+        244
+      ],
+      "summary": "Matches each selected frame to the closest transcript segment by timestamp so frames can be embedded alongside relevant course text.",
+      "tags": [
+        "video-processing",
+        "transcript-alignment",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/app/api/routes.py:VideoRequest",
+      "type": "class",
+      "name": "VideoRequest",
+      "filePath": "backend/app/api/routes.py",
+      "lineRange": [
+        36,
+        40
+      ],
+      "summary": "Pydantic request model carrying the YouTube video URL submitted to the course-generation endpoint.",
+      "tags": [
+        "data-model",
+        "validation",
+        "pydantic"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/app/api/routes.py:ProgressStatus",
+      "type": "class",
+      "name": "ProgressStatus",
+      "filePath": "backend/app/api/routes.py",
+      "lineRange": [
+        42,
+        47
+      ],
+      "summary": "Pydantic model representing a single progress update (status, detail, error, final result) streamed to the client during course generation.",
+      "tags": [
+        "data-model",
+        "streaming",
+        "pydantic"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/api/routes.py:send_progress",
+      "type": "function",
+      "name": "send_progress",
+      "filePath": "backend/app/api/routes.py",
+      "lineRange": [
+        49,
+        55
+      ],
+      "summary": "Builds a ProgressStatus update and pushes it onto the per-video asyncio queue consumed by the SSE stream.",
+      "tags": [
+        "streaming",
+        "utility",
+        "event-handler"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/api/routes.py:_run_course_generation",
+      "type": "function",
+      "name": "_run_course_generation",
+      "filePath": "backend/app/api/routes.py",
+      "lineRange": [
+        57,
+        392
+      ],
+      "summary": "Background task orchestrating the full course-generation pipeline: fetches the transcript (with Whisper fallback), extracts and aligns keyframes, invokes the LangGraph agentic app, uploads frames to S3, persists the course, and reports progress at each stage before cleaning up temp files.",
+      "tags": [
+        "orchestration",
+        "background-task",
+        "pipeline",
+        "error-handling"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Defines nested sync helper closures (get_transcript_sync, get_frames_sync) run via asyncio.to_thread to keep blocking work off the event loop while still reporting progress asynchronously."
+    },
+    {
+      "id": "function:backend/app/api/routes.py:generate_course_request",
+      "type": "function",
+      "name": "generate_course_request",
+      "filePath": "backend/app/api/routes.py",
+      "lineRange": [
+        395,
+        451
+      ],
+      "summary": "POST endpoint that validates a YouTube URL, extracts the video ID, guards against duplicate/in-flight/already-generated courses, and kicks off _run_course_generation as a tracked background task.",
+      "tags": [
+        "api-handler",
+        "entry-point",
+        "validation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:backend/app/api/routes.py:stream_progress",
+      "type": "function",
+      "name": "stream_progress",
+      "filePath": "backend/app/api/routes.py",
+      "lineRange": [
+        456,
+        543
+      ],
+      "summary": "SSE endpoint that streams ProgressStatus updates for a video's generation task, replaying a synthetic finished event if the course already exists or live-forwarding queue updates until completion or client disconnect.",
+      "tags": [
+        "api-handler",
+        "streaming",
+        "sse",
+        "event-handler"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:backend/app/api/routes.py:save_transcript",
+      "type": "function",
+      "name": "save_transcript",
+      "filePath": "backend/app/api/routes.py",
+      "lineRange": [
+        545,
+        566
+      ],
+      "summary": "Writes the fetched transcript text to a local file under a per-video directory and returns its path.",
+      "tags": [
+        "utility",
+        "file-io"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/api/routes.py:_safe_delete",
+      "type": "function",
+      "name": "_safe_delete",
+      "filePath": "backend/app/api/routes.py",
+      "lineRange": [
+        569,
+        578
+      ],
+      "summary": "Deletes a temporary file if it exists, logging but swallowing any errors so cleanup never crashes the pipeline.",
+      "tags": [
+        "utility",
+        "cleanup",
+        "error-handling"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/api/routes.py:process_and_upload_frames",
+      "type": "function",
+      "name": "process_and_upload_frames",
+      "filePath": "backend/app/api/routes.py",
+      "lineRange": [
+        581,
+        714
+      ],
+      "summary": "Scans the generated course content for local frame image paths, uploads each unique frame to S3 concurrently, and rewrites the course/structured content to reference the resulting S3 URLs.",
+      "tags": [
+        "orchestration",
+        "s3",
+        "data-transformation"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:backend/app/api/routes.py:_get_whisper_transcript",
+      "type": "function",
+      "name": "_get_whisper_transcript",
+      "filePath": "backend/app/api/routes.py",
+      "lineRange": [
+        717,
+        777
+      ],
+      "summary": "Fallback transcript path: extracts the video's audio with ffmpeg and transcribes it locally with OpenAI Whisper when no YouTube-provided transcript is available, then cleans up the extracted audio file.",
+      "tags": [
+        "transcription",
+        "whisper",
+        "fallback",
+        "ffmpeg"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:backend/app/api/s3_utils.py:upload_frame_to_s3",
+      "type": "function",
+      "name": "upload_frame_to_s3",
+      "filePath": "backend/app/api/s3_utils.py",
+      "lineRange": [
+        54,
+        102
+      ],
+      "summary": "Uploads a local frame image to the configured S3 (or S3-compatible) bucket under a per-video key and returns the resulting public URL, or None on failure.",
+      "tags": [
+        "s3",
+        "storage",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/main.py:root",
+      "type": "function",
+      "name": "root",
+      "filePath": "backend/app/main.py",
+      "lineRange": [
+        35,
+        42
+      ],
+      "summary": "Root GET endpoint returning a simple welcome message to confirm the API is running.",
+      "tags": [
+        "api-handler",
+        "health-check"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/app/db/crud.py",
+      "type": "file",
+      "name": "crud.py",
+      "filePath": "backend/app/db/crud.py",
+      "summary": "Async CRUD layer for the courses table: creates a new Course record (with IntegrityError handling for duplicate video IDs), updates a course's status, and fetches a course by YouTube video ID.",
+      "tags": [
+        "data-model",
+        "service",
+        "database",
+        "async"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/app/db/database.py",
+      "type": "file",
+      "name": "database.py",
+      "filePath": "backend/app/db/database.py",
+      "summary": "Configures the SQLAlchemy async engine and session factory from the DATABASE_URL environment variable, and exposes a test_connection helper used to verify database connectivity at startup.",
+      "tags": [
+        "config",
+        "database",
+        "entry-point",
+        "service"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/app/db/models.py",
+      "type": "file",
+      "name": "models.py",
+      "filePath": "backend/app/db/models.py",
+      "summary": "Defines the SQLAlchemy declarative Base and the Course ORM model storing generated course data (transcript, structured content, course content with S3 frame URLs, quiz content, retention plan, and status).",
+      "tags": [
+        "data-model",
+        "database",
+        "schema-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/scripts/init_db.py",
+      "type": "file",
+      "name": "init_db.py",
+      "filePath": "backend/scripts/init_db.py",
+      "summary": "One-shot database initializer run by the backend-init compose service: polls the configured DATABASE_URL until Postgres accepts connections, then idempotently creates any missing tables via Base.metadata.create_all.",
+      "tags": [
+        "entry-point",
+        "database",
+        "migration",
+        "script"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Uses asyncio retry polling with SystemExit on exhaustion, a common belt-and-braces pattern for compose services that start before their database dependency is fully ready."
+    },
+    {
+      "id": "function:backend/app/db/crud.py:create_course",
+      "type": "function",
+      "name": "create_course",
+      "filePath": "backend/app/db/crud.py",
+      "lineRange": [
+        12,
+        76
+      ],
+      "summary": "Inserts a new Course row with transcript, structured content, course content, quiz content, and retention plan; handles IntegrityError on duplicate video_id by returning the existing course.",
+      "tags": [
+        "database",
+        "async",
+        "data-model"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/db/crud.py:update_course_status",
+      "type": "function",
+      "name": "update_course_status",
+      "filePath": "backend/app/db/crud.py",
+      "lineRange": [
+        78,
+        100
+      ],
+      "summary": "Updates the status field (and updated_at timestamp) of a course record identified by video_id.",
+      "tags": [
+        "database",
+        "async"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/db/crud.py:get_course_by_video_id",
+      "type": "function",
+      "name": "get_course_by_video_id",
+      "filePath": "backend/app/db/crud.py",
+      "lineRange": [
+        103,
+        115
+      ],
+      "summary": "Fetches a single Course record by its YouTube video_id, returning None if not found.",
+      "tags": [
+        "database",
+        "async"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/db/database.py:test_connection",
+      "type": "function",
+      "name": "test_connection",
+      "filePath": "backend/app/db/database.py",
+      "lineRange": [
+        42,
+        55
+      ],
+      "summary": "Runs a SELECT 1 query against the configured engine to verify the database connection is healthy, logging the result.",
+      "tags": [
+        "database",
+        "async",
+        "validation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/app/db/models.py:Course",
+      "type": "class",
+      "name": "Course",
+      "filePath": "backend/app/db/models.py",
+      "lineRange": [
+        10,
+        29
+      ],
+      "summary": "SQLAlchemy ORM model for the 'courses' table, storing the transcript, structured content, generated course content (with S3 frame URLs), quiz content, retention plan, and processing status for each YouTube video.",
+      "tags": [
+        "data-model",
+        "database",
+        "schema-definition"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/scripts/init_db.py:_wait_for_db",
+      "type": "function",
+      "name": "_wait_for_db",
+      "filePath": "backend/scripts/init_db.py",
+      "lineRange": [
+        26,
+        44
+      ],
+      "summary": "Polls the database engine with retries until it accepts connections, raising SystemExit if the database remains unavailable after the retry budget is exhausted.",
+      "tags": [
+        "database",
+        "async",
+        "utility"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/scripts/init_db.py:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "backend/scripts/init_db.py",
+      "lineRange": [
+        47,
+        52
+      ],
+      "summary": "Entry point that waits for the database to be reachable, then creates any missing tables from the SQLAlchemy metadata and disposes of the engine.",
+      "tags": [
+        "entry-point",
+        "database",
+        "async"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:backend/Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "backend/Dockerfile",
+      "summary": "Single-stage Docker build for the FastAPI + LangGraph backend, pinned to Python 3.10-slim for numpy/numba wheel compatibility, installing CPU-only PyTorch from a dedicated index before the rest of requirements.txt, then copying in the app and scripts directories and launching via scripts/start.sh on port 8000.",
+      "tags": [
+        "containerization",
+        "infrastructure",
+        "deployment",
+        "python",
+        "build-system"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Deliberately avoids Docker multi-stage builds; instead orders RUN layers (setuptools/wheel, then CPU-only torch via --extra-index-url, then --no-build-isolation pip install -r requirements.txt) to dodge CUDA wheel bloat and an openai-whisper sdist build failure against modern setuptools."
+    },
+    {
+      "id": "service:backend/.dockerignore",
+      "type": "service",
+      "name": ".dockerignore",
+      "filePath": "backend/.dockerignore",
+      "summary": "Excludes caches, virtualenvs, git metadata, and generated artifacts (frames/, transcripts/, logs) from the backend Docker build context to keep image builds small and deterministic.",
+      "tags": [
+        "infrastructure",
+        "containerization",
+        "build-context",
+        "configuration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:frontend/.dockerignore",
+      "type": "service",
+      "name": ".dockerignore",
+      "filePath": "frontend/.dockerignore",
+      "summary": "Excludes node_modules, build output, .git, and log/OS artifacts from the Docker build context for the frontend image, keeping image builds fast and reproducible.",
+      "tags": [
+        "containerization",
+        "infrastructure",
+        "build-context",
+        "docker"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:frontend/Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "frontend/Dockerfile",
+      "summary": "Multi-stage Docker build that compiles the CRA (react-scripts 5) frontend with node:20-alpine and serves the resulting static bundle from nginx:1.27-alpine on port 80.",
+      "tags": [
+        "containerization",
+        "infrastructure",
+        "deployment",
+        "multi-stage-build",
+        "frontend"
+      ],
+      "complexity": "moderate",
+      "languageNotes": "Multi-stage build separates the Node build toolchain from the final nginx runtime image, keeping the shipped image small. Uses --legacy-peer-deps to work around a react@19 vs @testing-library/react peer-dependency conflict, and bakes REACT_APP_API_BASE_URL into the bundle at build time via an ARG/ENV pair (default http://localhost:8000)."
+    },
+    {
+      "id": "service:frontend/Dockerfile:build",
+      "type": "service",
+      "name": "build",
+      "filePath": "frontend/Dockerfile",
+      "lineRange": [
+        7,
+        28
+      ],
+      "summary": "Build stage on node:20-alpine: installs dependencies with npm ci --legacy-peer-deps, copies public/src/tsconfig.json, bakes REACT_APP_API_BASE_URL, and runs npm run build to produce the static bundle.",
+      "tags": [
+        "build-stage",
+        "npm",
+        "react",
+        "docker"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:frontend/Dockerfile:nginx",
+      "type": "service",
+      "name": "nginx",
+      "filePath": "frontend/Dockerfile",
+      "lineRange": [
+        29,
+        35
+      ],
+      "summary": "Runtime stage on nginx:1.27-alpine: installs a custom nginx.conf and copies the built static bundle from the build stage, exposing port 80 to serve the frontend.",
+      "tags": [
+        "nginx",
+        "static-hosting",
+        "docker",
+        "runtime-stage"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.env.example",
+      "type": "config",
+      "name": ".env.example",
+      "filePath": ".env.example",
+      "summary": "Template environment file listing required and optional variables for the docker-compose stack: LLM API keys (Gemini, Groq), Postgres credentials, MinIO/S3 storage settings, and the frontend API base URL.",
+      "tags": [
+        "configuration",
+        "environment-variables",
+        "secrets",
+        "docker"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Project README for the Docker-Compose launcher of the YouTube Video to Structured Course Generator, covering quick start, usage, .env configuration, changes made vs. the upstream project, troubleshooting, and manual (non-Docker) development instructions.",
+      "tags": [
+        "documentation",
+        "entry-point",
+        "quick-start",
+        "overview"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "service:docker-compose.yml",
+      "type": "service",
+      "name": "docker-compose.yml",
+      "filePath": "docker-compose.yml",
+      "summary": "Docker Compose stack definition that launches the full local application: Postgres for persistence, MinIO for S3-compatible frame storage plus a bucket-init job, Jaeger for tracing, the FastAPI/LangGraph backend with a DB-init job, and the nginx-served React frontend.",
+      "tags": [
+        "orchestration",
+        "infrastructure",
+        "containerization",
+        "docker-compose"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Uses depends_on with service_healthy/service_completed_successfully conditions to sequence one-shot init containers (minio-init, backend-init) ahead of the services that need them."
+    },
+    {
+      "id": "config:package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "package.json",
+      "summary": "Minimal root-level npm manifest declaring a single dependency, remark-breaks, likely used for markdown line-break rendering somewhere in the project's tooling or frontend.",
+      "tags": [
+        "configuration",
+        "npm",
+        "dependencies"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:docker-compose.yml:postgres",
+      "type": "service",
+      "name": "postgres",
+      "filePath": "docker-compose.yml",
+      "summary": "Postgres 16 Alpine database service providing course/JSONB persistence, with a healthcheck gating dependent services.",
+      "tags": [
+        "database",
+        "infrastructure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:docker-compose.yml:minio",
+      "type": "service",
+      "name": "minio",
+      "filePath": "docker-compose.yml",
+      "summary": "MinIO service providing local S3-compatible object storage for extracted video frame images, exposing the S3 API and web console.",
+      "tags": [
+        "storage",
+        "infrastructure",
+        "s3"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:docker-compose.yml:minio-init",
+      "type": "service",
+      "name": "minio-init",
+      "filePath": "docker-compose.yml",
+      "summary": "One-shot bootstrap job that waits for MinIO to be healthy, creates the storage bucket, and sets it to public-read for local image serving.",
+      "tags": [
+        "initialization",
+        "infrastructure",
+        "s3"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:docker-compose.yml:jaeger",
+      "type": "service",
+      "name": "jaeger",
+      "filePath": "docker-compose.yml",
+      "summary": "Jaeger all-in-one service acting as the OpenTelemetry/OTLP trace collector and UI for the stack.",
+      "tags": [
+        "observability",
+        "tracing",
+        "infrastructure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:docker-compose.yml:backend",
+      "type": "service",
+      "name": "backend",
+      "filePath": "docker-compose.yml",
+      "summary": "FastAPI + LangGraph agent backend service, built from ./backend, wired to Postgres, MinIO/S3, and Jaeger via environment variables, exposed on port 8000.",
+      "tags": [
+        "backend",
+        "api",
+        "infrastructure"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "service:docker-compose.yml:backend-init",
+      "type": "service",
+      "name": "backend-init",
+      "filePath": "docker-compose.yml",
+      "summary": "One-shot database schema initialization job that runs scripts/init_db.py against the backend image to create the courses table once Postgres is healthy.",
+      "tags": [
+        "initialization",
+        "database",
+        "infrastructure"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "service:docker-compose.yml:frontend",
+      "type": "service",
+      "name": "frontend",
+      "filePath": "docker-compose.yml",
+      "summary": "React SPA built from ./frontend and served by nginx on port 3000, configured with the backend API base URL at build time.",
+      "tags": [
+        "frontend",
+        "infrastructure",
+        "nginx"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:frontend/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "frontend/README.md",
+      "summary": "Default Create React App boilerplate README for the frontend, documenting the standard npm scripts (start, test, build, eject) and links to CRA/React learning resources.",
+      "tags": [
+        "documentation",
+        "frontend",
+        "create-react-app",
+        "getting-started"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:frontend/package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "frontend/package.json",
+      "summary": "npm manifest for the React/TypeScript frontend, declaring dependencies (React 19, MUI, axios, react-router-dom, react-player, react-markdown, dompurify) and the CRA-based start/build/test/eject scripts.",
+      "tags": [
+        "configuration",
+        "npm",
+        "dependencies",
+        "react",
+        "build-system"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Built on Create React App (react-scripts 5.0.1) with MUI for components, axios for API calls, react-player for video playback, and react-markdown/dompurify for rendering sanitized course content \u2014 consistent with a YouTube-to-course generator UI."
+    },
+    {
+      "id": "config:frontend/tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "filePath": "frontend/tsconfig.json",
+      "summary": "TypeScript compiler configuration for the frontend, enabling standard CRA-generated strict/JSX/module settings and scoping compilation to the src directory.",
+      "tags": [
+        "configuration",
+        "typescript",
+        "compiler-options",
+        "frontend"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/public/index.html",
+      "type": "file",
+      "name": "index.html",
+      "filePath": "frontend/public/index.html",
+      "summary": "HTML shell template for the React frontend (Create React App), providing the root mount div, manifest/favicon links, and Google Fonts (Inter) preconnect tags into which the bundled JS is injected at build time.",
+      "tags": [
+        "entry-point",
+        "markup",
+        "html-template",
+        "react-shell"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Standard Create React App public/index.html with %PUBLIC_URL% placeholder substitution during build."
+    },
+    {
+      "id": "config:frontend/public/manifest.json",
+      "type": "config",
+      "name": "manifest.json",
+      "filePath": "frontend/public/manifest.json",
+      "summary": "Web app manifest declaring PWA metadata (app name, icons, theme/background colors, start URL) for when the frontend is installed on a mobile or desktop device.",
+      "tags": [
+        "configuration",
+        "pwa",
+        "manifest",
+        "metadata"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:frontend/public/robots.txt",
+      "type": "document",
+      "name": "robots.txt",
+      "filePath": "frontend/public/robots.txt",
+      "summary": "Search engine crawler policy allowing all user agents unrestricted access to the site (no paths disallowed).",
+      "tags": [
+        "documentation",
+        "seo",
+        "crawler-policy"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.serena/project.yml",
+      "type": "config",
+      "name": "project.yml",
+      "filePath": ".serena/project.yml",
+      "summary": "Serena MCP project configuration defining language servers, workspace folders, ignored paths, tool exclusions, and default operating modes for the deep-harn repository.",
+      "tags": [
+        "configuration",
+        "tooling",
+        "mcp",
+        "serena"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:.ua/.understandignore",
+      "type": "file",
+      "name": ".understandignore",
+      "filePath": ".ua/.understandignore",
+      "summary": "Template ignore-pattern file for the Understand-Anything analysis tool, listing commented-out glob patterns (from .gitignore conventions and common test-file naming) that can be uncommented to exclude paths from codebase analysis.",
+      "tags": [
+        "configuration",
+        "tooling",
+        "ignore-patterns",
+        "understand-anything"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/app/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/app/__init__.py",
+      "summary": "Empty Python package marker file that makes backend/app importable as a package.",
+      "tags": [
+        "package-marker",
+        "python",
+        "empty"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/app/api/agentic.py",
+      "type": "file",
+      "name": "agentic.py",
+      "filePath": "backend/app/api/agentic.py",
+      "summary": "LangGraph agent pipeline that turns a lecture transcript and extracted video frames into a structured multi-module course \u2014 orchestrating Gemini/Groq LLM calls (with tenacity retry and OpenTelemetry tracing) across content structuring, frame selection, course content generation, quiz creation, and spaced-retention plan design.",
+      "tags": [
+        "langgraph",
+        "llm-pipeline",
+        "agentic",
+        "api-handler",
+        "opentelemetry"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Uses tenacity @retry decorators wrapping Gemini/Groq chain invocations, each also wrapped in an OpenTelemetry span, giving per-LLM-call retry and observability across every LangGraph node function."
+    },
+    {
+      "id": "file:backend/app/api/utils.py",
+      "type": "file",
+      "name": "utils.py",
+      "filePath": "backend/app/api/utils.py",
+      "summary": "Small utility module providing LLM-output JSON cleanup (stripping markdown code fences) and base64 image encoding helpers used by the agentic course-generation pipeline.",
+      "tags": [
+        "utility",
+        "json-parsing",
+        "image-encoding",
+        "helper"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/app/db/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/app/db/__init__.py",
+      "summary": "Empty Python package marker file for the backend/app/db package.",
+      "tags": [
+        "package-marker",
+        "python",
+        "empty",
+        "database"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/app/sse/broadcaster.py",
+      "type": "file",
+      "name": "broadcaster.py",
+      "filePath": "backend/app/sse/broadcaster.py",
+      "summary": "In-memory Server-Sent Events broadcaster (MessageAnnouncer) that manages per-job async queues for progress subscribers, publishes JSON-formatted progress events, and tracks job status for the course-generation SSE stream.",
+      "tags": [
+        "sse",
+        "real-time",
+        "broadcaster",
+        "async",
+        "event-handler"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:backend/requirements.txt",
+      "type": "document",
+      "name": "requirements.txt",
+      "filePath": "backend/requirements.txt",
+      "summary": "Python dependency manifest for the backend service, pinning FastAPI/uvicorn, LangChain/LangGraph with Gemini and Groq integrations, video/audio processing libraries (yt-dlp, opencv, whisper, scenedetect, fiftyone), OpenTelemetry instrumentation, and PostgreSQL/S3 clients, with inline notes explaining resolved version conflicts.",
+      "tags": [
+        "dependencies",
+        "python",
+        "build-system",
+        "documentation"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/scripts/start.sh",
+      "type": "file",
+      "name": "start.sh",
+      "filePath": "backend/scripts/start.sh",
+      "summary": "Container entrypoint script that runs a preflight import check of the heavy dependency stack (fiftyone, the LangGraph agent, the FastAPI app) before launching uvicorn as a single worker on port 8000, since in-memory progress queues require a single process.",
+      "tags": [
+        "entry-point",
+        "shell-script",
+        "containerization",
+        "deployment"
+      ],
+      "complexity": "simple",
+      "languageNotes": "Deliberately pinned to a single uvicorn worker/process because SSE progress state (PROGRESS_QUEUES / ACTIVE_TASKS in app/api/routes.py) lives in process memory rather than a shared store."
+    },
+    {
+      "id": "file:frontend/nginx.conf",
+      "type": "file",
+      "name": "nginx.conf",
+      "filePath": "frontend/nginx.conf",
+      "summary": "Nginx server configuration serving the built React SPA \u2014 enables gzip compression, sets long-lived immutable caching for hashed static assets, and falls back all unmatched routes to index.html for client-side routing.",
+      "tags": [
+        "nginx",
+        "spa",
+        "static-assets",
+        "configuration"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/src/App.css",
+      "type": "file",
+      "name": "App.css",
+      "filePath": "frontend/src/App.css",
+      "summary": "Default Create React App stylesheet for the root App component, providing the boilerplate centered layout, spinning logo animation, and header styling from the CRA template.",
+      "tags": [
+        "css",
+        "styling",
+        "boilerplate",
+        "create-react-app"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/src/index.css",
+      "type": "file",
+      "name": "index.css",
+      "filePath": "frontend/src/index.css",
+      "summary": "Global base stylesheet setting the default system font stack and monospace code font for the whole React application.",
+      "tags": [
+        "css",
+        "global-styles",
+        "typography",
+        "boilerplate"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/src/react-app-env.d.ts",
+      "type": "file",
+      "name": "react-app-env.d.ts",
+      "filePath": "frontend/src/react-app-env.d.ts",
+      "summary": "Create React App TypeScript ambient type declaration reference file enabling CRA's built-in type definitions (e.g. for static asset imports).",
+      "tags": [
+        "type-definition",
+        "typescript",
+        "boilerplate",
+        "create-react-app"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/src/setupTests.ts",
+      "type": "file",
+      "name": "setupTests.ts",
+      "filePath": "frontend/src/setupTests.ts",
+      "summary": "Jest test setup file that imports jest-dom's custom DOM matchers (e.g. toHaveTextContent) for use across the frontend test suite.",
+      "tags": [
+        "test",
+        "jest",
+        "setup",
+        "boilerplate"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/tsconfig.tsbuildinfo",
+      "type": "file",
+      "name": "tsconfig.tsbuildinfo",
+      "filePath": "frontend/tsconfig.tsbuildinfo",
+      "summary": "Auto-generated TypeScript incremental build cache file tracking compiled file state for faster rebuilds; not hand-maintained source.",
+      "tags": [
+        "build-artifact",
+        "typescript",
+        "generated",
+        "cache"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/api/agentic.py:log_retry_error",
+      "type": "function",
+      "name": "log_retry_error",
+      "filePath": "backend/app/api/agentic.py",
+      "lineRange": [
+        88,
+        93
+      ],
+      "summary": "Tenacity retry-callback that logs a warning and records an OpenTelemetry span event whenever an LLM call is retried after failure.",
+      "tags": [
+        "retry",
+        "logging",
+        "opentelemetry",
+        "callback"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/api/agentic.py:call_gemini_with_retry",
+      "type": "function",
+      "name": "call_gemini_with_retry",
+      "filePath": "backend/app/api/agentic.py",
+      "lineRange": [
+        101,
+        138
+      ],
+      "summary": "Invokes a LangChain chain against Gemini with tenacity-managed retries, wrapping the call in an OpenTelemetry span that records input/output sizes, latency, and error status.",
+      "tags": [
+        "llm-call",
+        "retry",
+        "gemini",
+        "opentelemetry"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/api/agentic.py:call_groq_with_retry",
+      "type": "function",
+      "name": "call_groq_with_retry",
+      "filePath": "backend/app/api/agentic.py",
+      "lineRange": [
+        145,
+        184
+      ],
+      "summary": "Invokes a LangChain chain against Groq with tenacity-managed retries, tracing the call span with attributes for latency and payload sizes analogous to the Gemini variant.",
+      "tags": [
+        "llm-call",
+        "retry",
+        "groq",
+        "opentelemetry"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/api/agentic.py:content_structurer",
+      "type": "function",
+      "name": "content_structurer",
+      "filePath": "backend/app/api/agentic.py",
+      "lineRange": [
+        186,
+        260
+      ],
+      "summary": "LangGraph node that prompts Gemini to convert a raw transcript into a structured JSON outline of course modules and sections, parsing and cleaning the LLM's JSON response.",
+      "tags": [
+        "langgraph-node",
+        "llm-pipeline",
+        "json-parsing",
+        "gemini"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/api/agentic.py:frame_selector",
+      "type": "function",
+      "name": "frame_selector",
+      "filePath": "backend/app/api/agentic.py",
+      "lineRange": [
+        263,
+        510
+      ],
+      "summary": "LangGraph node that iterates each structured section, matches candidate video frames by timestamp, base64-encodes them, and asks Groq's vision model to pick the most representative frame with a caption for each section.",
+      "tags": [
+        "langgraph-node",
+        "vision-llm",
+        "frame-selection",
+        "groq"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:backend/app/api/agentic.py:course_content_generator",
+      "type": "function",
+      "name": "course_content_generator",
+      "filePath": "backend/app/api/agentic.py",
+      "lineRange": [
+        512,
+        593
+      ],
+      "summary": "LangGraph node that expands the structured outline into full course content (explanations, examples) per section via a Gemini chat prompt, parsing the returned JSON.",
+      "tags": [
+        "langgraph-node",
+        "llm-pipeline",
+        "content-generation",
+        "gemini"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/api/agentic.py:quiz_architect",
+      "type": "function",
+      "name": "quiz_architect",
+      "filePath": "backend/app/api/agentic.py",
+      "lineRange": [
+        595,
+        681
+      ],
+      "summary": "LangGraph node that generates quiz questions for each course section using Gemini, validating and logging the total question count produced.",
+      "tags": [
+        "langgraph-node",
+        "quiz-generation",
+        "llm-pipeline",
+        "gemini"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/api/agentic.py:retention_designer",
+      "type": "function",
+      "name": "retention_designer",
+      "filePath": "backend/app/api/agentic.py",
+      "lineRange": [
+        683,
+        779
+      ],
+      "summary": "LangGraph node that designs a spaced-retention study plan (review schedule and tip placeholders) for the generated course content via a Gemini prompt.",
+      "tags": [
+        "langgraph-node",
+        "retention-plan",
+        "llm-pipeline",
+        "gemini"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/api/agentic.py:retention_tip_executor",
+      "type": "function",
+      "name": "retention_tip_executor",
+      "filePath": "backend/app/api/agentic.py",
+      "lineRange": [
+        781,
+        873
+      ],
+      "summary": "LangGraph node that fills in retention plan placeholders with concrete study tips, selecting from multiple prompt templates per tip type and calling Gemini to generate each tip's content.",
+      "tags": [
+        "langgraph-node",
+        "retention-plan",
+        "llm-pipeline",
+        "gemini"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/app/api/agentic.py:GraphState",
+      "type": "class",
+      "name": "GraphState",
+      "filePath": "backend/app/api/agentic.py",
+      "lineRange": [
+        63,
+        70
+      ],
+      "summary": "TypedDict defining the shared LangGraph state schema (transcript, frames, structured_content, course_content, quiz_content, retention_plan) threaded through every pipeline node.",
+      "tags": [
+        "type-definition",
+        "langgraph-state",
+        "data-model"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/api/utils.py:clean_json_string",
+      "type": "function",
+      "name": "clean_json_string",
+      "filePath": "backend/app/api/utils.py",
+      "lineRange": [
+        19,
+        61
+      ],
+      "summary": "Strips markdown code fences and extraneous text from an LLM's raw text response to extract a parseable JSON string, with fallback heuristics and validation via json.loads.",
+      "tags": [
+        "json-parsing",
+        "llm-output",
+        "utility",
+        "validation"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/api/utils.py:encode_image",
+      "type": "function",
+      "name": "encode_image",
+      "filePath": "backend/app/api/utils.py",
+      "lineRange": [
+        64,
+        82
+      ],
+      "summary": "Reads an image file from disk and returns its base64-encoded string, used to embed frames in vision-LLM prompts.",
+      "tags": [
+        "utility",
+        "image-encoding",
+        "base64"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/app/sse/broadcaster.py:MessageAnnouncer",
+      "type": "class",
+      "name": "MessageAnnouncer",
+      "filePath": "backend/app/sse/broadcaster.py",
+      "lineRange": [
+        16,
+        130
+      ],
+      "summary": "Thread-safe, in-memory pub/sub manager that tracks per-job asyncio queues of SSE subscribers, publishes JSON progress events to all listeners for a job, and stores/retrieves per-job status for late subscribers.",
+      "tags": [
+        "sse",
+        "pub-sub",
+        "async",
+        "broadcaster",
+        "in-memory-state"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/sse/broadcaster.py:format_sse",
+      "type": "function",
+      "name": "format_sse",
+      "filePath": "backend/app/sse/broadcaster.py",
+      "lineRange": [
+        134,
+        145
+      ],
+      "summary": "Formats a Python dict as a properly-encoded Server-Sent Events data frame (JSON-serialized, newline-terminated).",
+      "tags": [
+        "sse",
+        "formatting",
+        "utility"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:frontend/src/App.test.tsx",
+      "target": "file:frontend/src/App.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/App.tsx",
+      "target": "file:frontend/src/pages/UploadPage.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/index.tsx",
+      "target": "file:frontend/src/App.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/index.tsx",
+      "target": "file:frontend/src/index.css",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/index.tsx",
+      "target": "file:frontend/src/reportWebVitals.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/pages/UploadPage.tsx",
+      "target": "file:frontend/src/services/api.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/services/api.ts",
+      "target": "file:frontend/src/pages/UploadPage.tsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:frontend/src/App.tsx",
+      "target": "function:frontend/src/App.tsx:App",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/src/App.tsx",
+      "target": "function:frontend/src/App.tsx:App",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/pages/UploadPage.tsx",
+      "target": "function:frontend/src/pages/UploadPage.tsx:UploadPage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/src/pages/UploadPage.tsx",
+      "target": "function:frontend/src/pages/UploadPage.tsx:UploadPage",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/reportWebVitals.ts",
+      "target": "function:frontend/src/reportWebVitals.ts:reportWebVitals",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/src/reportWebVitals.ts",
+      "target": "function:frontend/src/reportWebVitals.ts:reportWebVitals",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/services/api.ts",
+      "target": "function:frontend/src/services/api.ts:startCourseGeneration",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/src/services/api.ts",
+      "target": "function:frontend/src/services/api.ts:startCourseGeneration",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/pages/UploadPage.tsx",
+      "target": "function:frontend/src/services/api.ts:startCourseGeneration",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:frontend/src/App.tsx",
+      "target": "file:frontend/src/App.test.tsx",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:backend/app/api/frame_extraction.py",
+      "target": "function:backend/app/api/frame_extraction.py:download_video",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/frame_extraction.py",
+      "target": "function:backend/app/api/frame_extraction.py:detect_scenes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/frame_extraction.py",
+      "target": "function:backend/app/api/frame_extraction.py:extract_keyframes_with_timestamps",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/frame_extraction.py",
+      "target": "function:backend/app/api/frame_extraction.py:optimize_frame",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/frame_extraction.py",
+      "target": "function:backend/app/api/frame_extraction.py:load_frames_into_fiftyone",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/frame_extraction.py",
+      "target": "function:backend/app/api/frame_extraction.py:select_unique_frames",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/frame_extraction.py",
+      "target": "function:backend/app/api/frame_extraction.py:align_frames_to_transcript",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/frame_extraction.py",
+      "target": "function:backend/app/api/frame_extraction.py:download_video",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/frame_extraction.py",
+      "target": "function:backend/app/api/frame_extraction.py:detect_scenes",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/frame_extraction.py",
+      "target": "function:backend/app/api/frame_extraction.py:extract_keyframes_with_timestamps",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/frame_extraction.py",
+      "target": "function:backend/app/api/frame_extraction.py:optimize_frame",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/frame_extraction.py",
+      "target": "function:backend/app/api/frame_extraction.py:load_frames_into_fiftyone",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/frame_extraction.py",
+      "target": "function:backend/app/api/frame_extraction.py:select_unique_frames",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/frame_extraction.py",
+      "target": "function:backend/app/api/frame_extraction.py:align_frames_to_transcript",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "class:backend/app/api/routes.py:VideoRequest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "class:backend/app/api/routes.py:ProgressStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "function:backend/app/api/routes.py:send_progress",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "function:backend/app/api/routes.py:_run_course_generation",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "function:backend/app/api/routes.py:generate_course_request",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "function:backend/app/api/routes.py:stream_progress",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "function:backend/app/api/routes.py:save_transcript",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "function:backend/app/api/routes.py:_safe_delete",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "function:backend/app/api/routes.py:process_and_upload_frames",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "function:backend/app/api/routes.py:_get_whisper_transcript",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "class:backend/app/api/routes.py:VideoRequest",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "class:backend/app/api/routes.py:ProgressStatus",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "function:backend/app/api/routes.py:send_progress",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "function:backend/app/api/routes.py:_run_course_generation",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "function:backend/app/api/routes.py:generate_course_request",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "function:backend/app/api/routes.py:stream_progress",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "function:backend/app/api/routes.py:save_transcript",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "function:backend/app/api/routes.py:_safe_delete",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "function:backend/app/api/routes.py:process_and_upload_frames",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "function:backend/app/api/routes.py:_get_whisper_transcript",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/s3_utils.py",
+      "target": "function:backend/app/api/s3_utils.py:upload_frame_to_s3",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/s3_utils.py",
+      "target": "function:backend/app/api/s3_utils.py:upload_frame_to_s3",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/main.py",
+      "target": "function:backend/app/main.py:root",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/main.py",
+      "target": "function:backend/app/main.py:root",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "file:backend/app/api/__init__.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "file:backend/app/api/agentic.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "file:backend/app/api/frame_extraction.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "file:backend/app/api/s3_utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "file:backend/app/db/crud.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/app/api/routes.py",
+      "target": "file:backend/app/db/database.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/app/main.py",
+      "target": "file:backend/app/api/routes.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "function:backend/app/api/routes.py:_run_course_generation",
+      "target": "function:backend/app/api/frame_extraction.py:download_video",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/routes.py:_run_course_generation",
+      "target": "function:backend/app/api/frame_extraction.py:detect_scenes",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/routes.py:_run_course_generation",
+      "target": "function:backend/app/api/frame_extraction.py:extract_keyframes_with_timestamps",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/routes.py:_run_course_generation",
+      "target": "function:backend/app/api/frame_extraction.py:load_frames_into_fiftyone",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/routes.py:_run_course_generation",
+      "target": "function:backend/app/api/frame_extraction.py:select_unique_frames",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/routes.py:_run_course_generation",
+      "target": "function:backend/app/api/frame_extraction.py:align_frames_to_transcript",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/routes.py:_run_course_generation",
+      "target": "function:backend/app/db/crud.py:create_course",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/routes.py:_run_course_generation",
+      "target": "function:backend/app/db/crud.py:get_course_by_video_id",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/routes.py:generate_course_request",
+      "target": "function:backend/app/db/crud.py:get_course_by_video_id",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/routes.py:stream_progress",
+      "target": "function:backend/app/db/crud.py:get_course_by_video_id",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/routes.py:process_and_upload_frames",
+      "target": "function:backend/app/api/s3_utils.py:upload_frame_to_s3",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/routes.py:_run_course_generation",
+      "target": "function:backend/app/api/routes.py:save_transcript",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/routes.py:_run_course_generation",
+      "target": "function:backend/app/api/routes.py:_get_whisper_transcript",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/routes.py:_run_course_generation",
+      "target": "function:backend/app/api/routes.py:process_and_upload_frames",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/routes.py:_get_whisper_transcript",
+      "target": "function:backend/app/api/routes.py:_safe_delete",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/db/crud.py",
+      "target": "file:backend/app/db/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/scripts/init_db.py",
+      "target": "file:backend/app/db/database.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/scripts/init_db.py",
+      "target": "file:backend/app/db/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:backend/app/db/crud.py",
+      "target": "function:backend/app/db/crud.py:create_course",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/db/crud.py",
+      "target": "function:backend/app/db/crud.py:update_course_status",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/db/crud.py",
+      "target": "function:backend/app/db/crud.py:get_course_by_video_id",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/db/crud.py",
+      "target": "function:backend/app/db/crud.py:create_course",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/db/crud.py",
+      "target": "function:backend/app/db/crud.py:update_course_status",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/db/crud.py",
+      "target": "function:backend/app/db/crud.py:get_course_by_video_id",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/db/database.py",
+      "target": "function:backend/app/db/database.py:test_connection",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/db/database.py",
+      "target": "function:backend/app/db/database.py:test_connection",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/db/models.py",
+      "target": "class:backend/app/db/models.py:Course",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/db/models.py",
+      "target": "class:backend/app/db/models.py:Course",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/scripts/init_db.py",
+      "target": "function:backend/scripts/init_db.py:_wait_for_db",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/scripts/init_db.py",
+      "target": "function:backend/scripts/init_db.py:main",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/scripts/init_db.py",
+      "target": "function:backend/scripts/init_db.py:_wait_for_db",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/scripts/init_db.py",
+      "target": "function:backend/scripts/init_db.py:main",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/scripts/init_db.py:main",
+      "target": "function:backend/scripts/init_db.py:_wait_for_db",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/db/crud.py:create_course",
+      "target": "class:backend/app/db/models.py:Course",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/db/crud.py:update_course_status",
+      "target": "class:backend/app/db/models.py:Course",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/db/crud.py:get_course_by_video_id",
+      "target": "class:backend/app/db/models.py:Course",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "service:backend/.dockerignore",
+      "target": "service:backend/Dockerfile",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "service:backend/Dockerfile",
+      "target": "file:backend/scripts/start.sh",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "service:frontend/Dockerfile",
+      "target": "service:frontend/Dockerfile:build",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:frontend/Dockerfile",
+      "target": "service:frontend/Dockerfile:nginx",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "service:frontend/.dockerignore",
+      "target": "service:frontend/Dockerfile",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "service:docker-compose.yml",
+      "target": "service:docker-compose.yml:postgres",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:docker-compose.yml",
+      "target": "service:docker-compose.yml:minio",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:docker-compose.yml",
+      "target": "service:docker-compose.yml:minio-init",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:docker-compose.yml",
+      "target": "service:docker-compose.yml:jaeger",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:docker-compose.yml",
+      "target": "service:docker-compose.yml:backend",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:docker-compose.yml",
+      "target": "service:docker-compose.yml:backend-init",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:docker-compose.yml",
+      "target": "service:docker-compose.yml:frontend",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:docker-compose.yml:minio-init",
+      "target": "service:docker-compose.yml:minio",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:docker-compose.yml:backend",
+      "target": "service:docker-compose.yml:postgres",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:docker-compose.yml:backend",
+      "target": "service:docker-compose.yml:minio-init",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:docker-compose.yml:backend-init",
+      "target": "service:docker-compose.yml:postgres",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:docker-compose.yml:frontend",
+      "target": "service:docker-compose.yml:backend",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:.env.example",
+      "target": "service:docker-compose.yml",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:README.md",
+      "target": "service:docker-compose.yml",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "config:.env.example",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:frontend/package.json",
+      "target": "config:frontend/tsconfig.json",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:frontend/README.md",
+      "target": "config:frontend/package.json",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:frontend/public/manifest.json",
+      "target": "file:frontend/public/index.html",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:backend/app/api/agentic.py",
+      "target": "class:backend/app/api/agentic.py:GraphState",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/agentic.py",
+      "target": "function:backend/app/api/agentic.py:log_retry_error",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/agentic.py",
+      "target": "function:backend/app/api/agentic.py:call_gemini_with_retry",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/agentic.py",
+      "target": "function:backend/app/api/agentic.py:call_groq_with_retry",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/agentic.py",
+      "target": "function:backend/app/api/agentic.py:content_structurer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/agentic.py",
+      "target": "function:backend/app/api/agentic.py:frame_selector",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/agentic.py",
+      "target": "function:backend/app/api/agentic.py:course_content_generator",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/agentic.py",
+      "target": "function:backend/app/api/agentic.py:quiz_architect",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/agentic.py",
+      "target": "function:backend/app/api/agentic.py:retention_designer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/agentic.py",
+      "target": "function:backend/app/api/agentic.py:retention_tip_executor",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/utils.py",
+      "target": "function:backend/app/api/utils.py:clean_json_string",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/utils.py",
+      "target": "function:backend/app/api/utils.py:encode_image",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/sse/broadcaster.py",
+      "target": "class:backend/app/sse/broadcaster.py:MessageAnnouncer",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/sse/broadcaster.py",
+      "target": "function:backend/app/sse/broadcaster.py:format_sse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/app/api/agentic.py",
+      "target": "class:backend/app/api/agentic.py:GraphState",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/agentic.py",
+      "target": "function:backend/app/api/agentic.py:log_retry_error",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/agentic.py",
+      "target": "function:backend/app/api/agentic.py:call_gemini_with_retry",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/agentic.py",
+      "target": "function:backend/app/api/agentic.py:call_groq_with_retry",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/agentic.py",
+      "target": "function:backend/app/api/agentic.py:content_structurer",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/agentic.py",
+      "target": "function:backend/app/api/agentic.py:frame_selector",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/agentic.py",
+      "target": "function:backend/app/api/agentic.py:course_content_generator",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/agentic.py",
+      "target": "function:backend/app/api/agentic.py:quiz_architect",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/agentic.py",
+      "target": "function:backend/app/api/agentic.py:retention_designer",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/agentic.py",
+      "target": "function:backend/app/api/agentic.py:retention_tip_executor",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/utils.py",
+      "target": "function:backend/app/api/utils.py:clean_json_string",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/utils.py",
+      "target": "function:backend/app/api/utils.py:encode_image",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/sse/broadcaster.py",
+      "target": "class:backend/app/sse/broadcaster.py:MessageAnnouncer",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/sse/broadcaster.py",
+      "target": "function:backend/app/sse/broadcaster.py:format_sse",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:backend/app/api/agentic.py",
+      "target": "file:backend/app/api/utils.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "function:backend/app/api/agentic.py:content_structurer",
+      "target": "function:backend/app/api/agentic.py:call_gemini_with_retry",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/agentic.py:frame_selector",
+      "target": "function:backend/app/api/agentic.py:call_groq_with_retry",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/agentic.py:course_content_generator",
+      "target": "function:backend/app/api/agentic.py:call_gemini_with_retry",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/agentic.py:quiz_architect",
+      "target": "function:backend/app/api/agentic.py:call_gemini_with_retry",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/agentic.py:retention_designer",
+      "target": "function:backend/app/api/agentic.py:call_gemini_with_retry",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/agentic.py:retention_tip_executor",
+      "target": "function:backend/app/api/agentic.py:call_gemini_with_retry",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/agentic.py:content_structurer",
+      "target": "function:backend/app/api/utils.py:clean_json_string",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/agentic.py:frame_selector",
+      "target": "function:backend/app/api/utils.py:clean_json_string",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/agentic.py:frame_selector",
+      "target": "function:backend/app/api/utils.py:encode_image",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/agentic.py:course_content_generator",
+      "target": "function:backend/app/api/utils.py:clean_json_string",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/agentic.py:quiz_architect",
+      "target": "function:backend/app/api/utils.py:clean_json_string",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:backend/app/api/agentic.py:retention_designer",
+      "target": "function:backend/app/api/utils.py:clean_json_string",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:ui",
+      "name": "Frontend UI",
+      "description": "The React/TypeScript single-page application (CRA) \u2014 App and UploadPage components, the axios API client, global styles, and the static HTML shell that let a user submit a YouTube URL and view the generated course, quiz, and retention plan.",
+      "nodeIds": [
+        "file:frontend/src/App.test.tsx",
+        "file:frontend/src/App.tsx",
+        "file:frontend/src/index.tsx",
+        "file:frontend/src/pages/UploadPage.tsx",
+        "file:frontend/src/reportWebVitals.ts",
+        "file:frontend/src/services/api.ts",
+        "file:frontend/public/index.html",
+        "file:frontend/src/App.css",
+        "file:frontend/src/index.css",
+        "file:frontend/src/react-app-env.d.ts",
+        "file:frontend/src/setupTests.ts",
+        "file:frontend/tsconfig.tsbuildinfo"
+      ]
+    },
+    {
+      "id": "layer:api",
+      "name": "Backend API & Orchestration",
+      "description": "The FastAPI application and its request-handling logic \u2014 the app entry point, the course-generation router, the LangGraph agentic pipeline (Gemini/Groq calls), video frame extraction, S3 upload helpers, and the SSE progress broadcaster.",
+      "nodeIds": [
+        "file:backend/app/api/__init__.py",
+        "file:backend/app/api/frame_extraction.py",
+        "file:backend/app/api/routes.py",
+        "file:backend/app/api/s3_utils.py",
+        "file:backend/app/main.py",
+        "file:backend/app/__init__.py",
+        "file:backend/app/api/agentic.py",
+        "file:backend/app/api/utils.py",
+        "file:backend/app/sse/broadcaster.py"
+      ]
+    },
+    {
+      "id": "layer:data",
+      "name": "Data Layer",
+      "description": "Persistence for generated courses \u2014 the SQLAlchemy async engine/session setup, the Course ORM model, the async CRUD functions, and the one-shot database schema initializer run at container startup.",
+      "nodeIds": [
+        "file:backend/app/db/crud.py",
+        "file:backend/app/db/database.py",
+        "file:backend/app/db/models.py",
+        "file:backend/app/db/__init__.py",
+        "file:backend/scripts/init_db.py"
+      ]
+    },
+    {
+      "id": "layer:infrastructure",
+      "name": "Infrastructure & Deployment",
+      "description": "Container and orchestration definitions for the whole stack \u2014 backend and frontend Dockerfiles, the docker-compose services (Postgres, MinIO, Jaeger, backend, frontend, and their init jobs), the nginx static-file config, and the backend container entrypoint script.",
+      "nodeIds": [
+        "service:backend/Dockerfile",
+        "service:backend/.dockerignore",
+        "service:frontend/.dockerignore",
+        "service:frontend/Dockerfile",
+        "service:frontend/Dockerfile:build",
+        "service:frontend/Dockerfile:nginx",
+        "service:docker-compose.yml",
+        "service:docker-compose.yml:postgres",
+        "service:docker-compose.yml:minio",
+        "service:docker-compose.yml:minio-init",
+        "service:docker-compose.yml:jaeger",
+        "service:docker-compose.yml:backend",
+        "service:docker-compose.yml:backend-init",
+        "service:docker-compose.yml:frontend",
+        "file:backend/scripts/start.sh",
+        "file:frontend/nginx.conf"
+      ]
+    },
+    {
+      "id": "layer:config",
+      "name": "Configuration",
+      "description": "Project and build configuration \u2014 the root and frontend npm manifests, the frontend TypeScript compiler config, the PWA manifest, the .env template for the compose stack, and tooling configs for Serena and Understand-Anything.",
+      "nodeIds": [
+        "config:.env.example",
+        "config:package.json",
+        "config:frontend/package.json",
+        "config:frontend/tsconfig.json",
+        "config:frontend/public/manifest.json",
+        "config:.serena/project.yml",
+        "file:.ua/.understandignore"
+      ]
+    },
+    {
+      "id": "layer:documentation",
+      "name": "Documentation",
+      "description": "Project-facing documentation and dependency manifests describing how to run the stack and what the backend depends on \u2014 the root and frontend READMEs, the crawler policy, and the annotated Python requirements file.",
+      "nodeIds": [
+        "document:README.md",
+        "document:frontend/README.md",
+        "document:frontend/public/robots.txt",
+        "document:backend/requirements.txt"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "Project Overview",
+      "description": "This repository is a Docker-Compose launcher for a YouTube-to-course generator: paste in a video URL and get back a structured course with quizzes and a retention plan. The README explains that the actual application logic is vendored from an upstream project, and this repo's job is to wrap it in a reproducible five-service stack (frontend, backend, Postgres, MinIO, Jaeger) that starts with one command. Keep this map in mind as the tour moves from the UI, through the backend's AI pipeline, down to the database and infrastructure that hold it all together.",
+      "nodeIds": [
+        "document:README.md"
+      ]
+    },
+    {
+      "order": 2,
+      "title": "Frontend Entry Point",
+      "description": "index.tsx is where the React application boots: it mounts the App component into the DOM root inside React.StrictMode and kicks off web-vitals reporting. This is the browser-side counterpart to the backend entry point you'll see in Step 5 \u2014 everything the user interacts with starts execution here. It's a thin, largely boilerplate CRA (Create React App) file, which is typical: entry points should do almost nothing besides wiring things together.",
+      "nodeIds": [
+        "file:frontend/src/index.tsx"
+      ],
+      "languageLesson": "React.StrictMode is a development-only wrapper that intentionally double-invokes certain functions (like component render and effects) to help surface side-effect bugs before they reach production."
+    },
+    {
+      "order": 3,
+      "title": "Routing Gateway",
+      "description": "App.tsx sets up React Router and routes the single '/' path to the UploadPage component. Even though this app has only one page today, wrapping it in a router keeps the door open for future routes without restructuring the app shell. This is the direct child of index.tsx from Step 2, and its only job is to hand off to the real UI logic.",
+      "nodeIds": [
+        "file:frontend/src/App.tsx"
+      ]
+    },
+    {
+      "order": 4,
+      "title": "Upload Flow and API Client",
+      "description": "UploadPage.tsx is the entire application's UI: a user pastes a YouTube URL, the page calls startCourseGeneration in api.ts to POST it to the backend's /api/generate-course endpoint, and then the page subscribes to a Server-Sent Events stream to show live progress before rendering the finished course, quiz, and retention-plan tabs with Material UI. These two files form a tightly coupled pair \u2014 the component owns the UI state machine, while api.ts is a thin Axios wrapper that isolates the one HTTP call the frontend needs to make. This is the last stop on the frontend side before the tour crosses into the backend that does the actual work.",
+      "nodeIds": [
+        "file:frontend/src/pages/UploadPage.tsx",
+        "file:frontend/src/services/api.ts"
+      ],
+      "languageLesson": "Server-Sent Events (SSE) give a one-way server-to-client push channel over plain HTTP \u2014 simpler than WebSockets when you only need to stream progress updates, not bidirectional messages."
+    },
+    {
+      "order": 5,
+      "title": "Backend Entry Point",
+      "description": "main.py is where the FastAPI application is created: it configures CORS so the frontend (on a different port) can call it, mounts the local frames directory as static files so extracted video keyframes can be served back to the browser, and registers the API router under /api. This is the backend's equivalent of Step 2's index.tsx \u2014 a small bootstrap file whose only real logic is wiring up the router you'll explore next.",
+      "nodeIds": [
+        "file:backend/app/main.py"
+      ]
+    },
+    {
+      "order": 6,
+      "title": "Course Generation Router",
+      "description": "routes.py is the busiest file in the backend (26 outgoing dependencies) and the true orchestrator of the whole product: it exposes the /api/generate-course and SSE progress endpoints, fetches the transcript (falling back to local Whisper transcription if needed), and coordinates frame extraction, the LangGraph agent pipeline, S3 uploads, and database persistence as a background task. Every backend module the rest of this tour covers gets pulled together here. Its generate_course_request and _run_course_generation functions are the connective tissue between the UI request from Step 4 and everything downstream.",
+      "nodeIds": [
+        "file:backend/app/api/routes.py"
+      ],
+      "languageLesson": "FastAPI's BackgroundTasks let a request return immediately while long-running work (like an AI pipeline) continues after the response is sent \u2014 essential here since course generation can take minutes."
+    },
+    {
+      "order": 7,
+      "title": "The LangGraph Agent Pipeline",
+      "description": "agentic.py is the AI core of the product: a LangGraph pipeline that turns a transcript and extracted video frames into a structured course by chaining Gemini/Groq LLM calls through content structuring, frame selection, course content generation, quiz creation, and spaced-retention plan design. Each stage is a node function called by routes.py's orchestration from Step 6, wrapped in tenacity retry logic and OpenTelemetry tracing (which is why Jaeger is part of the stack from Step 1). This is the single most complex file in the project and the reason the whole stack exists.",
+      "nodeIds": [
+        "file:backend/app/api/agentic.py"
+      ],
+      "languageLesson": "LangGraph models an LLM workflow as a state graph: each node is a function that reads and updates a shared state object (GraphState here), making multi-step, retryable AI pipelines easier to reason about than a linear chain of calls."
+    },
+    {
+      "order": 8,
+      "title": "Video Frame Extraction",
+      "description": "frame_extraction.py is a self-contained computer-vision pipeline: it downloads the video with yt-dlp, detects scene boundaries, extracts and optimizes keyframes, loads them into a FiftyOne dataset to filter down to visually unique frames, then aligns the survivors to transcript timestamps. This runs before the agent pipeline from Step 7 so the LLM has real screenshots to reason about, not just text. It's the second-largest module in the backend (14 outgoing dependencies) and explains why the Docker image needs OpenCV, scenedetect, and FiftyOne installed.",
+      "nodeIds": [
+        "file:backend/app/api/frame_extraction.py"
+      ]
+    },
+    {
+      "order": 9,
+      "title": "Storage and Live Progress",
+      "description": "Two small supporting services round out the API layer: s3_utils.py uploads each selected keyframe to MinIO (S3-compatible local storage) and returns its public URL for the frontend to display, while broadcaster.py's MessageAnnouncer manages per-job async queues that power the SSE progress stream UploadPage.tsx subscribes to back in Step 4. Neither file does anything glamorous, but together they're what make the UI feel responsive instead of a silent multi-minute wait.",
+      "nodeIds": [
+        "file:backend/app/api/s3_utils.py",
+        "file:backend/app/sse/broadcaster.py"
+      ]
+    },
+    {
+      "order": 10,
+      "title": "The Data Layer",
+      "description": "Generated courses need to persist somewhere, and this is the layer that does it: database.py configures the async SQLAlchemy engine from DATABASE_URL, models.py defines the single Course table (storing transcript, structured content, quiz, and retention plan as JSONB), and crud.py provides the async create/update/fetch functions that routes.py calls throughout course generation. This is a deliberately minimal data model \u2014 one table holding everything a course needs \u2014 which keeps the whole backend easy to reason about.",
+      "nodeIds": [
+        "file:backend/app/db/models.py",
+        "file:backend/app/db/database.py",
+        "file:backend/app/db/crud.py"
+      ],
+      "languageLesson": "SQLAlchemy's async engine (create_async_engine) requires an async-capable driver (asyncpg here) and async session context managers \u2014 mixing sync and async SQLAlchemy code is a common source of bugs."
+    },
+    {
+      "order": 11,
+      "title": "Database Bootstrap",
+      "description": "init_db.py is a one-shot script, not part of the running application: it polls the configured DATABASE_URL until Postgres accepts connections, then idempotently creates any missing tables from the Base.metadata defined in Step 10's models.py. This script is run by a dedicated backend-init container before the main backend starts, which you'll see wired up in the next step's docker-compose.yml \u2014 it's the bridge between the code-level data model and the infrastructure that provisions it.",
+      "nodeIds": [
+        "file:backend/scripts/init_db.py"
+      ]
+    },
+    {
+      "order": 12,
+      "title": "Orchestrating the Full Stack",
+      "description": "docker-compose.yml is what turns everything covered so far into a single `docker compose up`: it launches Postgres, MinIO (plus a bucket-init job), Jaeger, the FastAPI backend (gated behind a healthy Postgres and the backend-init job from Step 11), and the nginx-served frontend (gated behind a healthy backend). The depends_on chains encode the real startup order this application needs \u2014 the frontend genuinely cannot come up correctly before the backend, and the backend cannot before its database exists.",
+      "nodeIds": [
+        "service:docker-compose.yml"
+      ],
+      "languageLesson": "Docker Compose's `depends_on` with `condition: service_healthy` blocks a service from starting until its dependency's healthcheck passes, not just until the container process starts \u2014 critical for services like Postgres that take a moment to become ready to accept connections."
+    },
+    {
+      "order": 13,
+      "title": "Containerizing Each Service",
+      "description": "The backend and frontend each get their own Dockerfile with very different shapes. The backend's is a single-stage Python 3.10-slim build that installs CPU-only PyTorch from a dedicated index before the rest of requirements.txt (a version-compatibility workaround), then launches via start.sh. The frontend's is a multi-stage build: a node:20-alpine stage compiles the CRA bundle, and only the compiled static output gets copied into a minimal nginx:1.27-alpine runtime stage, keeping the final image small.",
+      "nodeIds": [
+        "service:backend/Dockerfile",
+        "service:frontend/Dockerfile"
+      ],
+      "languageLesson": "Multi-stage Docker builds use multiple FROM statements so build-time dependencies (a full Node toolchain, dev packages) never end up in the runtime image \u2014 only files explicitly COPY'd from an earlier stage survive into the final one."
+    },
+    {
+      "order": 14,
+      "title": "Configuring the Stack",
+      "description": "The .env.example file is the capstone: it lists every environment variable the docker-compose.yml from Step 12 expects, from LLM API keys (Gemini, Groq) that power the agent pipeline in Step 7, to Postgres credentials for Step 10's data layer, to MinIO/S3 settings for Step 9's frame storage, to the frontend's API base URL. Copying this to .env and filling in real API keys is the one manual step standing between cloning this repo and running the entire course-generation pipeline end to end.",
+      "nodeIds": [
+        "config:.env.example"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,2498 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 5,
+  "filesSkipped": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 5,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 5,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "results": [
+    {
+      "path": "backend/app/api/__init__.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 1,
+      "nonEmptyLines": 0,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/app/api/frame_extraction.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 244,
+      "nonEmptyLines": 203,
+      "functions": [
+        {
+          "name": "download_video",
+          "startLine": 26,
+          "endLine": 48,
+          "params": [
+            "url"
+          ]
+        },
+        {
+          "name": "detect_scenes",
+          "startLine": 51,
+          "endLine": 72,
+          "params": [
+            "video_path",
+            "threshold"
+          ]
+        },
+        {
+          "name": "extract_keyframes_with_timestamps",
+          "startLine": 75,
+          "endLine": 130,
+          "params": [
+            "video_path",
+            "scenes",
+            "output_dir"
+          ]
+        },
+        {
+          "name": "optimize_frame",
+          "startLine": 133,
+          "endLine": 153,
+          "params": [
+            "frame_path",
+            "resolution",
+            "quality"
+          ]
+        },
+        {
+          "name": "load_frames_into_fiftyone",
+          "startLine": 156,
+          "endLine": 180,
+          "params": [
+            "frames",
+            "video_id"
+          ]
+        },
+        {
+          "name": "select_unique_frames",
+          "startLine": 183,
+          "endLine": 211,
+          "params": [
+            "dataset",
+            "uniqueness_threshold"
+          ]
+        },
+        {
+          "name": "align_frames_to_transcript",
+          "startLine": 214,
+          "endLine": 244,
+          "params": [
+            "frames",
+            "transcript_segments"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "download_video",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "detect_scenes",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "extract_keyframes_with_timestamps",
+          "line": 75,
+          "isDefault": false
+        },
+        {
+          "name": "optimize_frame",
+          "line": 133,
+          "isDefault": false
+        },
+        {
+          "name": "load_frames_into_fiftyone",
+          "line": 156,
+          "isDefault": false
+        },
+        {
+          "name": "select_unique_frames",
+          "line": 183,
+          "isDefault": false
+        },
+        {
+          "name": "align_frames_to_transcript",
+          "line": 214,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "download_video",
+          "callee": "YoutubeDL",
+          "lineNumber": 41
+        },
+        {
+          "caller": "download_video",
+          "callee": "logger.info",
+          "lineNumber": 42
+        },
+        {
+          "caller": "download_video",
+          "callee": "ydl.extract_info",
+          "lineNumber": 43
+        },
+        {
+          "caller": "download_video",
+          "callee": "info.get",
+          "lineNumber": 45
+        },
+        {
+          "caller": "download_video",
+          "callee": "logger.info",
+          "lineNumber": 47
+        },
+        {
+          "caller": "detect_scenes",
+          "callee": "logger.info",
+          "lineNumber": 62
+        },
+        {
+          "caller": "detect_scenes",
+          "callee": "VideoManager",
+          "lineNumber": 63
+        },
+        {
+          "caller": "detect_scenes",
+          "callee": "SceneManager",
+          "lineNumber": 64
+        },
+        {
+          "caller": "detect_scenes",
+          "callee": "scene_manager.add_detector",
+          "lineNumber": 65
+        },
+        {
+          "caller": "detect_scenes",
+          "callee": "ContentDetector",
+          "lineNumber": 65
+        },
+        {
+          "caller": "detect_scenes",
+          "callee": "video_manager.set_downscale_factor",
+          "lineNumber": 66
+        },
+        {
+          "caller": "detect_scenes",
+          "callee": "video_manager.start",
+          "lineNumber": 67
+        },
+        {
+          "caller": "detect_scenes",
+          "callee": "scene_manager.detect_scenes",
+          "lineNumber": 68
+        },
+        {
+          "caller": "detect_scenes",
+          "callee": "scene_manager.get_scene_list",
+          "lineNumber": 69
+        },
+        {
+          "caller": "detect_scenes",
+          "callee": "video_manager.release",
+          "lineNumber": 70
+        },
+        {
+          "caller": "detect_scenes",
+          "callee": "logger.info",
+          "lineNumber": 71
+        },
+        {
+          "caller": "detect_scenes",
+          "callee": "len",
+          "lineNumber": 71
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "os.path.exists",
+          "lineNumber": 90
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "os.makedirs",
+          "lineNumber": 91
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "logger.info",
+          "lineNumber": 92
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "len",
+          "lineNumber": 95
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "logger.info",
+          "lineNumber": 98
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "enumerate",
+          "lineNumber": 99
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "scene[0].get_seconds",
+          "lineNumber": 100
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "scene[1].get_seconds",
+          "lineNumber": 100
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "logger.info",
+          "lineNumber": 101
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "scenes[-1][1].get_seconds",
+          "lineNumber": 104
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "logger.info",
+          "lineNumber": 105
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "logger.warning",
+          "lineNumber": 108
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "enumerate",
+          "lineNumber": 110
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "scene[0].get_seconds",
+          "lineNumber": 111
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "scene[1].get_seconds",
+          "lineNumber": 111
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "offsets.append",
+          "lineNumber": 116
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "max",
+          "lineNumber": 120
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "min",
+          "lineNumber": 120
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "os.path.join",
+          "lineNumber": 121
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "logger.info",
+          "lineNumber": 123
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "subprocess.run",
+          "lineNumber": 124
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "frames.append",
+          "lineNumber": 126
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "logger.info",
+          "lineNumber": 129
+        },
+        {
+          "caller": "extract_keyframes_with_timestamps",
+          "callee": "len",
+          "lineNumber": 129
+        },
+        {
+          "caller": "optimize_frame",
+          "callee": "logger.info",
+          "lineNumber": 144
+        },
+        {
+          "caller": "optimize_frame",
+          "callee": "logger.info",
+          "lineNumber": 146
+        },
+        {
+          "caller": "optimize_frame",
+          "callee": "Image.open",
+          "lineNumber": 147
+        },
+        {
+          "caller": "optimize_frame",
+          "callee": "logger.info",
+          "lineNumber": 148
+        },
+        {
+          "caller": "optimize_frame",
+          "callee": "img.resize",
+          "lineNumber": 149
+        },
+        {
+          "caller": "optimize_frame",
+          "callee": "img.save",
+          "lineNumber": 150
+        },
+        {
+          "caller": "optimize_frame",
+          "callee": "logger.error",
+          "lineNumber": 152
+        },
+        {
+          "caller": "optimize_frame",
+          "callee": "logger.error",
+          "lineNumber": 153
+        },
+        {
+          "caller": "load_frames_into_fiftyone",
+          "callee": "fo.list_datasets",
+          "lineNumber": 170
+        },
+        {
+          "caller": "load_frames_into_fiftyone",
+          "callee": "logger.info",
+          "lineNumber": 171
+        },
+        {
+          "caller": "load_frames_into_fiftyone",
+          "callee": "fo.delete_dataset",
+          "lineNumber": 172
+        },
+        {
+          "caller": "load_frames_into_fiftyone",
+          "callee": "fo.Dataset",
+          "lineNumber": 174
+        },
+        {
+          "caller": "load_frames_into_fiftyone",
+          "callee": "fo.Sample",
+          "lineNumber": 176
+        },
+        {
+          "caller": "load_frames_into_fiftyone",
+          "callee": "dataset.add_sample",
+          "lineNumber": 179
+        },
+        {
+          "caller": "select_unique_frames",
+          "callee": "fob.compute_uniqueness",
+          "lineNumber": 195
+        },
+        {
+          "caller": "select_unique_frames",
+          "callee": "dataset.match",
+          "lineNumber": 196
+        },
+        {
+          "caller": "select_unique_frames",
+          "callee": "fo.ViewField",
+          "lineNumber": 196
+        },
+        {
+          "caller": "select_unique_frames",
+          "callee": "unique_view.sort_by(\"scene_index\").sort_by",
+          "lineNumber": 199
+        },
+        {
+          "caller": "select_unique_frames",
+          "callee": "unique_view.sort_by",
+          "lineNumber": 199
+        },
+        {
+          "caller": "select_unique_frames",
+          "callee": "selected_frames.append",
+          "lineNumber": 203
+        },
+        {
+          "caller": "select_unique_frames",
+          "callee": "logger.info",
+          "lineNumber": 209
+        },
+        {
+          "caller": "select_unique_frames",
+          "callee": "len",
+          "lineNumber": 209
+        },
+        {
+          "caller": "select_unique_frames",
+          "callee": "logger.info",
+          "lineNumber": 210
+        },
+        {
+          "caller": "align_frames_to_transcript",
+          "callee": "min",
+          "lineNumber": 232
+        },
+        {
+          "caller": "align_frames_to_transcript",
+          "callee": "abs",
+          "lineNumber": 234
+        },
+        {
+          "caller": "align_frames_to_transcript",
+          "callee": "aligned_frames.append",
+          "lineNumber": 242
+        },
+        {
+          "caller": "align_frames_to_transcript",
+          "callee": "logger.info",
+          "lineNumber": 243
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 7,
+        "functionCount": 7,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/app/api/routes.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 777,
+      "nonEmptyLines": 686,
+      "functions": [
+        {
+          "name": "send_progress",
+          "startLine": 49,
+          "endLine": 55,
+          "params": [
+            "queue",
+            "status",
+            "detail",
+            "error",
+            "final_result"
+          ]
+        },
+        {
+          "name": "_run_course_generation",
+          "startLine": 57,
+          "endLine": 392,
+          "params": [
+            "video_id",
+            "video_url",
+            "queue"
+          ]
+        },
+        {
+          "name": "generate_course_request",
+          "startLine": 395,
+          "endLine": 451,
+          "params": [
+            "request"
+          ]
+        },
+        {
+          "name": "stream_progress",
+          "startLine": 456,
+          "endLine": 543,
+          "params": [
+            "request",
+            "video_id"
+          ]
+        },
+        {
+          "name": "save_transcript",
+          "startLine": 545,
+          "endLine": 566,
+          "params": [
+            "transcript",
+            "video_id"
+          ]
+        },
+        {
+          "name": "_safe_delete",
+          "startLine": 569,
+          "endLine": 578,
+          "params": [
+            "filepath"
+          ]
+        },
+        {
+          "name": "process_and_upload_frames",
+          "startLine": 581,
+          "endLine": 714,
+          "params": [
+            "course_content",
+            "structured_content",
+            "video_id"
+          ]
+        },
+        {
+          "name": "_get_whisper_transcript",
+          "startLine": 717,
+          "endLine": 777,
+          "params": [
+            "video_id",
+            "video_url"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "VideoRequest",
+          "startLine": 36,
+          "endLine": 40,
+          "methods": [],
+          "properties": [
+            "videoUrl"
+          ]
+        },
+        {
+          "name": "ProgressStatus",
+          "startLine": 42,
+          "endLine": 47,
+          "methods": [],
+          "properties": [
+            "status",
+            "detail",
+            "error",
+            "final_result"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "VideoRequest",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "ProgressStatus",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "send_progress",
+          "line": 49,
+          "isDefault": false
+        },
+        {
+          "name": "_run_course_generation",
+          "line": 57,
+          "isDefault": false
+        },
+        {
+          "name": "generate_course_request",
+          "line": 394,
+          "isDefault": false
+        },
+        {
+          "name": "stream_progress",
+          "line": 455,
+          "isDefault": false
+        },
+        {
+          "name": "save_transcript",
+          "line": 545,
+          "isDefault": false
+        },
+        {
+          "name": "_safe_delete",
+          "line": 569,
+          "isDefault": false
+        },
+        {
+          "name": "process_and_upload_frames",
+          "line": 581,
+          "isDefault": false
+        },
+        {
+          "name": "_get_whisper_transcript",
+          "line": 717,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "send_progress",
+          "callee": "ProgressStatus",
+          "lineNumber": 54
+        },
+        {
+          "caller": "send_progress",
+          "callee": "queue.put",
+          "lineNumber": 55
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "set",
+          "lineNumber": 59
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 63
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "time.time",
+          "lineNumber": 64
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "time.time",
+          "lineNumber": 65
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 66
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "logger.info",
+          "lineNumber": 71
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "YouTubeTranscriptApi.list_transcripts",
+          "lineNumber": 72
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "logger.info",
+          "lineNumber": 76
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "transcript_list.find_generated_transcript",
+          "lineNumber": 79
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "logger.info",
+          "lineNumber": 80
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "transcript_list.find_generated_transcript",
+          "lineNumber": 87
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "logger.info",
+          "lineNumber": 88
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "logger.error",
+          "lineNumber": 91
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "transcript_obj.fetch",
+          "lineNumber": 93
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "item[\"text\"].strip",
+          "lineNumber": 95
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "\"\\n\".join",
+          "lineNumber": 98
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "logger.info",
+          "lineNumber": 99
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "logger.warning",
+          "lineNumber": 102
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "type",
+          "lineNumber": 102
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "os.path.join",
+          "lineNumber": 103
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "local_temp_files.add",
+          "lineNumber": 104
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "_get_whisper_transcript",
+          "lineNumber": 105
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "logger.exception",
+          "lineNumber": 107
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "str(api_err).lower",
+          "lineNumber": 108
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "str",
+          "lineNumber": 108
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "HTTPException",
+          "lineNumber": 109
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "logger.warning",
+          "lineNumber": 110
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "type",
+          "lineNumber": 110
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "os.path.join",
+          "lineNumber": 111
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "local_temp_files.add",
+          "lineNumber": 112
+        },
+        {
+          "caller": "get_transcript_sync",
+          "callee": "_get_whisper_transcript",
+          "lineNumber": 113
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "asyncio.to_thread",
+          "lineNumber": 115
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "time.time",
+          "lineNumber": 116
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 117
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "ValueError",
+          "lineNumber": 119
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "time.time",
+          "lineNumber": 122
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 123
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "time.time",
+          "lineNumber": 130
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "os.path.normpath",
+          "lineNumber": 131
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "os.path.join",
+          "lineNumber": 131
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "os.makedirs",
+          "lineNumber": 132
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "set",
+          "lineNumber": 133
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "time.time",
+          "lineNumber": 137
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "logger.info",
+          "lineNumber": 138
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "frame_extraction.download_video",
+          "lineNumber": 139
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "time.time",
+          "lineNumber": 140
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "os.path.exists",
+          "lineNumber": 141
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "ValueError",
+          "lineNumber": 142
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "local_temp_files.add",
+          "lineNumber": 143
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "logger.info",
+          "lineNumber": 144
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "time.time",
+          "lineNumber": 147
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "logger.info",
+          "lineNumber": 148
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "frame_extraction.detect_scenes",
+          "lineNumber": 149
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "time.time",
+          "lineNumber": 150
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "logger.warning",
+          "lineNumber": 151
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "logger.info",
+          "lineNumber": 152
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "time.time",
+          "lineNumber": 155
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "logger.info",
+          "lineNumber": 156
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "frame_extraction.extract_keyframes_with_timestamps",
+          "lineNumber": 157
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "time.time",
+          "lineNumber": 160
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "logger.info",
+          "lineNumber": 161
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "f_data.get",
+          "lineNumber": 167
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "os.path.isabs",
+          "lineNumber": 169
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "os.path.relpath",
+          "lineNumber": 169
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "os.getcwd",
+          "lineNumber": 169
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "os.path.normpath",
+          "lineNumber": 170
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "f_path_rel.replace",
+          "lineNumber": 171
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "os.path.exists",
+          "lineNumber": 172
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "existing_frames_data.append",
+          "lineNumber": 173
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "local_frame_paths.add",
+          "lineNumber": 174
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "logger.warning",
+          "lineNumber": 176
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "logger.warning",
+          "lineNumber": 179
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "time.time",
+          "lineNumber": 183
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "logger.info",
+          "lineNumber": 184
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "int",
+          "lineNumber": 185
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "time.time",
+          "lineNumber": 185
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "frame_extraction.load_frames_into_fiftyone",
+          "lineNumber": 186
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "frame_extraction.select_unique_frames",
+          "lineNumber": 187
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "time.time",
+          "lineNumber": 188
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "logger.info",
+          "lineNumber": 189
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "frame.get",
+          "lineNumber": 195
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "os.path.exists",
+          "lineNumber": 196
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "local_temp_files.add",
+          "lineNumber": 197
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "final_selected_frames.append",
+          "lineNumber": 198
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "logger.warning",
+          "lineNumber": 199
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "fo.list_datasets",
+          "lineNumber": 204
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "fo.delete_dataset",
+          "lineNumber": 205
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "logger.info",
+          "lineNumber": 206
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "logger.warning",
+          "lineNumber": 208
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "logger.info",
+          "lineNumber": 210
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "len",
+          "lineNumber": 210
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "time.time",
+          "lineNumber": 211
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "logger.exception",
+          "lineNumber": 214
+        },
+        {
+          "caller": "get_frames_sync",
+          "callee": "ValueError",
+          "lineNumber": 215
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "asyncio.to_thread",
+          "lineNumber": 218
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 221
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "frame_timings.get",
+          "lineNumber": 221
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 222
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "frame_timings.get",
+          "lineNumber": 222
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 223
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "frame_timings.get",
+          "lineNumber": 223
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 224
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "frame_timings.get",
+          "lineNumber": 224
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "len",
+          "lineNumber": 224
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "time.time",
+          "lineNumber": 226
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 227
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "time.time",
+          "lineNumber": 230
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 231
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "asyncio.to_thread",
+          "lineNumber": 232
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "time.time",
+          "lineNumber": 236
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 237
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "asyncio.to_thread",
+          "lineNumber": 240
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "local_temp_files.add",
+          "lineNumber": 242
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "time.time",
+          "lineNumber": 245
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 246
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "agentic.app.ainvoke",
+          "lineNumber": 253
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "time.time",
+          "lineNumber": 256
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 257
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "time.time",
+          "lineNumber": 261
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "results.get",
+          "lineNumber": 262
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "results.get",
+          "lineNumber": 263
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "results.get",
+          "lineNumber": 264
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "results.get",
+          "lineNumber": 265
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "isinstance",
+          "lineNumber": 267
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "isinstance",
+          "lineNumber": 268
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "isinstance",
+          "lineNumber": 269
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "isinstance",
+          "lineNumber": 270
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "logger.error",
+          "lineNumber": 271
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "ValueError",
+          "lineNumber": 272
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 273
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "asyncio.sleep",
+          "lineNumber": 275
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 276
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "asyncio.sleep",
+          "lineNumber": 277
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 278
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "asyncio.sleep",
+          "lineNumber": 279
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 280
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "time.time",
+          "lineNumber": 281
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "logger.info",
+          "lineNumber": 282
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "time.time",
+          "lineNumber": 286
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 287
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "process_and_upload_frames",
+          "lineNumber": 288
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "time.time",
+          "lineNumber": 293
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 294
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "time.time",
+          "lineNumber": 297
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 298
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "async_session",
+          "lineNumber": 300
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "create_course",
+          "lineNumber": 302
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "async_session",
+          "lineNumber": 313
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "get_course_by_video_id",
+          "lineNumber": 314
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "logger.warning",
+          "lineNumber": 316
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "ValueError",
+          "lineNumber": 328
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 341
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "time.time",
+          "lineNumber": 344
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 345
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "logger.info",
+          "lineNumber": 346
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "logger.error",
+          "lineNumber": 349
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 350
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "str",
+          "lineNumber": 350
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "logger.error",
+          "lineNumber": 353
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 354
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "str",
+          "lineNumber": 354
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "str",
+          "lineNumber": 355
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "logger.exception",
+          "lineNumber": 357
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "send_progress",
+          "lineNumber": 360
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "logger.info",
+          "lineNumber": 364
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "local_temp_files.copy",
+          "lineNumber": 366
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "os.path.isfile",
+          "lineNumber": 370
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "delete_tasks.append",
+          "lineNumber": 371
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "asyncio.to_thread",
+          "lineNumber": 371
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "file_paths_in_tasks.append",
+          "lineNumber": 372
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "asyncio.gather",
+          "lineNumber": 374
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "enumerate",
+          "lineNumber": 375
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "isinstance",
+          "lineNumber": 376
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "logger.warning",
+          "lineNumber": 376
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "os.path.normpath",
+          "lineNumber": 379
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "os.path.join",
+          "lineNumber": 379
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "os.path.exists",
+          "lineNumber": 381
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "os.path.isdir",
+          "lineNumber": 381
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "asyncio.to_thread",
+          "lineNumber": 382
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "asyncio.to_thread",
+          "lineNumber": 383
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "logger.info",
+          "lineNumber": 383
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "logger.info",
+          "lineNumber": 384
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "logger.warning",
+          "lineNumber": 385
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "logger.info",
+          "lineNumber": 386
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "queue.put",
+          "lineNumber": 388
+        },
+        {
+          "caller": "_run_course_generation",
+          "callee": "logger.info",
+          "lineNumber": 392
+        },
+        {
+          "caller": "generate_course_request",
+          "callee": "HTTPException",
+          "lineNumber": 403
+        },
+        {
+          "caller": "generate_course_request",
+          "callee": "request.videoUrl.split(\"v=\")[-1].split(\"&\")[0].split",
+          "lineNumber": 404
+        },
+        {
+          "caller": "generate_course_request",
+          "callee": "request.videoUrl.split(\"v=\")[-1].split",
+          "lineNumber": 404
+        },
+        {
+          "caller": "generate_course_request",
+          "callee": "request.videoUrl.split",
+          "lineNumber": 404
+        },
+        {
+          "caller": "generate_course_request",
+          "callee": "HTTPException",
+          "lineNumber": 406
+        },
+        {
+          "caller": "generate_course_request",
+          "callee": "logger.info",
+          "lineNumber": 407
+        },
+        {
+          "caller": "generate_course_request",
+          "callee": "ACTIVE_TASKS[video_id].done",
+          "lineNumber": 410
+        },
+        {
+          "caller": "generate_course_request",
+          "callee": "logger.warning",
+          "lineNumber": 411
+        },
+        {
+          "caller": "generate_course_request",
+          "callee": "HTTPException",
+          "lineNumber": 412
+        },
+        {
+          "caller": "generate_course_request",
+          "callee": "async_session",
+          "lineNumber": 415
+        },
+        {
+          "caller": "generate_course_request",
+          "callee": "get_course_by_video_id",
+          "lineNumber": 416
+        },
+        {
+          "caller": "generate_course_request",
+          "callee": "logger.info",
+          "lineNumber": 418
+        },
+        {
+          "caller": "generate_course_request",
+          "callee": "logger.info",
+          "lineNumber": 433
+        },
+        {
+          "caller": "generate_course_request",
+          "callee": "asyncio.Queue",
+          "lineNumber": 434
+        },
+        {
+          "caller": "generate_course_request",
+          "callee": "asyncio.create_task",
+          "lineNumber": 438
+        },
+        {
+          "caller": "generate_course_request",
+          "callee": "_run_course_generation",
+          "lineNumber": 439
+        },
+        {
+          "caller": "generate_course_request",
+          "callee": "logger.error",
+          "lineNumber": 447
+        },
+        {
+          "caller": "generate_course_request",
+          "callee": "logger.exception",
+          "lineNumber": 450
+        },
+        {
+          "caller": "generate_course_request",
+          "callee": "HTTPException",
+          "lineNumber": 451
+        },
+        {
+          "caller": "stream_progress",
+          "callee": "logger.info",
+          "lineNumber": 460
+        },
+        {
+          "caller": "stream_progress",
+          "callee": "logger.warning",
+          "lineNumber": 464
+        },
+        {
+          "caller": "stream_progress",
+          "callee": "async_session",
+          "lineNumber": 466
+        },
+        {
+          "caller": "stream_progress",
+          "callee": "get_course_by_video_id",
+          "lineNumber": 467
+        },
+        {
+          "caller": "finished_generator",
+          "callee": "ProgressStatus",
+          "lineNumber": 481
+        },
+        {
+          "caller": "finished_generator",
+          "callee": "update.model_dump_json",
+          "lineNumber": 482
+        },
+        {
+          "caller": "finished_generator",
+          "callee": "logger.info",
+          "lineNumber": 483
+        },
+        {
+          "caller": "stream_progress",
+          "callee": "StreamingResponse",
+          "lineNumber": 484
+        },
+        {
+          "caller": "stream_progress",
+          "callee": "finished_generator",
+          "lineNumber": 484
+        },
+        {
+          "caller": "stream_progress",
+          "callee": "HTTPException",
+          "lineNumber": 487
+        },
+        {
+          "caller": "event_generator",
+          "callee": "request.is_disconnected",
+          "lineNumber": 495
+        },
+        {
+          "caller": "event_generator",
+          "callee": "logger.info",
+          "lineNumber": 496
+        },
+        {
+          "caller": "event_generator",
+          "callee": "asyncio.wait_for",
+          "lineNumber": 501
+        },
+        {
+          "caller": "event_generator",
+          "callee": "queue.get",
+          "lineNumber": 501
+        },
+        {
+          "caller": "event_generator",
+          "callee": "logger.info",
+          "lineNumber": 509
+        },
+        {
+          "caller": "event_generator",
+          "callee": "update.model_dump_json",
+          "lineNumber": 515
+        },
+        {
+          "caller": "event_generator",
+          "callee": "logger.info",
+          "lineNumber": 518
+        },
+        {
+          "caller": "event_generator",
+          "callee": "logger.info",
+          "lineNumber": 523
+        },
+        {
+          "caller": "event_generator",
+          "callee": "logger.exception",
+          "lineNumber": 525
+        },
+        {
+          "caller": "event_generator",
+          "callee": "ProgressStatus",
+          "lineNumber": 528
+        },
+        {
+          "caller": "event_generator",
+          "callee": "str",
+          "lineNumber": 528
+        },
+        {
+          "caller": "event_generator",
+          "callee": "error_update.model_dump_json",
+          "lineNumber": 529
+        },
+        {
+          "caller": "event_generator",
+          "callee": "logger.info",
+          "lineNumber": 533
+        },
+        {
+          "caller": "event_generator",
+          "callee": "logger.info",
+          "lineNumber": 540
+        },
+        {
+          "caller": "stream_progress",
+          "callee": "StreamingResponse",
+          "lineNumber": 543
+        },
+        {
+          "caller": "stream_progress",
+          "callee": "event_generator",
+          "lineNumber": 543
+        },
+        {
+          "caller": "save_transcript",
+          "callee": "os.makedirs",
+          "lineNumber": 557
+        },
+        {
+          "caller": "save_transcript",
+          "callee": "os.path.join",
+          "lineNumber": 558
+        },
+        {
+          "caller": "save_transcript",
+          "callee": "open",
+          "lineNumber": 560
+        },
+        {
+          "caller": "save_transcript",
+          "callee": "f.write",
+          "lineNumber": 561
+        },
+        {
+          "caller": "save_transcript",
+          "callee": "logger.info",
+          "lineNumber": 562
+        },
+        {
+          "caller": "save_transcript",
+          "callee": "logger.error",
+          "lineNumber": 565
+        },
+        {
+          "caller": "_safe_delete",
+          "callee": "os.path.exists",
+          "lineNumber": 572
+        },
+        {
+          "caller": "_safe_delete",
+          "callee": "os.remove",
+          "lineNumber": 573
+        },
+        {
+          "caller": "_safe_delete",
+          "callee": "logger.debug",
+          "lineNumber": 574
+        },
+        {
+          "caller": "_safe_delete",
+          "callee": "logger.warning",
+          "lineNumber": 576
+        },
+        {
+          "caller": "_safe_delete",
+          "callee": "logger.warning",
+          "lineNumber": 578
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "set",
+          "lineNumber": 593
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "logger.info",
+          "lineNumber": 597
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "content_dicts_to_scan.items",
+          "lineNumber": 600
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "isinstance",
+          "lineNumber": 601
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "logger.debug",
+          "lineNumber": 602
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "enumerate",
+          "lineNumber": 605
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "content_dict.get",
+          "lineNumber": 605
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "isinstance",
+          "lineNumber": 607
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "logger.warning",
+          "lineNumber": 608
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "enumerate",
+          "lineNumber": 611
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "module.get",
+          "lineNumber": 611
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "isinstance",
+          "lineNumber": 613
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "logger.warning",
+          "lineNumber": 614
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "section.get",
+          "lineNumber": 619
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "isinstance",
+          "lineNumber": 620
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "logger.warning",
+          "lineNumber": 621
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "type",
+          "lineNumber": 623
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "enumerate",
+          "lineNumber": 626
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "isinstance",
+          "lineNumber": 628
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "logger.warning",
+          "lineNumber": 629
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "frame.get",
+          "lineNumber": 632
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "isinstance",
+          "lineNumber": 634
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "local_path.startswith",
+          "lineNumber": 634
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "logger.debug",
+          "lineNumber": 636
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "local_paths_to_upload.add",
+          "lineNumber": 637
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "local_path.startswith",
+          "lineNumber": 638
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "logger.debug",
+          "lineNumber": 639
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "logger.info",
+          "lineNumber": 643
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "json.loads",
+          "lineNumber": 645
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "json.dumps",
+          "lineNumber": 645
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "json.loads",
+          "lineNumber": 645
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "json.dumps",
+          "lineNumber": 645
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "logger.info",
+          "lineNumber": 647
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "len",
+          "lineNumber": 647
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "list",
+          "lineNumber": 651
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "os.path.normpath",
+          "lineNumber": 653
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "os.path.join",
+          "lineNumber": 653
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "os.getcwd",
+          "lineNumber": 653
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "os.path.basename",
+          "lineNumber": 654
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "os.path.exists",
+          "lineNumber": 655
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "logger.error",
+          "lineNumber": 656
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "asyncio.to_thread",
+          "lineNumber": 659
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "upload_tasks.append",
+          "lineNumber": 660
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "logger.warning",
+          "lineNumber": 663
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "json.loads",
+          "lineNumber": 664
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "json.dumps",
+          "lineNumber": 664
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "json.loads",
+          "lineNumber": 664
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "json.dumps",
+          "lineNumber": 664
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "asyncio.gather",
+          "lineNumber": 666
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "enumerate",
+          "lineNumber": 672
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "isinstance",
+          "lineNumber": 674
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "logger.error",
+          "lineNumber": 675
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "logger.info",
+          "lineNumber": 682
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "json.loads",
+          "lineNumber": 685
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "json.dumps",
+          "lineNumber": 685
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "json.loads",
+          "lineNumber": 686
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "json.dumps",
+          "lineNumber": 686
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "dicts_to_update.items",
+          "lineNumber": 689
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "isinstance",
+          "lineNumber": 690
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "content_dict.get",
+          "lineNumber": 691
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "isinstance",
+          "lineNumber": 692
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "module.get",
+          "lineNumber": 693
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "isinstance",
+          "lineNumber": 694
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "section.get",
+          "lineNumber": 697
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "isinstance",
+          "lineNumber": 698
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "isinstance",
+          "lineNumber": 701
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "updated_frames.append",
+          "lineNumber": 702
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "frame.get",
+          "lineNumber": 704
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "frame.copy",
+          "lineNumber": 706
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "updated_frames.append",
+          "lineNumber": 708
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "updated_frames.append",
+          "lineNumber": 710
+        },
+        {
+          "caller": "process_and_upload_frames",
+          "callee": "logger.info",
+          "lineNumber": 713
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "logger.info",
+          "lineNumber": 719
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "os.path.join",
+          "lineNumber": 720
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "os.path.dirname",
+          "lineNumber": 721
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "os.makedirs",
+          "lineNumber": 722
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "os.path.join",
+          "lineNumber": 723
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "logger.info",
+          "lineNumber": 734
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "\" \".join",
+          "lineNumber": 734
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "subprocess.run",
+          "lineNumber": 735
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "logger.info",
+          "lineNumber": 736
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "logger.info",
+          "lineNumber": 738
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "logger.error",
+          "lineNumber": 740
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "HTTPException",
+          "lineNumber": 741
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "logger.error",
+          "lineNumber": 744
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "ValueError",
+          "lineNumber": 746
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "logger.exception",
+          "lineNumber": 748
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "ValueError",
+          "lineNumber": 749
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "os.path.exists",
+          "lineNumber": 751
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "logger.error",
+          "lineNumber": 752
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "ValueError",
+          "lineNumber": 753
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "logger.info",
+          "lineNumber": 756
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "whisper.load_model",
+          "lineNumber": 757
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "model.transcribe",
+          "lineNumber": 758
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "result.get(\"text\", \"\").strip",
+          "lineNumber": 759
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "result.get",
+          "lineNumber": 759
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "logger.info",
+          "lineNumber": 760
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "result.get",
+          "lineNumber": 763
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "seg[\"text\"].strip",
+          "lineNumber": 768
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "logger.exception",
+          "lineNumber": 774
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "ValueError",
+          "lineNumber": 775
+        },
+        {
+          "caller": "_get_whisper_transcript",
+          "callee": "_safe_delete",
+          "lineNumber": 777
+        }
+      ],
+      "metrics": {
+        "importCount": 6,
+        "exportCount": 10,
+        "functionCount": 8,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "backend/app/api/s3_utils.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 102,
+      "nonEmptyLines": 91,
+      "functions": [
+        {
+          "name": "upload_frame_to_s3",
+          "startLine": 54,
+          "endLine": 102,
+          "params": [
+            "local_file_path",
+            "video_id",
+            "frame_filename"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "upload_frame_to_s3",
+          "line": 54,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "upload_frame_to_s3",
+          "callee": "logger.error",
+          "lineNumber": 67
+        },
+        {
+          "caller": "upload_frame_to_s3",
+          "callee": "S3_PUBLIC_URL.rstrip",
+          "lineNumber": 74
+        },
+        {
+          "caller": "upload_frame_to_s3",
+          "callee": "os.path.exists",
+          "lineNumber": 80
+        },
+        {
+          "caller": "upload_frame_to_s3",
+          "callee": "logger.error",
+          "lineNumber": 81
+        },
+        {
+          "caller": "upload_frame_to_s3",
+          "callee": "logger.info",
+          "lineNumber": 84
+        },
+        {
+          "caller": "upload_frame_to_s3",
+          "callee": "s3_client.upload_file",
+          "lineNumber": 85
+        },
+        {
+          "caller": "upload_frame_to_s3",
+          "callee": "logger.info",
+          "lineNumber": 92
+        },
+        {
+          "caller": "upload_frame_to_s3",
+          "callee": "logger.exception",
+          "lineNumber": 95
+        },
+        {
+          "caller": "upload_frame_to_s3",
+          "callee": "logger.error",
+          "lineNumber": 98
+        },
+        {
+          "caller": "upload_frame_to_s3",
+          "callee": "logger.exception",
+          "lineNumber": 101
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/app/main.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 42,
+      "nonEmptyLines": 34,
+      "functions": [
+        {
+          "name": "root",
+          "startLine": 35,
+          "endLine": 42,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "root",
+          "line": 34,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    }
+  ]
+}

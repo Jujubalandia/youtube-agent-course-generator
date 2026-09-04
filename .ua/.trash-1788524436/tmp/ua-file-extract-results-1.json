@@ -1,0 +1,725 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 6,
+  "filesSkipped": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 6,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 6,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "results": [
+    {
+      "path": "frontend/src/App.test.tsx",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 9,
+      "nonEmptyLines": 8,
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "frontend/src/App.tsx",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 16,
+      "nonEmptyLines": 14,
+      "functions": [
+        {
+          "name": "App",
+          "startLine": 5,
+          "endLine": 14,
+          "params": []
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 0,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "frontend/src/index.tsx",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 19,
+      "nonEmptyLines": 17,
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "frontend/src/pages/UploadPage.tsx",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 817,
+      "nonEmptyLines": 744,
+      "functions": [
+        {
+          "name": "UploadPage",
+          "startLine": 229,
+          "endLine": 815,
+          "params": []
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "UploadPage",
+          "callee": "useState",
+          "lineNumber": 230
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "useState",
+          "lineNumber": 231
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "useState",
+          "lineNumber": 232
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "useState",
+          "lineNumber": 233
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "useState",
+          "lineNumber": 235
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "useState",
+          "lineNumber": 236
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "useState",
+          "lineNumber": 237
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "useState",
+          "lineNumber": 239
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "useRef",
+          "lineNumber": 241
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "useRef",
+          "lineNumber": 243
+        },
+        {
+          "caller": "extractVideoId",
+          "callee": "url.match",
+          "lineNumber": 247
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "useEffect",
+          "lineNumber": 251
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "extractVideoId",
+          "lineNumber": 253
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "setEmbeddedVideoUrl",
+          "lineNumber": 255
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "setEmbeddedVideoUrl",
+          "lineNumber": 257
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "setEmbeddedVideoUrl",
+          "lineNumber": 260
+        },
+        {
+          "caller": "formatTimestamp",
+          "callee": "isNaN",
+          "lineNumber": 265
+        },
+        {
+          "caller": "formatTimestamp",
+          "callee": "Math.floor(timestamp / 3600).toString().padStart",
+          "lineNumber": 266
+        },
+        {
+          "caller": "formatTimestamp",
+          "callee": "Math.floor(timestamp / 3600).toString",
+          "lineNumber": 266
+        },
+        {
+          "caller": "formatTimestamp",
+          "callee": "Math.floor",
+          "lineNumber": 266
+        },
+        {
+          "caller": "formatTimestamp",
+          "callee": "Math.floor((timestamp % 3600) / 60).toString().padStart",
+          "lineNumber": 267
+        },
+        {
+          "caller": "formatTimestamp",
+          "callee": "Math.floor((timestamp % 3600) / 60).toString",
+          "lineNumber": 267
+        },
+        {
+          "caller": "formatTimestamp",
+          "callee": "Math.floor",
+          "lineNumber": 267
+        },
+        {
+          "caller": "formatTimestamp",
+          "callee": "Math.floor(timestamp % 60).toString().padStart",
+          "lineNumber": 268
+        },
+        {
+          "caller": "formatTimestamp",
+          "callee": "Math.floor(timestamp % 60).toString",
+          "lineNumber": 268
+        },
+        {
+          "caller": "formatTimestamp",
+          "callee": "Math.floor",
+          "lineNumber": 268
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "useCallback",
+          "lineNumber": 273
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "console.log",
+          "lineNumber": 275
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "eventSourceRef.current.close",
+          "lineNumber": 276
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "useEffect",
+          "lineNumber": 282
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "closeEventSource",
+          "lineNumber": 284
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "useCallback",
+          "lineNumber": 289
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "closeEventSource",
+          "lineNumber": 291
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "console.log",
+          "lineNumber": 294
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "console.log",
+          "lineNumber": 299
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "setProgressMessage",
+          "lineNumber": 301
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "JSON.parse",
+          "lineNumber": 307
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "setProgressMessage",
+          "lineNumber": 310
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "console.log",
+          "lineNumber": 314
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "setResponse",
+          "lineNumber": 316
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "setError",
+          "lineNumber": 318
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "setIsProcessing",
+          "lineNumber": 320
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "setProgressMessage",
+          "lineNumber": 321
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "closeEventSource",
+          "lineNumber": 322
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "console.error",
+          "lineNumber": 324
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "setError",
+          "lineNumber": 325
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "setIsProcessing",
+          "lineNumber": 326
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "setProgressMessage",
+          "lineNumber": 327
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "closeEventSource",
+          "lineNumber": 328
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "console.error",
+          "lineNumber": 331
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "setError",
+          "lineNumber": 332
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "setIsProcessing",
+          "lineNumber": 333
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "setProgressMessage",
+          "lineNumber": 334
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "closeEventSource",
+          "lineNumber": 335
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "console.error",
+          "lineNumber": 340
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "setError",
+          "lineNumber": 344
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "setIsProcessing",
+          "lineNumber": 350
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "setProgressMessage",
+          "lineNumber": 351
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "closeEventSource",
+          "lineNumber": 352
+        },
+        {
+          "caller": "handleSubmit",
+          "callee": "setIsProcessing",
+          "lineNumber": 360
+        },
+        {
+          "caller": "handleSubmit",
+          "callee": "setError",
+          "lineNumber": 361
+        },
+        {
+          "caller": "handleSubmit",
+          "callee": "setResponse",
+          "lineNumber": 362
+        },
+        {
+          "caller": "handleSubmit",
+          "callee": "setProgressMessage",
+          "lineNumber": 363
+        },
+        {
+          "caller": "handleSubmit",
+          "callee": "setActiveTab",
+          "lineNumber": 364
+        },
+        {
+          "caller": "handleSubmit",
+          "callee": "setSelectedAnswers",
+          "lineNumber": 365
+        },
+        {
+          "caller": "handleSubmit",
+          "callee": "startCourseGeneration",
+          "lineNumber": 369
+        },
+        {
+          "caller": "handleSubmit",
+          "callee": "console.log",
+          "lineNumber": 373
+        },
+        {
+          "caller": "handleSubmit",
+          "callee": "setResponse",
+          "lineNumber": 374
+        },
+        {
+          "caller": "handleSubmit",
+          "callee": "setIsProcessing",
+          "lineNumber": 375
+        },
+        {
+          "caller": "handleSubmit",
+          "callee": "setProgressMessage",
+          "lineNumber": 376
+        },
+        {
+          "caller": "handleSubmit",
+          "callee": "setError",
+          "lineNumber": 377
+        },
+        {
+          "caller": "handleSubmit",
+          "callee": "console.log",
+          "lineNumber": 381
+        },
+        {
+          "caller": "handleSubmit",
+          "callee": "listenForProgress",
+          "lineNumber": 383
+        },
+        {
+          "caller": "handleSubmit",
+          "callee": "console.error",
+          "lineNumber": 391
+        },
+        {
+          "caller": "handleSubmit",
+          "callee": "setError",
+          "lineNumber": 401
+        },
+        {
+          "caller": "handleSubmit",
+          "callee": "setIsProcessing",
+          "lineNumber": 402
+        },
+        {
+          "caller": "handleSubmit",
+          "callee": "setProgressMessage",
+          "lineNumber": 403
+        },
+        {
+          "caller": "handleQuizAnswer",
+          "callee": "setSelectedAnswers",
+          "lineNumber": 411
+        },
+        {
+          "caller": "getQuizButtonColor",
+          "callee": "isAnswerCorrect",
+          "lineNumber": 427
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "setVideoUrl",
+          "lineNumber": 469
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "setError",
+          "lineNumber": 495
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "setError",
+          "lineNumber": 496
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "setActiveTab",
+          "lineNumber": 537
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "response.course.course_content.modules.map",
+          "lineNumber": 550
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "module.sections.map",
+          "lineNumber": 556
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "section.media.map",
+          "lineNumber": 566
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "mediaItem.frame_path.startsWith",
+          "lineNumber": 569
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "console.error",
+          "lineNumber": 574
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "isNaN",
+          "lineNumber": 593
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "formatTimestamp",
+          "lineNumber": 595
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "response.course.quiz_content.quizzes.map",
+          "lineNumber": 619
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "quiz.questions.map",
+          "lineNumber": 627
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "isAnswerCorrect",
+          "lineNumber": 631
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "question.options.map",
+          "lineNumber": 646
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "getQuizButtonVariant",
+          "lineNumber": 650
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "getQuizButtonColor",
+          "lineNumber": 651
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "handleQuizAnswer",
+          "lineNumber": 652
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "String.fromCharCode",
+          "lineNumber": 665
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "[\"true\", \"false\"].map",
+          "lineNumber": 675
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "handleQuizAnswer",
+          "lineNumber": 681
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "option.charAt(0).toUpperCase",
+          "lineNumber": 695
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "option.charAt",
+          "lineNumber": 695
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "option.slice",
+          "lineNumber": 695
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "response.course.retention_plan.retention_plan.module_retention.map",
+          "lineNumber": 743
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "moduleRetention.retention_tips.map",
+          "lineNumber": 753
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "tip.executed_content.startsWith",
+          "lineNumber": 757
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "moduleRetention.spaced_repetition_prompts.map",
+          "lineNumber": 782
+        },
+        {
+          "caller": "UploadPage",
+          "callee": "moduleRetention.scenario_examples.map",
+          "lineNumber": 795
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 0,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "frontend/src/reportWebVitals.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 15,
+      "nonEmptyLines": 13,
+      "functions": [
+        {
+          "name": "reportWebVitals",
+          "startLine": 3,
+          "endLine": 13,
+          "params": [
+            "onPerfEntry"
+          ]
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "reportWebVitals",
+          "callee": "import('web-vitals').then",
+          "lineNumber": 5
+        },
+        {
+          "caller": "reportWebVitals",
+          "callee": "import",
+          "lineNumber": 5
+        },
+        {
+          "caller": "reportWebVitals",
+          "callee": "getCLS",
+          "lineNumber": 6
+        },
+        {
+          "caller": "reportWebVitals",
+          "callee": "getFID",
+          "lineNumber": 7
+        },
+        {
+          "caller": "reportWebVitals",
+          "callee": "getFCP",
+          "lineNumber": 8
+        },
+        {
+          "caller": "reportWebVitals",
+          "callee": "getLCP",
+          "lineNumber": 9
+        },
+        {
+          "caller": "reportWebVitals",
+          "callee": "getTTFB",
+          "lineNumber": 10
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "frontend/src/services/api.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 28,
+      "nonEmptyLines": 23,
+      "functions": [
+        {
+          "name": "startCourseGeneration",
+          "startLine": 20,
+          "endLine": 24,
+          "params": [
+            "videoUrl"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "startCourseGeneration",
+          "line": 20,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "startCourseGeneration",
+          "callee": "await axios.post",
+          "lineNumber": 22
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    }
+  ]
+}

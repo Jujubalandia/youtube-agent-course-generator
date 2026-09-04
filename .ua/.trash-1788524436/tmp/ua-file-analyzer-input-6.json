@@ -1,0 +1,15 @@
+{
+  "projectRoot": "/home/bera/deep-harn",
+  "batchFiles": [
+    {"path": ".env.example", "language": "config", "sizeLines": 59, "fileCategory": "config"},
+    {"path": "README.md", "language": "markdown", "sizeLines": 128, "fileCategory": "docs"},
+    {"path": "docker-compose.yml", "language": "yaml", "sizeLines": 159, "fileCategory": "infra"},
+    {"path": "package.json", "language": "json", "sizeLines": 5, "fileCategory": "config"}
+  ],
+  "batchImportData": {
+    ".env.example": [],
+    "README.md": [],
+    "docker-compose.yml": [],
+    "package.json": []
+  }
+}

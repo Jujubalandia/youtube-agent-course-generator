@@ -1,0 +1,46 @@
+{
+  "nodes": [
+    {
+      "id": "service:backend/Dockerfile",
+      "type": "service",
+      "name": "Dockerfile",
+      "filePath": "backend/Dockerfile",
+      "summary": "Single-stage Docker build for the FastAPI + LangGraph backend, pinned to Python 3.10-slim for numpy/numba wheel compatibility, installing CPU-only PyTorch from a dedicated index before the rest of requirements.txt, then copying in the app and scripts directories and launching via scripts/start.sh on port 8000.",
+      "tags": ["containerization", "infrastructure", "deployment", "python", "build-system"],
+      "complexity": "moderate",
+      "languageNotes": "Deliberately avoids Docker multi-stage builds; instead orders RUN layers (setuptools/wheel, then CPU-only torch via --extra-index-url, then --no-build-isolation pip install -r requirements.txt) to dodge CUDA wheel bloat and an openai-whisper sdist build failure against modern setuptools."
+    },
+    {
+      "id": "service:backend/.dockerignore",
+      "type": "service",
+      "name": ".dockerignore",
+      "filePath": "backend/.dockerignore",
+      "summary": "Excludes caches, virtualenvs, git metadata, and generated artifacts (frames/, transcripts/, logs) from the backend Docker build context to keep image builds small and deterministic.",
+      "tags": ["infrastructure", "containerization", "build-context", "configuration"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "service:backend/.dockerignore",
+      "target": "service:backend/Dockerfile",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "service:backend/Dockerfile",
+      "target": "file:backend/scripts/start.sh",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "service:backend/Dockerfile",
+      "target": "file:backend/app",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ]
+}

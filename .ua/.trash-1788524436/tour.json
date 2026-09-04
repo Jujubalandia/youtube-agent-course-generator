@@ -1,0 +1,93 @@
+[
+  {
+    "order": 1,
+    "title": "Project Overview",
+    "description": "This repository is a Docker-Compose launcher for a YouTube-to-course generator: paste in a video URL and get back a structured course with quizzes and a retention plan. The README explains that the actual application logic is vendored from an upstream project, and this repo's job is to wrap it in a reproducible five-service stack (frontend, backend, Postgres, MinIO, Jaeger) that starts with one command. Keep this map in mind as the tour moves from the UI, through the backend's AI pipeline, down to the database and infrastructure that hold it all together.",
+    "nodeIds": ["document:README.md"]
+  },
+  {
+    "order": 2,
+    "title": "Frontend Entry Point",
+    "description": "index.tsx is where the React application boots: it mounts the App component into the DOM root inside React.StrictMode and kicks off web-vitals reporting. This is the browser-side counterpart to the backend entry point you'll see in Step 5 — everything the user interacts with starts execution here. It's a thin, largely boilerplate CRA (Create React App) file, which is typical: entry points should do almost nothing besides wiring things together.",
+    "nodeIds": ["file:frontend/src/index.tsx"],
+    "languageLesson": "React.StrictMode is a development-only wrapper that intentionally double-invokes certain functions (like component render and effects) to help surface side-effect bugs before they reach production."
+  },
+  {
+    "order": 3,
+    "title": "Routing Gateway",
+    "description": "App.tsx sets up React Router and routes the single '/' path to the UploadPage component. Even though this app has only one page today, wrapping it in a router keeps the door open for future routes without restructuring the app shell. This is the direct child of index.tsx from Step 2, and its only job is to hand off to the real UI logic.",
+    "nodeIds": ["file:frontend/src/App.tsx"]
+  },
+  {
+    "order": 4,
+    "title": "Upload Flow and API Client",
+    "description": "UploadPage.tsx is the entire application's UI: a user pastes a YouTube URL, the page calls startCourseGeneration in api.ts to POST it to the backend's /api/generate-course endpoint, and then the page subscribes to a Server-Sent Events stream to show live progress before rendering the finished course, quiz, and retention-plan tabs with Material UI. These two files form a tightly coupled pair — the component owns the UI state machine, while api.ts is a thin Axios wrapper that isolates the one HTTP call the frontend needs to make. This is the last stop on the frontend side before the tour crosses into the backend that does the actual work.",
+    "nodeIds": ["file:frontend/src/pages/UploadPage.tsx", "file:frontend/src/services/api.ts"],
+    "languageLesson": "Server-Sent Events (SSE) give a one-way server-to-client push channel over plain HTTP — simpler than WebSockets when you only need to stream progress updates, not bidirectional messages."
+  },
+  {
+    "order": 5,
+    "title": "Backend Entry Point",
+    "description": "main.py is where the FastAPI application is created: it configures CORS so the frontend (on a different port) can call it, mounts the local frames directory as static files so extracted video keyframes can be served back to the browser, and registers the API router under /api. This is the backend's equivalent of Step 2's index.tsx — a small bootstrap file whose only real logic is wiring up the router you'll explore next.",
+    "nodeIds": ["file:backend/app/main.py"]
+  },
+  {
+    "order": 6,
+    "title": "Course Generation Router",
+    "description": "routes.py is the busiest file in the backend (26 outgoing dependencies) and the true orchestrator of the whole product: it exposes the /api/generate-course and SSE progress endpoints, fetches the transcript (falling back to local Whisper transcription if needed), and coordinates frame extraction, the LangGraph agent pipeline, S3 uploads, and database persistence as a background task. Every backend module the rest of this tour covers gets pulled together here. Its generate_course_request and _run_course_generation functions are the connective tissue between the UI request from Step 4 and everything downstream.",
+    "nodeIds": ["file:backend/app/api/routes.py"],
+    "languageLesson": "FastAPI's BackgroundTasks let a request return immediately while long-running work (like an AI pipeline) continues after the response is sent — essential here since course generation can take minutes."
+  },
+  {
+    "order": 7,
+    "title": "The LangGraph Agent Pipeline",
+    "description": "agentic.py is the AI core of the product: a LangGraph pipeline that turns a transcript and extracted video frames into a structured course by chaining Gemini/Groq LLM calls through content structuring, frame selection, course content generation, quiz creation, and spaced-retention plan design. Each stage is a node function called by routes.py's orchestration from Step 6, wrapped in tenacity retry logic and OpenTelemetry tracing (which is why Jaeger is part of the stack from Step 1). This is the single most complex file in the project and the reason the whole stack exists.",
+    "nodeIds": ["file:backend/app/api/agentic.py"],
+    "languageLesson": "LangGraph models an LLM workflow as a state graph: each node is a function that reads and updates a shared state object (GraphState here), making multi-step, retryable AI pipelines easier to reason about than a linear chain of calls."
+  },
+  {
+    "order": 8,
+    "title": "Video Frame Extraction",
+    "description": "frame_extraction.py is a self-contained computer-vision pipeline: it downloads the video with yt-dlp, detects scene boundaries, extracts and optimizes keyframes, loads them into a FiftyOne dataset to filter down to visually unique frames, then aligns the survivors to transcript timestamps. This runs before the agent pipeline from Step 7 so the LLM has real screenshots to reason about, not just text. It's the second-largest module in the backend (14 outgoing dependencies) and explains why the Docker image needs OpenCV, scenedetect, and FiftyOne installed.",
+    "nodeIds": ["file:backend/app/api/frame_extraction.py"]
+  },
+  {
+    "order": 9,
+    "title": "Storage and Live Progress",
+    "description": "Two small supporting services round out the API layer: s3_utils.py uploads each selected keyframe to MinIO (S3-compatible local storage) and returns its public URL for the frontend to display, while broadcaster.py's MessageAnnouncer manages per-job async queues that power the SSE progress stream UploadPage.tsx subscribes to back in Step 4. Neither file does anything glamorous, but together they're what make the UI feel responsive instead of a silent multi-minute wait.",
+    "nodeIds": ["file:backend/app/api/s3_utils.py", "file:backend/app/sse/broadcaster.py"]
+  },
+  {
+    "order": 10,
+    "title": "The Data Layer",
+    "description": "Generated courses need to persist somewhere, and this is the layer that does it: database.py configures the async SQLAlchemy engine from DATABASE_URL, models.py defines the single Course table (storing transcript, structured content, quiz, and retention plan as JSONB), and crud.py provides the async create/update/fetch functions that routes.py calls throughout course generation. This is a deliberately minimal data model — one table holding everything a course needs — which keeps the whole backend easy to reason about.",
+    "nodeIds": ["file:backend/app/db/models.py", "file:backend/app/db/database.py", "file:backend/app/db/crud.py"],
+    "languageLesson": "SQLAlchemy's async engine (create_async_engine) requires an async-capable driver (asyncpg here) and async session context managers — mixing sync and async SQLAlchemy code is a common source of bugs."
+  },
+  {
+    "order": 11,
+    "title": "Database Bootstrap",
+    "description": "init_db.py is a one-shot script, not part of the running application: it polls the configured DATABASE_URL until Postgres accepts connections, then idempotently creates any missing tables from the Base.metadata defined in Step 10's models.py. This script is run by a dedicated backend-init container before the main backend starts, which you'll see wired up in the next step's docker-compose.yml — it's the bridge between the code-level data model and the infrastructure that provisions it.",
+    "nodeIds": ["file:backend/scripts/init_db.py"]
+  },
+  {
+    "order": 12,
+    "title": "Orchestrating the Full Stack",
+    "description": "docker-compose.yml is what turns everything covered so far into a single `docker compose up`: it launches Postgres, MinIO (plus a bucket-init job), Jaeger, the FastAPI backend (gated behind a healthy Postgres and the backend-init job from Step 11), and the nginx-served frontend (gated behind a healthy backend). The depends_on chains encode the real startup order this application needs — the frontend genuinely cannot come up correctly before the backend, and the backend cannot before its database exists.",
+    "nodeIds": ["service:docker-compose.yml"],
+    "languageLesson": "Docker Compose's `depends_on` with `condition: service_healthy` blocks a service from starting until its dependency's healthcheck passes, not just until the container process starts — critical for services like Postgres that take a moment to become ready to accept connections."
+  },
+  {
+    "order": 13,
+    "title": "Containerizing Each Service",
+    "description": "The backend and frontend each get their own Dockerfile with very different shapes. The backend's is a single-stage Python 3.10-slim build that installs CPU-only PyTorch from a dedicated index before the rest of requirements.txt (a version-compatibility workaround), then launches via start.sh. The frontend's is a multi-stage build: a node:20-alpine stage compiles the CRA bundle, and only the compiled static output gets copied into a minimal nginx:1.27-alpine runtime stage, keeping the final image small.",
+    "nodeIds": ["service:backend/Dockerfile", "service:frontend/Dockerfile"],
+    "languageLesson": "Multi-stage Docker builds use multiple FROM statements so build-time dependencies (a full Node toolchain, dev packages) never end up in the runtime image — only files explicitly COPY'd from an earlier stage survive into the final one."
+  },
+  {
+    "order": 14,
+    "title": "Configuring the Stack",
+    "description": "The .env.example file is the capstone: it lists every environment variable the docker-compose.yml from Step 12 expects, from LLM API keys (Gemini, Groq) that power the agent pipeline in Step 7, to Postgres credentials for Step 10's data layer, to MinIO/S3 settings for Step 9's frame storage, to the frontend's API base URL. Copying this to .env and filling in real API keys is the one manual step standing between cloning this repo and running the entire course-generation pipeline end to end.",
+    "nodeIds": ["config:.env.example"]
+  }
+]

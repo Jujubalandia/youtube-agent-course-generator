@@ -1,0 +1,486 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 4,
+  "filesSkipped": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 4,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 4,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "results": [
+    {
+      "path": "backend/app/db/crud.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 115,
+      "nonEmptyLines": 106,
+      "functions": [
+        {
+          "name": "create_course",
+          "startLine": 12,
+          "endLine": 76,
+          "params": [
+            "session",
+            "video_id",
+            "transcript_text",
+            "structured_content",
+            "course_content",
+            "quiz_content",
+            "retention_plan",
+            "status"
+          ]
+        },
+        {
+          "name": "update_course_status",
+          "startLine": 78,
+          "endLine": 100,
+          "params": [
+            "session",
+            "video_id",
+            "status"
+          ]
+        },
+        {
+          "name": "get_course_by_video_id",
+          "startLine": 103,
+          "endLine": 115,
+          "params": [
+            "session",
+            "video_id"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "create_course",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "update_course_status",
+          "line": 78,
+          "isDefault": false
+        },
+        {
+          "name": "get_course_by_video_id",
+          "line": 103,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "create_course",
+          "callee": "Course",
+          "lineNumber": 38
+        },
+        {
+          "caller": "create_course",
+          "callee": "session.add",
+          "lineNumber": 49
+        },
+        {
+          "caller": "create_course",
+          "callee": "session.commit",
+          "lineNumber": 50
+        },
+        {
+          "caller": "create_course",
+          "callee": "session.refresh",
+          "lineNumber": 51
+        },
+        {
+          "caller": "create_course",
+          "callee": "logger.info",
+          "lineNumber": 52
+        },
+        {
+          "caller": "create_course",
+          "callee": "session.rollback",
+          "lineNumber": 55
+        },
+        {
+          "caller": "create_course",
+          "callee": "logger.warning",
+          "lineNumber": 56
+        },
+        {
+          "caller": "create_course",
+          "callee": "session.execute",
+          "lineNumber": 59
+        },
+        {
+          "caller": "create_course",
+          "callee": "select(Course).where",
+          "lineNumber": 59
+        },
+        {
+          "caller": "create_course",
+          "callee": "select",
+          "lineNumber": 59
+        },
+        {
+          "caller": "create_course",
+          "callee": "result.scalars().first",
+          "lineNumber": 60
+        },
+        {
+          "caller": "create_course",
+          "callee": "result.scalars",
+          "lineNumber": 60
+        },
+        {
+          "caller": "create_course",
+          "callee": "logger.info",
+          "lineNumber": 62
+        },
+        {
+          "caller": "create_course",
+          "callee": "logger.error",
+          "lineNumber": 66
+        },
+        {
+          "caller": "create_course",
+          "callee": "session.rollback",
+          "lineNumber": 69
+        },
+        {
+          "caller": "create_course",
+          "callee": "logger.exception",
+          "lineNumber": 70
+        },
+        {
+          "caller": "create_course",
+          "callee": "session.rollback",
+          "lineNumber": 74
+        },
+        {
+          "caller": "create_course",
+          "callee": "logger.exception",
+          "lineNumber": 75
+        },
+        {
+          "caller": "update_course_status",
+          "callee": "update(Course)                   # Use the imported update\n            .where(Course.video_id == video_id)\n            .values",
+          "lineNumber": 82
+        },
+        {
+          "caller": "update_course_status",
+          "callee": "update(Course)                   # Use the imported update\n            .where",
+          "lineNumber": 82
+        },
+        {
+          "caller": "update_course_status",
+          "callee": "update",
+          "lineNumber": 82
+        },
+        {
+          "caller": "update_course_status",
+          "callee": "func.now",
+          "lineNumber": 84
+        },
+        {
+          "caller": "update_course_status",
+          "callee": "session.execute",
+          "lineNumber": 88
+        },
+        {
+          "caller": "update_course_status",
+          "callee": "session.commit",
+          "lineNumber": 89
+        },
+        {
+          "caller": "update_course_status",
+          "callee": "logger.warning",
+          "lineNumber": 92
+        },
+        {
+          "caller": "update_course_status",
+          "callee": "logger.info",
+          "lineNumber": 95
+        },
+        {
+          "caller": "update_course_status",
+          "callee": "session.rollback",
+          "lineNumber": 98
+        },
+        {
+          "caller": "update_course_status",
+          "callee": "logger.exception",
+          "lineNumber": 99
+        },
+        {
+          "caller": "get_course_by_video_id",
+          "callee": "session.execute",
+          "lineNumber": 106
+        },
+        {
+          "caller": "get_course_by_video_id",
+          "callee": "select(Course).where",
+          "lineNumber": 106
+        },
+        {
+          "caller": "get_course_by_video_id",
+          "callee": "select",
+          "lineNumber": 106
+        },
+        {
+          "caller": "get_course_by_video_id",
+          "callee": "result.scalars().first",
+          "lineNumber": 107
+        },
+        {
+          "caller": "get_course_by_video_id",
+          "callee": "result.scalars",
+          "lineNumber": 107
+        },
+        {
+          "caller": "get_course_by_video_id",
+          "callee": "logger.debug",
+          "lineNumber": 109
+        },
+        {
+          "caller": "get_course_by_video_id",
+          "callee": "logger.debug",
+          "lineNumber": 111
+        },
+        {
+          "caller": "get_course_by_video_id",
+          "callee": "logger.exception",
+          "lineNumber": 114
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 3,
+        "functionCount": 3,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/app/db/database.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 55,
+      "nonEmptyLines": 49,
+      "functions": [
+        {
+          "name": "test_connection",
+          "startLine": 42,
+          "endLine": 55,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "test_connection",
+          "line": 42,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "test_connection",
+          "callee": "logger.error",
+          "lineNumber": 45
+        },
+        {
+          "caller": "test_connection",
+          "callee": "engine.connect",
+          "lineNumber": 48
+        },
+        {
+          "caller": "test_connection",
+          "callee": "conn.execute",
+          "lineNumber": 49
+        },
+        {
+          "caller": "test_connection",
+          "callee": "text",
+          "lineNumber": 49
+        },
+        {
+          "caller": "test_connection",
+          "callee": "result.scalar_one",
+          "lineNumber": 50
+        },
+        {
+          "caller": "test_connection",
+          "callee": "logger.info",
+          "lineNumber": 51
+        },
+        {
+          "caller": "test_connection",
+          "callee": "logger.error",
+          "lineNumber": 53
+        },
+        {
+          "caller": "test_connection",
+          "callee": "logger.error",
+          "lineNumber": 55
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "backend/app/db/models.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 35,
+      "nonEmptyLines": 30,
+      "classes": [
+        {
+          "name": "Course",
+          "startLine": 10,
+          "endLine": 29,
+          "methods": [
+            "__repr__"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "Course",
+          "line": 10,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "backend/scripts/init_db.py",
+      "language": "python",
+      "fileCategory": "code",
+      "totalLines": 59,
+      "nonEmptyLines": 47,
+      "functions": [
+        {
+          "name": "_wait_for_db",
+          "startLine": 26,
+          "endLine": 44,
+          "params": [
+            "retries",
+            "delay"
+          ]
+        },
+        {
+          "name": "main",
+          "startLine": 47,
+          "endLine": 52,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "_wait_for_db",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "main",
+          "line": 47,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "_wait_for_db",
+          "callee": "range",
+          "lineNumber": 32
+        },
+        {
+          "caller": "_wait_for_db",
+          "callee": "engine.connect",
+          "lineNumber": 34
+        },
+        {
+          "caller": "_wait_for_db",
+          "callee": "conn.execute",
+          "lineNumber": 35
+        },
+        {
+          "caller": "_wait_for_db",
+          "callee": "text",
+          "lineNumber": 35
+        },
+        {
+          "caller": "_wait_for_db",
+          "callee": "logger.info",
+          "lineNumber": 36
+        },
+        {
+          "caller": "_wait_for_db",
+          "callee": "logger.warning",
+          "lineNumber": 40
+        },
+        {
+          "caller": "_wait_for_db",
+          "callee": "asyncio.sleep",
+          "lineNumber": 41
+        },
+        {
+          "caller": "_wait_for_db",
+          "callee": "logger.critical",
+          "lineNumber": 42
+        },
+        {
+          "caller": "_wait_for_db",
+          "callee": "os.getenv",
+          "lineNumber": 43
+        },
+        {
+          "caller": "_wait_for_db",
+          "callee": "SystemExit",
+          "lineNumber": 44
+        },
+        {
+          "caller": "main",
+          "callee": "_wait_for_db",
+          "lineNumber": 48
+        },
+        {
+          "caller": "main",
+          "callee": "engine.begin",
+          "lineNumber": 49
+        },
+        {
+          "caller": "main",
+          "callee": "conn.run_sync",
+          "lineNumber": 50
+        },
+        {
+          "caller": "main",
+          "callee": "logger.info",
+          "lineNumber": 51
+        },
+        {
+          "caller": "main",
+          "callee": "engine.dispose",
+          "lineNumber": 52
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    }
+  ]
+}

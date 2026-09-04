@@ -1,0 +1,15 @@
+{
+  "projectRoot": "/home/bera/deep-harn",
+  "batchFiles": [
+    {"path": "backend/app/db/crud.py", "language": "python", "sizeLines": 114, "fileCategory": "code"},
+    {"path": "backend/app/db/database.py", "language": "python", "sizeLines": 55, "fileCategory": "code"},
+    {"path": "backend/app/db/models.py", "language": "python", "sizeLines": 34, "fileCategory": "code"},
+    {"path": "backend/scripts/init_db.py", "language": "python", "sizeLines": 59, "fileCategory": "code"}
+  ],
+  "batchImportData": {
+    "backend/app/db/crud.py": ["backend/app/db/models.py"],
+    "backend/app/db/database.py": [],
+    "backend/app/db/models.py": [],
+    "backend/scripts/init_db.py": ["backend/app/db/database.py", "backend/app/db/models.py"]
+  }
+}

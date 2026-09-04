@@ -1,0 +1,312 @@
+{
+  "nodes": [
+    {
+      "id": "file:backend/app/api/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/app/api/__init__.py",
+      "summary": "Empty package marker that makes the api directory importable as the backend.app.api Python package.",
+      "tags": ["package-init", "empty-file", "python-package"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/app/api/frame_extraction.py",
+      "type": "file",
+      "name": "frame_extraction.py",
+      "filePath": "backend/app/api/frame_extraction.py",
+      "summary": "Video processing pipeline that downloads a YouTube video via yt-dlp, detects scene boundaries, extracts and optimizes keyframes, loads them into a FiftyOne dataset to select visually unique frames, and aligns the selected frames to transcript timestamps.",
+      "tags": ["video-processing", "utility", "computer-vision", "pipeline"],
+      "complexity": "complex",
+      "languageNotes": "Combines yt-dlp, PySceneDetect, Pillow, and FiftyOne/fiftyone.brain to turn a raw video into a curated, transcript-aligned set of keyframes."
+    },
+    {
+      "id": "file:backend/app/api/routes.py",
+      "type": "file",
+      "name": "routes.py",
+      "filePath": "backend/app/api/routes.py",
+      "summary": "Core FastAPI router for the course-generation feature: exposes endpoints to kick off course generation from a YouTube URL and to stream progress over SSE, orchestrating transcript fetching (with Whisper fallback), frame extraction, the LangGraph agent pipeline, S3 frame uploads, and course persistence.",
+      "tags": ["api-handler", "entry-point", "orchestration", "streaming", "background-task"],
+      "complexity": "complex",
+      "languageNotes": "Uses asyncio.Queue-backed Server-Sent Events (StreamingResponse) to stream long-running background task progress to the client, and asyncio.to_thread to offload blocking I/O (yt-dlp, ffmpeg, Whisper, FiftyOne) from the event loop."
+    },
+    {
+      "id": "file:backend/app/api/s3_utils.py",
+      "type": "file",
+      "name": "s3_utils.py",
+      "filePath": "backend/app/api/s3_utils.py",
+      "summary": "Initializes a boto3 S3 (or S3-compatible, e.g. MinIO) client from environment variables and provides a helper to upload a local keyframe file to the configured bucket, returning its public URL.",
+      "tags": ["storage", "s3", "utility", "aws"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/app/main.py",
+      "type": "file",
+      "name": "main.py",
+      "filePath": "backend/app/main.py",
+      "summary": "FastAPI application entry point: creates the app, configures CORS, mounts the local frames directory as static files, and registers the API router under /api.",
+      "tags": ["entry-point", "fastapi", "bootstrap", "middleware"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/api/frame_extraction.py:download_video",
+      "type": "function",
+      "name": "download_video",
+      "filePath": "backend/app/api/frame_extraction.py",
+      "lineRange": [26, 48],
+      "summary": "Downloads a video from a URL using yt-dlp and returns the local file path along with the resolved video ID.",
+      "tags": ["video-processing", "download", "yt-dlp"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/api/frame_extraction.py:detect_scenes",
+      "type": "function",
+      "name": "detect_scenes",
+      "filePath": "backend/app/api/frame_extraction.py",
+      "lineRange": [51, 72],
+      "summary": "Runs PySceneDetect content-based scene detection on a video file and returns the list of detected scene boundaries.",
+      "tags": ["video-processing", "scene-detection", "computer-vision"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/api/frame_extraction.py:extract_keyframes_with_timestamps",
+      "type": "function",
+      "name": "extract_keyframes_with_timestamps",
+      "filePath": "backend/app/api/frame_extraction.py",
+      "lineRange": [75, 130],
+      "summary": "Extracts a representative keyframe image per detected scene using ffmpeg, computing a timestamp offset within each scene and writing frames to the output directory with their scene timing metadata.",
+      "tags": ["video-processing", "ffmpeg", "keyframe-extraction"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:backend/app/api/frame_extraction.py:optimize_frame",
+      "type": "function",
+      "name": "optimize_frame",
+      "filePath": "backend/app/api/frame_extraction.py",
+      "lineRange": [133, 153],
+      "summary": "Resizes and re-saves a frame image with Pillow to reduce its resolution/quality for storage or display.",
+      "tags": ["image-processing", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/api/frame_extraction.py:load_frames_into_fiftyone",
+      "type": "function",
+      "name": "load_frames_into_fiftyone",
+      "filePath": "backend/app/api/frame_extraction.py",
+      "lineRange": [156, 180],
+      "summary": "Loads a set of extracted frame images into a fresh FiftyOne dataset for a given video, replacing any dataset that already exists for it.",
+      "tags": ["computer-vision", "fiftyone", "data-loading"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/api/frame_extraction.py:select_unique_frames",
+      "type": "function",
+      "name": "select_unique_frames",
+      "filePath": "backend/app/api/frame_extraction.py",
+      "lineRange": [183, 211],
+      "summary": "Uses fiftyone.brain's uniqueness computation to filter a dataset down to visually unique frames above a threshold, sorted by scene order.",
+      "tags": ["computer-vision", "fiftyone", "deduplication"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/api/frame_extraction.py:align_frames_to_transcript",
+      "type": "function",
+      "name": "align_frames_to_transcript",
+      "filePath": "backend/app/api/frame_extraction.py",
+      "lineRange": [214, 244],
+      "summary": "Matches each selected frame to the closest transcript segment by timestamp so frames can be embedded alongside relevant course text.",
+      "tags": ["video-processing", "transcript-alignment", "utility"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/app/api/routes.py:VideoRequest",
+      "type": "class",
+      "name": "VideoRequest",
+      "filePath": "backend/app/api/routes.py",
+      "lineRange": [36, 40],
+      "summary": "Pydantic request model carrying the YouTube video URL submitted to the course-generation endpoint.",
+      "tags": ["data-model", "validation", "pydantic"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/app/api/routes.py:ProgressStatus",
+      "type": "class",
+      "name": "ProgressStatus",
+      "filePath": "backend/app/api/routes.py",
+      "lineRange": [42, 47],
+      "summary": "Pydantic model representing a single progress update (status, detail, error, final result) streamed to the client during course generation.",
+      "tags": ["data-model", "streaming", "pydantic"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/api/routes.py:send_progress",
+      "type": "function",
+      "name": "send_progress",
+      "filePath": "backend/app/api/routes.py",
+      "lineRange": [49, 55],
+      "summary": "Builds a ProgressStatus update and pushes it onto the per-video asyncio queue consumed by the SSE stream.",
+      "tags": ["streaming", "utility", "event-handler"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/api/routes.py:_run_course_generation",
+      "type": "function",
+      "name": "_run_course_generation",
+      "filePath": "backend/app/api/routes.py",
+      "lineRange": [57, 392],
+      "summary": "Background task orchestrating the full course-generation pipeline: fetches the transcript (with Whisper fallback), extracts and aligns keyframes, invokes the LangGraph agentic app, uploads frames to S3, persists the course, and reports progress at each stage before cleaning up temp files.",
+      "tags": ["orchestration", "background-task", "pipeline", "error-handling"],
+      "complexity": "complex",
+      "languageNotes": "Defines nested sync helper closures (get_transcript_sync, get_frames_sync) run via asyncio.to_thread to keep blocking work off the event loop while still reporting progress asynchronously."
+    },
+    {
+      "id": "function:backend/app/api/routes.py:generate_course_request",
+      "type": "function",
+      "name": "generate_course_request",
+      "filePath": "backend/app/api/routes.py",
+      "lineRange": [395, 451],
+      "summary": "POST endpoint that validates a YouTube URL, extracts the video ID, guards against duplicate/in-flight/already-generated courses, and kicks off _run_course_generation as a tracked background task.",
+      "tags": ["api-handler", "entry-point", "validation"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:backend/app/api/routes.py:stream_progress",
+      "type": "function",
+      "name": "stream_progress",
+      "filePath": "backend/app/api/routes.py",
+      "lineRange": [456, 543],
+      "summary": "SSE endpoint that streams ProgressStatus updates for a video's generation task, replaying a synthetic finished event if the course already exists or live-forwarding queue updates until completion or client disconnect.",
+      "tags": ["api-handler", "streaming", "sse", "event-handler"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:backend/app/api/routes.py:save_transcript",
+      "type": "function",
+      "name": "save_transcript",
+      "filePath": "backend/app/api/routes.py",
+      "lineRange": [545, 566],
+      "summary": "Writes the fetched transcript text to a local file under a per-video directory and returns its path.",
+      "tags": ["utility", "file-io"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/api/routes.py:_safe_delete",
+      "type": "function",
+      "name": "_safe_delete",
+      "filePath": "backend/app/api/routes.py",
+      "lineRange": [569, 578],
+      "summary": "Deletes a temporary file if it exists, logging but swallowing any errors so cleanup never crashes the pipeline.",
+      "tags": ["utility", "cleanup", "error-handling"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/api/routes.py:process_and_upload_frames",
+      "type": "function",
+      "name": "process_and_upload_frames",
+      "filePath": "backend/app/api/routes.py",
+      "lineRange": [581, 714],
+      "summary": "Scans the generated course content for local frame image paths, uploads each unique frame to S3 concurrently, and rewrites the course/structured content to reference the resulting S3 URLs.",
+      "tags": ["orchestration", "s3", "data-transformation"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:backend/app/api/routes.py:_get_whisper_transcript",
+      "type": "function",
+      "name": "_get_whisper_transcript",
+      "filePath": "backend/app/api/routes.py",
+      "lineRange": [717, 777],
+      "summary": "Fallback transcript path: extracts the video's audio with ffmpeg and transcribes it locally with OpenAI Whisper when no YouTube-provided transcript is available, then cleans up the extracted audio file.",
+      "tags": ["transcription", "whisper", "fallback", "ffmpeg"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:backend/app/api/s3_utils.py:upload_frame_to_s3",
+      "type": "function",
+      "name": "upload_frame_to_s3",
+      "filePath": "backend/app/api/s3_utils.py",
+      "lineRange": [54, 102],
+      "summary": "Uploads a local frame image to the configured S3 (or S3-compatible) bucket under a per-video key and returns the resulting public URL, or None on failure.",
+      "tags": ["s3", "storage", "utility"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/main.py:root",
+      "type": "function",
+      "name": "root",
+      "filePath": "backend/app/main.py",
+      "lineRange": [35, 42],
+      "summary": "Root GET endpoint returning a simple welcome message to confirm the API is running.",
+      "tags": ["api-handler", "health-check"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    { "source": "file:backend/app/api/frame_extraction.py", "target": "function:backend/app/api/frame_extraction.py:download_video", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:backend/app/api/frame_extraction.py", "target": "function:backend/app/api/frame_extraction.py:detect_scenes", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:backend/app/api/frame_extraction.py", "target": "function:backend/app/api/frame_extraction.py:extract_keyframes_with_timestamps", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:backend/app/api/frame_extraction.py", "target": "function:backend/app/api/frame_extraction.py:optimize_frame", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:backend/app/api/frame_extraction.py", "target": "function:backend/app/api/frame_extraction.py:load_frames_into_fiftyone", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:backend/app/api/frame_extraction.py", "target": "function:backend/app/api/frame_extraction.py:select_unique_frames", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:backend/app/api/frame_extraction.py", "target": "function:backend/app/api/frame_extraction.py:align_frames_to_transcript", "type": "contains", "direction": "forward", "weight": 1.0 },
+
+    { "source": "file:backend/app/api/frame_extraction.py", "target": "function:backend/app/api/frame_extraction.py:download_video", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:backend/app/api/frame_extraction.py", "target": "function:backend/app/api/frame_extraction.py:detect_scenes", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:backend/app/api/frame_extraction.py", "target": "function:backend/app/api/frame_extraction.py:extract_keyframes_with_timestamps", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:backend/app/api/frame_extraction.py", "target": "function:backend/app/api/frame_extraction.py:optimize_frame", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:backend/app/api/frame_extraction.py", "target": "function:backend/app/api/frame_extraction.py:load_frames_into_fiftyone", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:backend/app/api/frame_extraction.py", "target": "function:backend/app/api/frame_extraction.py:select_unique_frames", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:backend/app/api/frame_extraction.py", "target": "function:backend/app/api/frame_extraction.py:align_frames_to_transcript", "type": "exports", "direction": "forward", "weight": 0.8 },
+
+    { "source": "file:backend/app/api/routes.py", "target": "class:backend/app/api/routes.py:VideoRequest", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:backend/app/api/routes.py", "target": "class:backend/app/api/routes.py:ProgressStatus", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:backend/app/api/routes.py", "target": "function:backend/app/api/routes.py:send_progress", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:backend/app/api/routes.py", "target": "function:backend/app/api/routes.py:_run_course_generation", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:backend/app/api/routes.py", "target": "function:backend/app/api/routes.py:generate_course_request", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:backend/app/api/routes.py", "target": "function:backend/app/api/routes.py:stream_progress", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:backend/app/api/routes.py", "target": "function:backend/app/api/routes.py:save_transcript", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:backend/app/api/routes.py", "target": "function:backend/app/api/routes.py:_safe_delete", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:backend/app/api/routes.py", "target": "function:backend/app/api/routes.py:process_and_upload_frames", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:backend/app/api/routes.py", "target": "function:backend/app/api/routes.py:_get_whisper_transcript", "type": "contains", "direction": "forward", "weight": 1.0 },
+
+    { "source": "file:backend/app/api/routes.py", "target": "class:backend/app/api/routes.py:VideoRequest", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:backend/app/api/routes.py", "target": "class:backend/app/api/routes.py:ProgressStatus", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:backend/app/api/routes.py", "target": "function:backend/app/api/routes.py:send_progress", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:backend/app/api/routes.py", "target": "function:backend/app/api/routes.py:_run_course_generation", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:backend/app/api/routes.py", "target": "function:backend/app/api/routes.py:generate_course_request", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:backend/app/api/routes.py", "target": "function:backend/app/api/routes.py:stream_progress", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:backend/app/api/routes.py", "target": "function:backend/app/api/routes.py:save_transcript", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:backend/app/api/routes.py", "target": "function:backend/app/api/routes.py:_safe_delete", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:backend/app/api/routes.py", "target": "function:backend/app/api/routes.py:process_and_upload_frames", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:backend/app/api/routes.py", "target": "function:backend/app/api/routes.py:_get_whisper_transcript", "type": "exports", "direction": "forward", "weight": 0.8 },
+
+    { "source": "file:backend/app/api/s3_utils.py", "target": "function:backend/app/api/s3_utils.py:upload_frame_to_s3", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:backend/app/api/s3_utils.py", "target": "function:backend/app/api/s3_utils.py:upload_frame_to_s3", "type": "exports", "direction": "forward", "weight": 0.8 },
+
+    { "source": "file:backend/app/main.py", "target": "function:backend/app/main.py:root", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:backend/app/main.py", "target": "function:backend/app/main.py:root", "type": "exports", "direction": "forward", "weight": 0.8 },
+
+    { "source": "file:backend/app/api/routes.py", "target": "file:backend/app/api/__init__.py", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:backend/app/api/routes.py", "target": "file:backend/app/api/agentic.py", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:backend/app/api/routes.py", "target": "file:backend/app/api/frame_extraction.py", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:backend/app/api/routes.py", "target": "file:backend/app/api/s3_utils.py", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:backend/app/api/routes.py", "target": "file:backend/app/db/crud.py", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:backend/app/api/routes.py", "target": "file:backend/app/db/database.py", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:backend/app/main.py", "target": "file:backend/app/api/routes.py", "type": "imports", "direction": "forward", "weight": 0.7 },
+
+    { "source": "function:backend/app/api/routes.py:_run_course_generation", "target": "function:backend/app/api/frame_extraction.py:download_video", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:backend/app/api/routes.py:_run_course_generation", "target": "function:backend/app/api/frame_extraction.py:detect_scenes", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:backend/app/api/routes.py:_run_course_generation", "target": "function:backend/app/api/frame_extraction.py:extract_keyframes_with_timestamps", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:backend/app/api/routes.py:_run_course_generation", "target": "function:backend/app/api/frame_extraction.py:load_frames_into_fiftyone", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:backend/app/api/routes.py:_run_course_generation", "target": "function:backend/app/api/frame_extraction.py:select_unique_frames", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:backend/app/api/routes.py:_run_course_generation", "target": "function:backend/app/api/frame_extraction.py:align_frames_to_transcript", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:backend/app/api/routes.py:_run_course_generation", "target": "function:backend/app/db/crud.py:create_course", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:backend/app/api/routes.py:_run_course_generation", "target": "function:backend/app/db/crud.py:get_course_by_video_id", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:backend/app/api/routes.py:generate_course_request", "target": "function:backend/app/db/crud.py:get_course_by_video_id", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:backend/app/api/routes.py:stream_progress", "target": "function:backend/app/db/crud.py:get_course_by_video_id", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:backend/app/api/routes.py:process_and_upload_frames", "target": "function:backend/app/api/s3_utils.py:upload_frame_to_s3", "type": "calls", "direction": "forward", "weight": 0.8 },
+
+    { "source": "function:backend/app/api/routes.py:_run_course_generation", "target": "function:backend/app/api/routes.py:save_transcript", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:backend/app/api/routes.py:_run_course_generation", "target": "function:backend/app/api/routes.py:_get_whisper_transcript", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:backend/app/api/routes.py:_run_course_generation", "target": "function:backend/app/api/routes.py:process_and_upload_frames", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:backend/app/api/routes.py:_get_whisper_transcript", "target": "function:backend/app/api/routes.py:_safe_delete", "type": "calls", "direction": "forward", "weight": 0.8 }
+  ]
+}

@@ -1,0 +1,328 @@
+{
+  "nodes": [
+    {
+      "id": "config:.serena/project.yml",
+      "type": "config",
+      "name": "project.yml",
+      "filePath": ".serena/project.yml",
+      "summary": "Serena MCP project configuration defining language servers, workspace folders, ignored paths, tool exclusions, and default operating modes for the deep-harn repository.",
+      "tags": ["configuration", "tooling", "mcp", "serena"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:.ua/.understandignore",
+      "type": "file",
+      "name": ".understandignore",
+      "filePath": ".ua/.understandignore",
+      "summary": "Template ignore-pattern file for the Understand-Anything analysis tool, listing commented-out glob patterns (from .gitignore conventions and common test-file naming) that can be uncommented to exclude paths from codebase analysis.",
+      "tags": ["configuration", "tooling", "ignore-patterns", "understand-anything"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/app/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/app/__init__.py",
+      "summary": "Empty Python package marker file that makes backend/app importable as a package.",
+      "tags": ["package-marker", "python", "empty"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/app/api/agentic.py",
+      "type": "file",
+      "name": "agentic.py",
+      "filePath": "backend/app/api/agentic.py",
+      "summary": "LangGraph agent pipeline that turns a lecture transcript and extracted video frames into a structured multi-module course — orchestrating Gemini/Groq LLM calls (with tenacity retry and OpenTelemetry tracing) across content structuring, frame selection, course content generation, quiz creation, and spaced-retention plan design.",
+      "tags": ["langgraph", "llm-pipeline", "agentic", "api-handler", "opentelemetry"],
+      "complexity": "complex",
+      "languageNotes": "Uses tenacity @retry decorators wrapping Gemini/Groq chain invocations, each also wrapped in an OpenTelemetry span, giving per-LLM-call retry and observability across every LangGraph node function."
+    },
+    {
+      "id": "file:backend/app/api/utils.py",
+      "type": "file",
+      "name": "utils.py",
+      "filePath": "backend/app/api/utils.py",
+      "summary": "Small utility module providing LLM-output JSON cleanup (stripping markdown code fences) and base64 image encoding helpers used by the agentic course-generation pipeline.",
+      "tags": ["utility", "json-parsing", "image-encoding", "helper"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:backend/app/db/__init__.py",
+      "type": "file",
+      "name": "__init__.py",
+      "filePath": "backend/app/db/__init__.py",
+      "summary": "Empty Python package marker file for the backend/app/db package.",
+      "tags": ["package-marker", "python", "empty", "database"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/app/sse/broadcaster.py",
+      "type": "file",
+      "name": "broadcaster.py",
+      "filePath": "backend/app/sse/broadcaster.py",
+      "summary": "In-memory Server-Sent Events broadcaster (MessageAnnouncer) that manages per-job async queues for progress subscribers, publishes JSON-formatted progress events, and tracks job status for the course-generation SSE stream.",
+      "tags": ["sse", "real-time", "broadcaster", "async", "event-handler"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:backend/requirements.txt",
+      "type": "document",
+      "name": "requirements.txt",
+      "filePath": "backend/requirements.txt",
+      "summary": "Python dependency manifest for the backend service, pinning FastAPI/uvicorn, LangChain/LangGraph with Gemini and Groq integrations, video/audio processing libraries (yt-dlp, opencv, whisper, scenedetect, fiftyone), OpenTelemetry instrumentation, and PostgreSQL/S3 clients, with inline notes explaining resolved version conflicts.",
+      "tags": ["dependencies", "python", "build-system", "documentation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:backend/scripts/start.sh",
+      "type": "file",
+      "name": "start.sh",
+      "filePath": "backend/scripts/start.sh",
+      "summary": "Container entrypoint script that runs a preflight import check of the heavy dependency stack (fiftyone, the LangGraph agent, the FastAPI app) before launching uvicorn as a single worker on port 8000, since in-memory progress queues require a single process.",
+      "tags": ["entry-point", "shell-script", "containerization", "deployment"],
+      "complexity": "simple",
+      "languageNotes": "Deliberately pinned to a single uvicorn worker/process because SSE progress state (PROGRESS_QUEUES / ACTIVE_TASKS in app/api/routes.py) lives in process memory rather than a shared store."
+    },
+    {
+      "id": "file:frontend/nginx.conf",
+      "type": "file",
+      "name": "nginx.conf",
+      "filePath": "frontend/nginx.conf",
+      "summary": "Nginx server configuration serving the built React SPA — enables gzip compression, sets long-lived immutable caching for hashed static assets, and falls back all unmatched routes to index.html for client-side routing.",
+      "tags": ["nginx", "spa", "static-assets", "configuration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/src/App.css",
+      "type": "file",
+      "name": "App.css",
+      "filePath": "frontend/src/App.css",
+      "summary": "Default Create React App stylesheet for the root App component, providing the boilerplate centered layout, spinning logo animation, and header styling from the CRA template.",
+      "tags": ["css", "styling", "boilerplate", "create-react-app"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/src/index.css",
+      "type": "file",
+      "name": "index.css",
+      "filePath": "frontend/src/index.css",
+      "summary": "Global base stylesheet setting the default system font stack and monospace code font for the whole React application.",
+      "tags": ["css", "global-styles", "typography", "boilerplate"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/src/react-app-env.d.ts",
+      "type": "file",
+      "name": "react-app-env.d.ts",
+      "filePath": "frontend/src/react-app-env.d.ts",
+      "summary": "Create React App TypeScript ambient type declaration reference file enabling CRA's built-in type definitions (e.g. for static asset imports).",
+      "tags": ["type-definition", "typescript", "boilerplate", "create-react-app"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/src/setupTests.ts",
+      "type": "file",
+      "name": "setupTests.ts",
+      "filePath": "frontend/src/setupTests.ts",
+      "summary": "Jest test setup file that imports jest-dom's custom DOM matchers (e.g. toHaveTextContent) for use across the frontend test suite.",
+      "tags": ["test", "jest", "setup", "boilerplate"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:frontend/tsconfig.tsbuildinfo",
+      "type": "file",
+      "name": "tsconfig.tsbuildinfo",
+      "filePath": "frontend/tsconfig.tsbuildinfo",
+      "summary": "Auto-generated TypeScript incremental build cache file tracking compiled file state for faster rebuilds; not hand-maintained source.",
+      "tags": ["build-artifact", "typescript", "generated", "cache"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/api/agentic.py:log_retry_error",
+      "type": "function",
+      "name": "log_retry_error",
+      "filePath": "backend/app/api/agentic.py",
+      "lineRange": [88, 93],
+      "summary": "Tenacity retry-callback that logs a warning and records an OpenTelemetry span event whenever an LLM call is retried after failure.",
+      "tags": ["retry", "logging", "opentelemetry", "callback"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/api/agentic.py:call_gemini_with_retry",
+      "type": "function",
+      "name": "call_gemini_with_retry",
+      "filePath": "backend/app/api/agentic.py",
+      "lineRange": [101, 138],
+      "summary": "Invokes a LangChain chain against Gemini with tenacity-managed retries, wrapping the call in an OpenTelemetry span that records input/output sizes, latency, and error status.",
+      "tags": ["llm-call", "retry", "gemini", "opentelemetry"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/api/agentic.py:call_groq_with_retry",
+      "type": "function",
+      "name": "call_groq_with_retry",
+      "filePath": "backend/app/api/agentic.py",
+      "lineRange": [145, 184],
+      "summary": "Invokes a LangChain chain against Groq with tenacity-managed retries, tracing the call span with attributes for latency and payload sizes analogous to the Gemini variant.",
+      "tags": ["llm-call", "retry", "groq", "opentelemetry"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/api/agentic.py:content_structurer",
+      "type": "function",
+      "name": "content_structurer",
+      "filePath": "backend/app/api/agentic.py",
+      "lineRange": [186, 260],
+      "summary": "LangGraph node that prompts Gemini to convert a raw transcript into a structured JSON outline of course modules and sections, parsing and cleaning the LLM's JSON response.",
+      "tags": ["langgraph-node", "llm-pipeline", "json-parsing", "gemini"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/api/agentic.py:frame_selector",
+      "type": "function",
+      "name": "frame_selector",
+      "filePath": "backend/app/api/agentic.py",
+      "lineRange": [263, 510],
+      "summary": "LangGraph node that iterates each structured section, matches candidate video frames by timestamp, base64-encodes them, and asks Groq's vision model to pick the most representative frame with a caption for each section.",
+      "tags": ["langgraph-node", "vision-llm", "frame-selection", "groq"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:backend/app/api/agentic.py:course_content_generator",
+      "type": "function",
+      "name": "course_content_generator",
+      "filePath": "backend/app/api/agentic.py",
+      "lineRange": [512, 593],
+      "summary": "LangGraph node that expands the structured outline into full course content (explanations, examples) per section via a Gemini chat prompt, parsing the returned JSON.",
+      "tags": ["langgraph-node", "llm-pipeline", "content-generation", "gemini"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/api/agentic.py:quiz_architect",
+      "type": "function",
+      "name": "quiz_architect",
+      "filePath": "backend/app/api/agentic.py",
+      "lineRange": [595, 681],
+      "summary": "LangGraph node that generates quiz questions for each course section using Gemini, validating and logging the total question count produced.",
+      "tags": ["langgraph-node", "quiz-generation", "llm-pipeline", "gemini"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/api/agentic.py:retention_designer",
+      "type": "function",
+      "name": "retention_designer",
+      "filePath": "backend/app/api/agentic.py",
+      "lineRange": [683, 779],
+      "summary": "LangGraph node that designs a spaced-retention study plan (review schedule and tip placeholders) for the generated course content via a Gemini prompt.",
+      "tags": ["langgraph-node", "retention-plan", "llm-pipeline", "gemini"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/api/agentic.py:retention_tip_executor",
+      "type": "function",
+      "name": "retention_tip_executor",
+      "filePath": "backend/app/api/agentic.py",
+      "lineRange": [781, 873],
+      "summary": "LangGraph node that fills in retention plan placeholders with concrete study tips, selecting from multiple prompt templates per tip type and calling Gemini to generate each tip's content.",
+      "tags": ["langgraph-node", "retention-plan", "llm-pipeline", "gemini"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:backend/app/api/agentic.py:GraphState",
+      "type": "class",
+      "name": "GraphState",
+      "filePath": "backend/app/api/agentic.py",
+      "lineRange": [63, 70],
+      "summary": "TypedDict defining the shared LangGraph state schema (transcript, frames, structured_content, course_content, quiz_content, retention_plan) threaded through every pipeline node.",
+      "tags": ["type-definition", "langgraph-state", "data-model"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:backend/app/api/utils.py:clean_json_string",
+      "type": "function",
+      "name": "clean_json_string",
+      "filePath": "backend/app/api/utils.py",
+      "lineRange": [19, 61],
+      "summary": "Strips markdown code fences and extraneous text from an LLM's raw text response to extract a parseable JSON string, with fallback heuristics and validation via json.loads.",
+      "tags": ["json-parsing", "llm-output", "utility", "validation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/api/utils.py:encode_image",
+      "type": "function",
+      "name": "encode_image",
+      "filePath": "backend/app/api/utils.py",
+      "lineRange": [64, 82],
+      "summary": "Reads an image file from disk and returns its base64-encoded string, used to embed frames in vision-LLM prompts.",
+      "tags": ["utility", "image-encoding", "base64"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:backend/app/sse/broadcaster.py:MessageAnnouncer",
+      "type": "class",
+      "name": "MessageAnnouncer",
+      "filePath": "backend/app/sse/broadcaster.py",
+      "lineRange": [16, 130],
+      "summary": "Thread-safe, in-memory pub/sub manager that tracks per-job asyncio queues of SSE subscribers, publishes JSON progress events to all listeners for a job, and stores/retrieves per-job status for late subscribers.",
+      "tags": ["sse", "pub-sub", "async", "broadcaster", "in-memory-state"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:backend/app/sse/broadcaster.py:format_sse",
+      "type": "function",
+      "name": "format_sse",
+      "filePath": "backend/app/sse/broadcaster.py",
+      "lineRange": [134, 145],
+      "summary": "Formats a Python dict as a properly-encoded Server-Sent Events data frame (JSON-serialized, newline-terminated).",
+      "tags": ["sse", "formatting", "utility"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {"source": "file:backend/app/api/agentic.py", "target": "class:backend/app/api/agentic.py:GraphState", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:backend/app/api/agentic.py", "target": "function:backend/app/api/agentic.py:log_retry_error", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:backend/app/api/agentic.py", "target": "function:backend/app/api/agentic.py:call_gemini_with_retry", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:backend/app/api/agentic.py", "target": "function:backend/app/api/agentic.py:call_groq_with_retry", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:backend/app/api/agentic.py", "target": "function:backend/app/api/agentic.py:content_structurer", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:backend/app/api/agentic.py", "target": "function:backend/app/api/agentic.py:frame_selector", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:backend/app/api/agentic.py", "target": "function:backend/app/api/agentic.py:course_content_generator", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:backend/app/api/agentic.py", "target": "function:backend/app/api/agentic.py:quiz_architect", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:backend/app/api/agentic.py", "target": "function:backend/app/api/agentic.py:retention_designer", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:backend/app/api/agentic.py", "target": "function:backend/app/api/agentic.py:retention_tip_executor", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:backend/app/api/utils.py", "target": "function:backend/app/api/utils.py:clean_json_string", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:backend/app/api/utils.py", "target": "function:backend/app/api/utils.py:encode_image", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:backend/app/sse/broadcaster.py", "target": "class:backend/app/sse/broadcaster.py:MessageAnnouncer", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:backend/app/sse/broadcaster.py", "target": "function:backend/app/sse/broadcaster.py:format_sse", "type": "contains", "direction": "forward", "weight": 1.0},
+
+    {"source": "file:backend/app/api/agentic.py", "target": "class:backend/app/api/agentic.py:GraphState", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:backend/app/api/agentic.py", "target": "function:backend/app/api/agentic.py:log_retry_error", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:backend/app/api/agentic.py", "target": "function:backend/app/api/agentic.py:call_gemini_with_retry", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:backend/app/api/agentic.py", "target": "function:backend/app/api/agentic.py:call_groq_with_retry", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:backend/app/api/agentic.py", "target": "function:backend/app/api/agentic.py:content_structurer", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:backend/app/api/agentic.py", "target": "function:backend/app/api/agentic.py:frame_selector", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:backend/app/api/agentic.py", "target": "function:backend/app/api/agentic.py:course_content_generator", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:backend/app/api/agentic.py", "target": "function:backend/app/api/agentic.py:quiz_architect", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:backend/app/api/agentic.py", "target": "function:backend/app/api/agentic.py:retention_designer", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:backend/app/api/agentic.py", "target": "function:backend/app/api/agentic.py:retention_tip_executor", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:backend/app/api/utils.py", "target": "function:backend/app/api/utils.py:clean_json_string", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:backend/app/api/utils.py", "target": "function:backend/app/api/utils.py:encode_image", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:backend/app/sse/broadcaster.py", "target": "class:backend/app/sse/broadcaster.py:MessageAnnouncer", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:backend/app/sse/broadcaster.py", "target": "function:backend/app/sse/broadcaster.py:format_sse", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:backend/app/api/agentic.py", "target": "file:backend/app/api/utils.py", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "function:backend/app/api/agentic.py:content_structurer", "target": "function:backend/app/api/agentic.py:call_gemini_with_retry", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:backend/app/api/agentic.py:frame_selector", "target": "function:backend/app/api/agentic.py:call_groq_with_retry", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:backend/app/api/agentic.py:course_content_generator", "target": "function:backend/app/api/agentic.py:call_gemini_with_retry", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:backend/app/api/agentic.py:quiz_architect", "target": "function:backend/app/api/agentic.py:call_gemini_with_retry", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:backend/app/api/agentic.py:retention_designer", "target": "function:backend/app/api/agentic.py:call_gemini_with_retry", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:backend/app/api/agentic.py:retention_tip_executor", "target": "function:backend/app/api/agentic.py:call_gemini_with_retry", "type": "calls", "direction": "forward", "weight": 0.8},
+
+    {"source": "function:backend/app/api/agentic.py:content_structurer", "target": "function:backend/app/api/utils.py:clean_json_string", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:backend/app/api/agentic.py:frame_selector", "target": "function:backend/app/api/utils.py:clean_json_string", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:backend/app/api/agentic.py:frame_selector", "target": "function:backend/app/api/utils.py:encode_image", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:backend/app/api/agentic.py:course_content_generator", "target": "function:backend/app/api/utils.py:clean_json_string", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:backend/app/api/agentic.py:quiz_architect", "target": "function:backend/app/api/utils.py:clean_json_string", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:backend/app/api/agentic.py:retention_designer", "target": "function:backend/app/api/utils.py:clean_json_string", "type": "calls", "direction": "forward", "weight": 0.8}
+  ]
+}

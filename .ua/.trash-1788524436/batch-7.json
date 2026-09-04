@@ -1,0 +1,48 @@
+{
+  "nodes": [
+    {
+      "id": "document:frontend/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "frontend/README.md",
+      "summary": "Default Create React App boilerplate README for the frontend, documenting the standard npm scripts (start, test, build, eject) and links to CRA/React learning resources.",
+      "tags": ["documentation", "frontend", "create-react-app", "getting-started"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:frontend/package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "frontend/package.json",
+      "summary": "npm manifest for the React/TypeScript frontend, declaring dependencies (React 19, MUI, axios, react-router-dom, react-player, react-markdown, dompurify) and the CRA-based start/build/test/eject scripts.",
+      "tags": ["configuration", "npm", "dependencies", "react", "build-system"],
+      "complexity": "simple",
+      "languageNotes": "Built on Create React App (react-scripts 5.0.1) with MUI for components, axios for API calls, react-player for video playback, and react-markdown/dompurify for rendering sanitized course content — consistent with a YouTube-to-course generator UI."
+    },
+    {
+      "id": "config:frontend/tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "filePath": "frontend/tsconfig.json",
+      "summary": "TypeScript compiler configuration for the frontend, enabling standard CRA-generated strict/JSX/module settings and scoping compilation to the src directory.",
+      "tags": ["configuration", "typescript", "compiler-options", "frontend"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "config:frontend/package.json",
+      "target": "config:frontend/tsconfig.json",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:frontend/README.md",
+      "target": "config:frontend/package.json",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

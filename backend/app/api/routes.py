@@ -7,6 +7,7 @@ import subprocess
 import asyncio
 import logging
 import json
+import re
 import time
 from typing import Any, Dict, List, Tuple, Set, Optional
 import whisper
@@ -32,6 +33,29 @@ load_dotenv()
 
 PROGRESS_QUEUES: Dict[str, asyncio.Queue] = {}
 ACTIVE_TASKS: Dict[str, asyncio.Task] = {}
+
+
+def _extract_video_id(url: str) -> Optional[str]:
+    """Extract the 11-character YouTube video id from common URL shapes.
+
+    Handles youtu.be/<id>, watch?v=<id> (with extra query params like ``?si=``),
+    shorts, live, embed and /v/ links. Returns None when no id is found.
+    """
+    url = (url or "").strip()
+    if not url:
+        return None
+    patterns = (
+        r"youtu\.be/([A-Za-z0-9_-]{11})",
+        r"youtube\.com/(?:shorts|live|embed|v)/([A-Za-z0-9_-]{11})",
+        # Generic `?v=` / `&v=` — covers youtube.com/watch?v=… (also mobile and
+        # music subdomains) regardless of extra query params like `?si=…`.
+        r"[?&]v=([A-Za-z0-9_-]{11})",
+    )
+    for pattern in patterns:
+        match = re.search(pattern, url, re.IGNORECASE)
+        if match:
+            return match.group(1)
+    return None
 
 class VideoRequest(BaseModel):
     """
@@ -90,7 +114,21 @@ async def _run_course_generation(video_id: str, video_url: str, queue: asyncio.Q
                     except NoTranscriptFound:
                         logger.error("No generated transcripts found at all. Falling back to Whisper.")
 
-                transcript_data: List[Dict[str, Any]] = transcript_obj.fetch()
+                try:
+                    transcript_data: List[Dict[str, Any]] = transcript_obj.fetch()
+                except Exception as fetch_err:  # incl. xml ParseError on empty/blocked timedtext
+                    logger.warning("Transcript fetch failed (%s). Falling back to Whisper.",
+                                   type(fetch_err).__name__)
+                    audio_file_path = os.path.join("/tmp", f"{video_id}.mp3")
+                    local_temp_files.add(audio_file_path)
+                    return _get_whisper_transcript(video_id, video_url)
+
+                if not transcript_data:
+                    logger.warning("Transcript fetch returned no segments. Falling back to Whisper.")
+                    audio_file_path = os.path.join("/tmp", f"{video_id}.mp3")
+                    local_temp_files.add(audio_file_path)
+                    return _get_whisper_transcript(video_id, video_url)
+
                 segments: List[Dict[str, Any]] = [
                     {"start": item["start"], "duration": item["duration"], "text": item["text"].strip()}
                     for item in transcript_data
@@ -401,7 +439,7 @@ async def generate_course_request(request: VideoRequest) -> Dict[str, Any]:
     try:
         if not request.videoUrl or ("youtube.com" not in request.videoUrl and "youtu.be" not in request.videoUrl):
             raise HTTPException(status_code=400, detail="Invalid YouTube URL provided.")
-        video_id = request.videoUrl.split("v=")[-1].split("&")[0].split("/")[ -1]
+        video_id = _extract_video_id(request.videoUrl)
         if not video_id:
             raise HTTPException(status_code=400, detail="Could not extract video ID from URL.")
         logger.info("Received request for video_id: %s", video_id)

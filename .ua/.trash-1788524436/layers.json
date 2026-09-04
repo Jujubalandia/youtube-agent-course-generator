@@ -1,0 +1,97 @@
+[
+  {
+    "id": "layer:ui",
+    "name": "Frontend UI",
+    "description": "The React/TypeScript single-page application (CRA) — App and UploadPage components, the axios API client, global styles, and the static HTML shell that let a user submit a YouTube URL and view the generated course, quiz, and retention plan.",
+    "nodeIds": [
+      "file:frontend/src/App.test.tsx",
+      "file:frontend/src/App.tsx",
+      "file:frontend/src/index.tsx",
+      "file:frontend/src/pages/UploadPage.tsx",
+      "file:frontend/src/reportWebVitals.ts",
+      "file:frontend/src/services/api.ts",
+      "file:frontend/public/index.html",
+      "file:frontend/src/App.css",
+      "file:frontend/src/index.css",
+      "file:frontend/src/react-app-env.d.ts",
+      "file:frontend/src/setupTests.ts",
+      "file:frontend/tsconfig.tsbuildinfo"
+    ]
+  },
+  {
+    "id": "layer:api",
+    "name": "Backend API & Orchestration",
+    "description": "The FastAPI application and its request-handling logic — the app entry point, the course-generation router, the LangGraph agentic pipeline (Gemini/Groq calls), video frame extraction, S3 upload helpers, and the SSE progress broadcaster.",
+    "nodeIds": [
+      "file:backend/app/api/__init__.py",
+      "file:backend/app/api/frame_extraction.py",
+      "file:backend/app/api/routes.py",
+      "file:backend/app/api/s3_utils.py",
+      "file:backend/app/main.py",
+      "file:backend/app/__init__.py",
+      "file:backend/app/api/agentic.py",
+      "file:backend/app/api/utils.py",
+      "file:backend/app/sse/broadcaster.py"
+    ]
+  },
+  {
+    "id": "layer:data",
+    "name": "Data Layer",
+    "description": "Persistence for generated courses — the SQLAlchemy async engine/session setup, the Course ORM model, the async CRUD functions, and the one-shot database schema initializer run at container startup.",
+    "nodeIds": [
+      "file:backend/app/db/crud.py",
+      "file:backend/app/db/database.py",
+      "file:backend/app/db/models.py",
+      "file:backend/app/db/__init__.py",
+      "file:backend/scripts/init_db.py"
+    ]
+  },
+  {
+    "id": "layer:infrastructure",
+    "name": "Infrastructure & Deployment",
+    "description": "Container and orchestration definitions for the whole stack — backend and frontend Dockerfiles, the docker-compose services (Postgres, MinIO, Jaeger, backend, frontend, and their init jobs), the nginx static-file config, and the backend container entrypoint script.",
+    "nodeIds": [
+      "service:backend/Dockerfile",
+      "service:backend/.dockerignore",
+      "service:frontend/.dockerignore",
+      "service:frontend/Dockerfile",
+      "service:frontend/Dockerfile:build",
+      "service:frontend/Dockerfile:nginx",
+      "service:docker-compose.yml",
+      "service:docker-compose.yml:postgres",
+      "service:docker-compose.yml:minio",
+      "service:docker-compose.yml:minio-init",
+      "service:docker-compose.yml:jaeger",
+      "service:docker-compose.yml:backend",
+      "service:docker-compose.yml:backend-init",
+      "service:docker-compose.yml:frontend",
+      "file:backend/scripts/start.sh",
+      "file:frontend/nginx.conf"
+    ]
+  },
+  {
+    "id": "layer:config",
+    "name": "Configuration",
+    "description": "Project and build configuration — the root and frontend npm manifests, the frontend TypeScript compiler config, the PWA manifest, the .env template for the compose stack, and tooling configs for Serena and Understand-Anything.",
+    "nodeIds": [
+      "config:.env.example",
+      "config:package.json",
+      "config:frontend/package.json",
+      "config:frontend/tsconfig.json",
+      "config:frontend/public/manifest.json",
+      "config:.serena/project.yml",
+      "file:.ua/.understandignore"
+    ]
+  },
+  {
+    "id": "layer:documentation",
+    "name": "Documentation",
+    "description": "Project-facing documentation and dependency manifests describing how to run the stack and what the backend depends on — the root and frontend READMEs, the crawler policy, and the annotated Python requirements file.",
+    "nodeIds": [
+      "document:README.md",
+      "document:frontend/README.md",
+      "document:frontend/public/robots.txt",
+      "document:backend/requirements.txt"
+    ]
+  }
+]

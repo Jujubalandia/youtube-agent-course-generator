@@ -14,6 +14,11 @@ import logging
 import os
 import sys
 
+# Allow `python scripts/init_db.py` to import the `app` package from the project
+# root (the backend WORKDIR /srv/backend), even though running a script directly
+# puts `scripts/` (not the project root) at the front of sys.path.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("init_db")
 

@@ -1,0 +1,14 @@
+{
+  "fixedSectionOk": true,
+  "nodesRecovered": 0,
+  "edgesRestored": 0,
+  "crossBatchEdgesAdded": 0,
+  "typesRemapped": 0,
+  "complexityRemapped": 0,
+  "notes": [
+    "Merge script report contained no 'Fixed' section entries for this run (node count held at 97 in -> 97 out, edges 163 in -> 162 out), so there was nothing to sanity-check there.",
+    "Node types are all within the known set (file, function, class, service, config, document); complexity values are all within {simple, moderate, complex}. No unrecoverable no-id nodes or unknown-type/complexity nodes were present.",
+    "The single 'could not fix' item -- edge service:backend/Dockerfile -> file:backend/app (deploys) -- was investigated and left dropped. batch-4.json shows the edge was authored by the batch analyzer to represent the Dockerfile's 'COPY app/' step, but no batch ever produced a node for the backend/app directory itself (only individual files under it, e.g. file:backend/app/main.py, file:backend/app/__init__.py, exist as nodes). This project's node schema has no directory-level node type, so the edge's target is a genuine model mismatch rather than a dropped/malformed node -- confirmed no file:backend/app, service:backend/app, or config:backend/app node exists anywhere in the assembled graph. Recreating it would require inventing a node type outside the established schema, so it was skipped per the 'target genuinely doesn't exist' guidance rather than speculatively redirected to main.py or __init__.py.",
+    "Cross-batch import edges: all 18 relationships listed in $IMPORT_MAP with non-empty import lists (agentic.py->utils.py, routes.py's 6 imports, crud.py->models.py, main.py->routes.py, init_db.py's 2 imports, and the 6 frontend edges including the App.tsx<->services/api.ts<->UploadPage.tsx chain) are already present in assembled-graph.json as 'imports' edges. No gaps found, so no edges were added."
+  ]
+}

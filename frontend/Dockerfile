@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1
 # Frontend image: builds the CRA (react-scripts 5) app and serves the static
 # bundle with nginx. Publish this container's port 80 to the host port that
 # matches the origin CORS allows (default 3000, see docker-compose.yml).

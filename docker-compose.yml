@@ -74,6 +74,21 @@ services:
       echo 'MinIO bucket $$S3_BUCKET_NAME ready (public-read for local image serving)'"
     restart: "no"
 
+  # FiftyOne's frame-dedup (compute_uniqueness) needs MongoDB. Its embedded
+  # `fiftyone-db` binary is unreliable inside this image, so we run a real Mongo
+  # and point FiftyOne at it via FIFTYONE_DATABASE_URI.
+  mongo:
+    image: mongo:7
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ ping: 1 }).ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    restart: unless-stopped
+
   jaeger:
     image: jaegertracing/all-in-one:1.76.0
     environment:
@@ -92,10 +107,15 @@ services:
         condition: service_healthy
       minio-init:
         condition: service_completed_successfully
+      mongo:
+        condition: service_healthy
     environment:
       # Mandatory: the LangGraph agent module refuses to import without these.
       GEMINI_API_KEY: ${GEMINI_API_KEY:?Set GEMINI_API_KEY in .env (see .env.example)}
       GROQ_API_KEY: ${GROQ_API_KEY:?Set GROQ_API_KEY in .env (see .env.example)}
+      # LLM models (override if a provider retires/renames a model).
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      GROQ_MODEL: ${GROQ_MODEL:-meta-llama/llama-4-scout-17b-16e-instruct}
       # Database (asyncpg driver). Override DATABASE_URL wholesale if you want.
       DATABASE_URL: "${DATABASE_URL:-postgresql+asyncpg://${POSTGRES_USER:-course}:${POSTGRES_PASSWORD:-course}@postgres:5432/${POSTGRES_DB:-coursegen}}"
       # Object storage. Defaults below wire up the bundled MinIO; to use real
@@ -109,6 +129,8 @@ services:
       S3_PUBLIC_URL: "${S3_PUBLIC_URL-http://localhost:9000}"
       # Tracing -> bundled Jaeger (override to disable, e.g. OTEL_EXPORTER_OTLP_ENDPOINT=)
       OTEL_EXPORTER_OTLP_ENDPOINT: "${OTEL_EXPORTER_OTLP_ENDPOINT-http://jaeger:4317}"
+      # FiftyOne (keyframe uniqueness) uses the bundled MongoDB service.
+      FIFTYONE_DATABASE_URI: mongodb://mongo:27017
     volumes:
       - whisper_cache:/root/.cache/whisper
     ports:
@@ -157,3 +179,4 @@ volumes:
   pgdata:
   minio_data:
   whisper_cache:
+  mongo_data:
